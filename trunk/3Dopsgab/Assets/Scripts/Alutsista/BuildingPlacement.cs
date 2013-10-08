@@ -20,7 +20,7 @@ public class BuildingPlacement : MonoBehaviour {
 		Vector3 p = camera.ScreenToWorldPoint(m);
 			
 		if (currentBuilding != null && !hasPlaced) {
-			currentBuilding.position = new Vector3(p.x,13,p.z);
+			currentBuilding.position = new Vector3(p.x,50,p.z);
 			
 			if (Input.GetMouseButtonDown(0)) {
 				if (IsLegalPosition()) {
@@ -46,7 +46,7 @@ public class BuildingPlacement : MonoBehaviour {
 		else {
 			if (Input.GetMouseButtonDown(0)) {
 				RaycastHit hit = new RaycastHit();
-				Ray ray = new Ray(new Vector3(p.x,13,p.z), Vector3.down);
+				Ray ray = new Ray(new Vector3(p.x,50,p.z), Vector3.down);
 				if (Physics.Raycast(ray, out hit,Mathf.Infinity,buildingsMask)) {
 					if (placeableBuildingOld != null) {
 						placeableBuildingOld.SetSelected(false);

@@ -83,8 +83,8 @@ public class HistoryManager : MonoBehaviour
     }
 
     public static HistoryItem[] testOperationArray = {
-                                                         new HistoryItem("add","Sukhoi-01","Sukhoi",new Vector3(-114.6f,9,383.4f)),
-                                                         new HistoryItem("add","F16-02","F16",new Vector3(-179f,9,288f))
+                                                         new HistoryItem("add","Sukhoi-01","Sukhoi",new Vector3(-114.6f,9f,383.4f)),
+                                                         new HistoryItem("add","F16-02","F16",new Vector3(-179f,9f,288f))
                                                      };
 }
 
