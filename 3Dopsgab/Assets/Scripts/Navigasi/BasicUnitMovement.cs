@@ -14,6 +14,7 @@ public class BasicUnitMovement : MonoBehaviour
     public bool action = false;
     public bool isSelected = false;
     public bool isUnitLaut; //diset di Editor prefabnya
+    public bool isUnitUdara; //diset di Editor prefabnya
     public Vector3 goal;
 
     public GameObject moveEffectObject;
@@ -104,7 +105,8 @@ public class BasicUnitMovement : MonoBehaviour
     }
 
     private float waterUnitLandDetectRange = 30f;
-    public static float UNIT_LAUTY = 4;
+    public static float UNIT_LAUT_Y = 4;
+    public static float UNIT_UDARA_Y = 50;
 	
 	void Update()
     {
@@ -181,7 +183,7 @@ public class BasicUnitMovement : MonoBehaviour
     public void addWaypoint(Vector3 wpItem)
     {
         if (waypoints == null) return;
-        if (isUnitLaut) { wpItem.y = UNIT_LAUTY; }
+        if (isUnitLaut) { wpItem.y = UNIT_LAUT_Y; }
 
         goal = wpItem;
 

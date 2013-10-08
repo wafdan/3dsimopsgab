@@ -13,15 +13,15 @@ public class UnitManager : MonoBehaviour
     private string testStatus = "";
     private bool menuVisible = false;
     private Vector3 screenPos;
-    private int menuH;
-    private int menuW;
+    private float menuH;
+    private float menuW;
     private float menuX;
     private float menuY;
     private float menuItemX;
     private float menuItemY;
-    private int menuItemW;
-    private int menuItemH;
-    private string[] unitOrderList = new string[] { "Delete", "Kembali" };
+    private float menuItemW;
+    private float menuItemH;
+    private string[] unitOrderList = new string[] { "Delete"};
     private Vector3 selectedUnitPos;
     private List<GameObject> unitsToBeProcessed;
     public static string UNIT_TAG = "Building";
@@ -310,12 +310,14 @@ public class UnitManager : MonoBehaviour
 
     }
 
+    private float selectedUnitUdaraHeight = BasicUnitMovement.UNIT_UDARA_Y; // nilai ketinggian unit udara berdasarkan slider
+    private float sliderUdaraH, btKembaliH; //tambahan ketinggian menu, opsional
     void showSelectedUnitMenu()
     {
         //screenPos = Camera.main.WorldToScreenPoint(transform.position);
         screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
 
-        menuH = 30 + 25 * (unitOrderList.Length);
+        menuH = 30f + 25f * ((float)unitOrderList.Length) + sliderUdaraH+btKembaliH;
         menuW = 300;
         menuX = screenPos.x;
         menuY = Screen.height - screenPos.y - menuH;
@@ -332,15 +334,10 @@ public class UnitManager : MonoBehaviour
         {
             if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), order))
             {
-
                 switch (order)
                 {
                     case "Delete":
-                        if (destroySelectedUnits())
-                            menuVisible = false;
-                        break;
-                    case "Kembali":
-                        menuVisible = false;
+                        if (destroySelectedUnits()) { menuVisible = false; }
                         break;
                     default:
                         break;
@@ -348,12 +345,39 @@ public class UnitManager : MonoBehaviour
             }
             menuItemY += menuItemH + 2;
         }
+        // cek if semua yg diselect adalah unit udara
+        bool showAturKetinggian = true;
+        foreach (GameObject gob in unitsToBeProcessed)
+        {
+            if (!gob.GetComponent<BasicUnitMovement>().isUnitUdara)
+                showAturKetinggian = false;
+            //else
+                //selectedUnitUdaraHeight = gob.transform.position.y;
+
+            gob.transform.position = new Vector3(gob.transform.position.x, selectedUnitUdaraHeight, gob.transform.position.z);    
+        }
+        if (showAturKetinggian)
+        {
+            sliderUdaraH = 50;
+            //if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "menu ketinggian yohoo"))
+            //{
+            //}
+            GUI.Label(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Ketinggian Unit: " + selectedUnitUdaraHeight + " km");
+            menuItemY += menuItemH + 2;
+            selectedUnitUdaraHeight = GUI.HorizontalSlider(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), selectedUnitUdaraHeight, 0.0f, 100.0f);
+            menuItemY += menuItemH + 2;
+        }
+        btKembaliH = 25;
+        if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Kembali"))
+        {
+            menuVisible = false;
+        }
     }
 
     private Vector2 scrollPosition = Vector2.zero;
     private float hScrollvH = 200;
     private int lastHistoryCount = 0;
-
+    
     void showHistoryGUI()
     {
         historyStyle = new GUIStyle(GUI.skin.button);
