@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.IO;
 
 public class MenuUnit : MonoBehaviour {
 	
@@ -98,6 +99,25 @@ public class MenuUnit : MonoBehaviour {
     //Unit manager
     private UnitManager unitManager;
     private GameObject unitManagerObject;
+	
+	public bool tampil = false;    
+	
+		public Rect winRect;   //windows basic rect
+        public string location;
+        private Vector2 scrollPosition1;
+       
+        private string[] strs;  //record the special level's selection
+        private int index;
+        private string path;    //this is the selected file's full name
+       
+        public GUIStyle fileStyle;                      //if the item is a file use this style
+        public GUIStyle dirStyle;                       //if the item is a directory use this style
+       
+        public string filter;                           //filter of file select
+       
+        public Texture2D fileTexture;                   //the file texture
+        public Texture2D dirTexture;                    //the directory texture
+	
 
 	void Start(){
         unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
@@ -200,6 +220,15 @@ public class MenuUnit : MonoBehaviour {
          radar = (Texture2D)Resources.Load("Radar");
          howitzer = (Texture2D)Resources.Load("Howitzer");
     }
+	
+	void Awake()
+        {
+            location = "C:\\.*" + path;
+            strs = new string[20];
+            index = 0;
+            path = location;
+        }
+	
 	
 	void Update () {
 		if(Input.GetButtonDown("Jump"))
@@ -336,8 +365,14 @@ public class MenuUnit : MonoBehaviour {
 				Deskripsi = GUI.TextArea(new Rect (cornerBox_X + 10, cornerBox_Y + 125, wBox-20,120), Deskripsi, 200);
 		
 				GUI.Label (new Rect (cornerBox_X + 10, cornerBox_Y + 250, wBox-120,25), "File Pendukung : ");
-				GUI.Button(new Rect (cornerBox_X + 115, cornerBox_Y + 252, wBox-180,20),"Upload");
-		
+				if (GUI.Button(new Rect (cornerBox_X + 115, cornerBox_Y + 252, wBox-180,20),"Upload")){
+					tampil = !tampil;
+				}
+				if (tampil){
+					GUI.backgroundColor = Color.white;
+					winRect = new Rect(500,20,150,20);
+					winRect = GUILayout.Window(1, winRect, DoMyWindow, "Browser");
+				}
 				GUI.Label (new Rect (cornerBox_X + 10, cornerBox_Y + 280, wBox-120,25), "Konfigurasi Unit : ");
                 if (GUI.Button(new Rect(cornerBox_X + 115, cornerBox_Y + 280, wBox*0.5f, 40), "Atur Pergerakan\nUnit"))
                 {
@@ -763,5 +798,80 @@ public class MenuUnit : MonoBehaviour {
         {
             GUI.Box(new Rect(0, 520, width, 100), "");
         }
-    } 
+    }
+	
+	
+		        void DoMyWindow(int windowID)
+        {
+            
+			OpenFileWindow(location);
+            GUI.DragWindow ();
+        }
+       
+        void OpenFileWindow( string location )
+        {
+            scrollPosition1 = GUILayout.BeginScrollView (scrollPosition1,GUILayout.Width(400),GUILayout.Height(400));
+            GUILayout.BeginVertical();
+                FileBrowser( location, 0, 0);   
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView ();
+            GUILayout.Label("Selected:" + path);
+        }
+       
+        void FileBrowser( string location, int spaceNum, int index)
+        {
+            FileInfo fileSelection;
+            DirectoryInfo directoryInfo;
+            DirectoryInfo directorySelection;
+            
+            //
+            fileSelection = new FileInfo( location );
+            if( fileSelection.Attributes == FileAttributes.Directory )
+                directoryInfo = new DirectoryInfo( location );
+            else
+                directoryInfo = fileSelection.Directory;
+               
+            //
+            GUILayout.BeginVertical();
+                foreach( DirectoryInfo dirInfo in directoryInfo.GetDirectories())
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(spaceNum);
+                    GUILayout.Label(dirTexture,dirStyle,GUILayout.Width(12));
+                    if( GUILayout.Button(dirInfo.Name, dirStyle) )
+                    {
+                        strs[index] = dirInfo.FullName;
+                        path = dirInfo.FullName;   
+                    }
+                    GUILayout.EndHorizontal();
+                    if( dirInfo.FullName == strs[index] && strs[index] != location )
+                        FileBrowser(strs[index], spaceNum + 20, index+1);              
+                }
+               
+                //list the special file with speical style and texture under current directory
+                //if( filter=="") filter = "*.*";
+                fileSelection = SelectList(directoryInfo.GetFiles(), null, fileStyle, fileTexture, spaceNum) as FileInfo;
+                if( fileSelection != null )
+                    path = fileSelection.FullName;
+                   
+            GUILayout.EndVertical();   
+        }
+       
+        private object SelectList( ICollection list, object selected, GUIStyle style, Texture image, int spaceNum)
+        {
+            foreach( object item in list )
+            {
+                //just show the name of directory and file
+                FileSystemInfo info = item as FileSystemInfo;
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(spaceNum);
+                GUILayout.Label(image,style,GUILayout.Width(12));
+                if( GUILayout.Button(info.Name, style) )
+                {
+                    selected = item;
+                }
+                GUILayout.EndHorizontal();
+            }
+            return selected;
+        }
 }
