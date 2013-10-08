@@ -52,6 +52,7 @@
      <Compile Include="Assets\UnitySerializer\Scripts\Movement.js" />
      <Compile Include="Assets\UnitySerializer\Scripts\PauseMenu.js" />
      <Compile Include="Assets\UnitySerializer\Scripts\Spawner.js" />
+     <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-SimpleWater4.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />

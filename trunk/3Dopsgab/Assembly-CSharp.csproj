@@ -44,6 +44,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Pixelplacement\iTweenPath\iTweenPath.cs" />
      <Compile Include="Assets\Scripts\Alutsista\BuildingManager.cs" />
      <Compile Include="Assets\Scripts\Alutsista\BuildingPlacement.cs" />
      <Compile Include="Assets\Scripts\Alutsista\PlaceableBuilding.cs" />
@@ -108,6 +109,11 @@
      <Compile Include="Assets\UnitySerializer\Scripts\TestLoading.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\TestSerialization.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\VariablesToSave.cs" />
+     <Compile Include="Assets\iTween\Plugins\iTween.cs" />
+     <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
+     <Compile Include="Assets\iTween\Sample\RotateSample.cs" />
+     <Compile Include="Assets\iTween\Sample\SampleInfo.cs" />
+     <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-SimpleWater4.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
