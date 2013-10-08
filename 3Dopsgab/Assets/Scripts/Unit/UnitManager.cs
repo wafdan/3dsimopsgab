@@ -21,7 +21,7 @@ public class UnitManager : MonoBehaviour
     private float menuItemY;
     private int menuItemW;
     private int menuItemH;
-    private string[] unitOrderList = new string[] { "Delete", "Edit" };
+    private string[] unitOrderList = new string[] { "Delete", "Kembali" };
     private Vector3 selectedUnitPos;
     private List<GameObject> unitsToBeProcessed;
     public static string UNIT_TAG = "Building";
@@ -42,7 +42,8 @@ public class UnitManager : MonoBehaviour
         //testAddUnit();
     }
 
-    public IEnumerator executeMovement(){
+    public IEnumerator executeMovement()
+    {
         float startTime;
         Vector3 startPoint;
         foreach (GameObject go in selectedUnits)
@@ -54,8 +55,8 @@ public class UnitManager : MonoBehaviour
                 startPoint = bum.gameObject.transform.position;
                 for (int i = 0; i < bum.waypoints.Count; i++)
                 {
-                     //yield MoveObject.use.Translation(bum.gameObject.transform, bum.waypoints[i], bum.waypoints[i+1], time, MoveType.Time);
-                    
+                    //yield MoveObject.use.Translation(bum.gameObject.transform, bum.waypoints[i], bum.waypoints[i+1], time, MoveType.Time);
+
                     //startTime = Time.time;
                     //Vector3.Lerp(startPoint, endPoint, i);
 
@@ -65,7 +66,7 @@ public class UnitManager : MonoBehaviour
                     //StartCoroutine(moveToPoint(go,bum.waypoints[i],bum));
                     go.transform.position = Vector3.Lerp(startPoint, bum.waypoints[i], bum.moveSpeed * Time.deltaTime);
                     startPoint = bum.waypoints[i];
-                    
+
                 }
             }
         }
@@ -90,7 +91,7 @@ public class UnitManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                
+
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity))
@@ -106,7 +107,7 @@ public class UnitManager : MonoBehaviour
                     if (hit.collider.gameObject.tag != UNIT_TAG) // cek apakah objek yg diselect adalah Unit, kalau tidak, deselect
                     {
                         Debug.Log("DESELECT");
-						DeselectAllUnits();
+                        DeselectAllUnits();
                     }
                 }
 
@@ -299,69 +300,68 @@ public class UnitManager : MonoBehaviour
     // GUI operations
     void OnGUI()
     {
-        showSelectedUnitMenu();
+        if (menuVisible && Camera.main.enabled)
+            showSelectedUnitMenu();
+
+        if (HistoryManager.showHistory)
+            showHistoryGUI();
+
         //GUI.Box(new Rect(400, 500, 300, 100), testStatus);
-        showHistoryGUI();
 
     }
 
     void showSelectedUnitMenu()
     {
-        if (menuVisible && Camera.main.enabled)
+        //screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
+
+        menuH = 30 + 25 * (unitOrderList.Length);
+        menuW = 300;
+        menuX = screenPos.x;
+        menuY = Screen.height - screenPos.y - menuH;
+
+        //Debug.Log("target is " + screenPos.x +","+screenPos.y+","+screenPos.z+ " pixels from the left");
+        menuItemX = screenPos.x + 5;
+        menuItemY = menuY + 20;
+        menuItemW = menuW - 10;
+        menuItemH = 25;
+
+        GUI.Box(new Rect(menuX, menuY, menuW, menuH), "menu unit");
+
+        foreach (string order in unitOrderList)
         {
-
-            //screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
-
-            menuH = 30 + 25 * (unitOrderList.Length);
-            menuW = 300;
-            menuX = screenPos.x;
-            menuY = Screen.height - screenPos.y - menuH;
-
-            //Debug.Log("target is " + screenPos.x +","+screenPos.y+","+screenPos.z+ " pixels from the left");
-            menuItemX = screenPos.x + 5;
-            menuItemY = menuY + 20;
-            menuItemW = menuW - 10;
-            menuItemH = 25;
-
-            GUI.Box(new Rect(menuX, menuY, menuW, menuH), "menu unit");
-
-            foreach (string order in unitOrderList)
+            if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), order))
             {
-                if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), order))
-                {
 
-                    if (order.Contains("Delete"))
-                    {
+                switch (order)
+                {
+                    case "Delete":
                         if (destroySelectedUnits())
-                        {
                             menuVisible = false;
-                        }
-                    }
-                    else
-                    {
-                        //theSpotlight.SetActive (false);
-                    }
+                        break;
+                    case "Kembali":
+                        menuVisible = false;
+                        break;
+                    default:
+                        break;
                 }
-                menuItemY += menuItemH + 2;
             }
-        }//endif menuVisible && mainCamera.enabled
+            menuItemY += menuItemH + 2;
+        }
     }
-    
+
     private Vector2 scrollPosition = Vector2.zero;
     private float hScrollvH = 200;
     private int lastHistoryCount = 0;
-    
+
     void showHistoryGUI()
     {
-        if (!HistoryManager.showHistory) return;
-
         historyStyle = new GUIStyle(GUI.skin.button);
         historyStyle.fontSize = 11;
 
         float hisPosW = 300;
         float hisPosH = 250;
-        float hisPosX = Screen.width-hisPosW;
+        float hisPosX = Screen.width - hisPosW;
         float hisPosY = 200;
         float hisItemH = 40;
         float hisItemW = hisPosW * 0.9f;
@@ -370,25 +370,25 @@ public class UnitManager : MonoBehaviour
         float hisItemX = 0; //relative to scroolview
         float hisItemY = 0; //relative to scrollview
         int len;
-        scrollPosition=  GUI.BeginScrollView(
-            				new Rect(hisPosX, hisPosY + 20, hisPosW, hisPosH),
-            				scrollPosition,
-            				new Rect(-10, 0, hisPosW-10, hScrollvH),false,false);
+        scrollPosition = GUI.BeginScrollView(
+                            new Rect(hisPosX, hisPosY + 20, hisPosW, hisPosH),
+                            scrollPosition,
+                            new Rect(-10, 0, hisPosW - 10, hScrollvH), false, false);
         for (int i = 0; i < HistoryManager.historyList.Count; i++)
         {
             len = HistoryManager.historyList.Count;
-            if (GUI.Button(new Rect(hisItemX, hisItemY, hisItemW, hisItemH), "["+i+"] "+HistoryManager.historyList[i].ToString(),historyStyle))
+            if (GUI.Button(new Rect(hisItemX, hisItemY, hisItemW, hisItemH), "[" + i + "] " + HistoryManager.historyList[i].ToString(), historyStyle))
             {
                 //foreach history i sampe len-i
                 //unco action[i]
                 //for(int j=i, lenj=len-i; j<lenj; j++){
-                    //undoAction(hitem);
+                //undoAction(hitem);
                 //}
                 HistoryManager.undoHistory((HistoryItem)HistoryManager.historyList[i]);
             }
             hisItemY += hisItemH + 1;
             hScrollvH = ((hisItemH + 1) * (i + 1) <= hScrollvH ? hScrollvH : (hisItemH + 1) * (i + 1));
-            
+
         }
         GUI.EndScrollView();
 
