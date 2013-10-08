@@ -114,7 +114,7 @@ public class UnitManager : MonoBehaviour
             if (Input.GetMouseButtonDown(1))
             {
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
+                //Debug.DrawRay(ray.GetPoint(200), Vector3.down * 30, Color.yellow);
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 {
                     if (debug)
@@ -156,6 +156,8 @@ public class UnitManager : MonoBehaviour
                                     //bum.lastPoint = bum.goal;
                                     //bum.idx++;
 
+                                    if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
+                                        return;
                                     bum.addWaypoint(hit.point);
                                 }
                             }
