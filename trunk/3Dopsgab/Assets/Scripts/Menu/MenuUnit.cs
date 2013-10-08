@@ -317,6 +317,10 @@ public class MenuUnit : MonoBehaviour {
                 HistoryManager.showHistory = false;
                 editUnitMode = !editUnitMode;
             }
+            if (GUI.Button(new Rect(btW * 2 + 1, 0, btW * 3, btH), (Camera.main.orthographic == true)?"Kamera Perspektif":"Kamera Ortogonal"))
+            {
+                Camera.main.orthographic = !Camera.main.orthographic;
+            }
             GUI.EndGroup();
 
             getMilitaryUnitGUI();
