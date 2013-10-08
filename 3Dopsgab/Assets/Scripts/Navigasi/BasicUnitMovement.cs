@@ -55,6 +55,8 @@ public class BasicUnitMovement : MonoBehaviour
     public int idx; // indeks history pergerakan unit
     [SerializeThis]
     public List<Vector3> waypoints;
+    private int curWaypointIdx = 0;
+    private Vector3 velocity;
 
     void Start()
     {
@@ -102,7 +104,34 @@ public class BasicUnitMovement : MonoBehaviour
 
     void Update()
     {
+        if (MenuUnit.testMovementMode)
+        {
+            Debug.Log("execute movement of: " + gameObject.name);
+            if (waypoints.Count > 0)
+            {
+                if (curWaypointIdx < waypoints.Count)
+                {
+                    Vector3 target = waypoints[curWaypointIdx];
+                    Vector3 moveDir = target - myTransform.position;
+                    velocity = rigidbody.velocity;
 
+                    myTransform.LookAt(target);
+                    myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
+
+                    if (Vector3.Distance(myTransform.position, target) <= 0.1f)
+                    {
+                        curWaypointIdx++;
+                        if (curWaypointIdx < waypoints.Count)
+                            myTransform.LookAt(waypoints[curWaypointIdx]);
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            //Debug.Log("stop movement of: " + gameObject.name);
+        }
         //Debug.DrawRay(transform.position,Vector3.back*100,Color.green);
 
         /* INI DITUNDA DULU, JANGAN DIHAPUS!
@@ -178,7 +207,7 @@ public class BasicUnitMovement : MonoBehaviour
         }
         else
         {
-            
+
             unitManager.SelectSingleUnit(gameObject);
         }
     }

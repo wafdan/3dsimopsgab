@@ -62,10 +62,22 @@ public class UnitManager : MonoBehaviour
                     //go.transform.LookAt(bum.waypoints[i]);
                     //go.transform.Translate(Vector3.forward * bum.moveSpeed * Time.deltaTime);
                     //go.transform.position += (wp - transform.position).normalized * bum.moveSpeed * Time.deltaTime;
+                    //StartCoroutine(moveToPoint(go,bum.waypoints[i],bum));
+                    go.transform.position = Vector3.Lerp(startPoint, bum.waypoints[i], bum.moveSpeed * Time.deltaTime);
+                    startPoint = bum.waypoints[i];
+                    
                 }
             }
         }
         yield return null;
+    }
+
+    private IEnumerator moveToPoint(GameObject go, Vector3 wp, BasicUnitMovement bum)
+    {
+        go.transform.LookAt(wp);
+        go.transform.Translate(Vector3.forward * bum.moveSpeed * Time.deltaTime);
+        go.transform.position += (wp - transform.position).normalized * bum.moveSpeed * Time.deltaTime;
+        yield return new WaitForSeconds(0.1f);
     }
 
     void Update()
