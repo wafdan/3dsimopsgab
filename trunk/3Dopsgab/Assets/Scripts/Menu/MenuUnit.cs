@@ -212,12 +212,12 @@ public class MenuUnit : MonoBehaviour {
 			Time.timeScale = 1.0f;
         if (testMovementMode)
         {
-            StartCoroutine(unitManager.executeMovement());
+            //StartCoroutine(unitManager.executeMovement());
         }
 	}
 	
     private int lastOpCount = 0;
-    private bool playOperationMode = false;
+    private bool playOperationMode = false; // play mode, bisa diakses semua unit
     public GUIStyle playLabelStyle; //DIATUR di Editor
     private OperationItem curOpItem;
     private string curOpInfo;
@@ -233,7 +233,7 @@ public class MenuUnit : MonoBehaviour {
     //menu kegiatan
     int kegiatanW = 200;
     int kegiatanH = 30;
-    private bool testMovementMode;
+    public static bool testMovementMode = false;
 
 	void OnGUI(){
 		GUI.backgroundColor = Color.yellow;
@@ -388,9 +388,9 @@ public class MenuUnit : MonoBehaviour {
             GUI.BeginGroup(new Rect(groupX, groupY, groupW, groupH));
             if (GUI.Button(new Rect(0, 0, btW, btH), "Tes Eksekusi"))
             {
-                testMovementMode = true;
+                testMovementMode = !testMovementMode;
             }
-            if (GUI.Button(new Rect(btW+1, 0, btW*2, btH), "Kembali ke Form Kegiatan"))
+            if (GUI.Button(new Rect(btW+1, 0, btW*2, btH), "Kembali ke \nForm Kegiatan"))
             {
                 showHUDTop = !showHUDTop;
                 HistoryManager.showHistory = false;
@@ -420,7 +420,7 @@ public class MenuUnit : MonoBehaviour {
             {
                 playOperationMode = !playOperationMode;
                 showHUDTop = !showHUDTop;
-                StopCoroutine("executeMovement");
+                
             }
             GUI.EndGroup();
         }
