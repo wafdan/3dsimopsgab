@@ -35,7 +35,7 @@ public class BuildingPlacement : MonoBehaviour {
                     //handling unit laut
                     if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitLaut)
                     {
-                        currentBuilding.position = new Vector3(p.x, BasicUnitMovement.UNIT_LAUTY, p.z);
+                        currentBuilding.position = new Vector3(p.x, BasicUnitMovement.UNIT_LAUT_Y, p.z);
                     }
                     HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,newName,prefabName,currentBuilding.position));
                     //change name of the new added unit
