@@ -32,6 +32,11 @@ public class BuildingPlacement : MonoBehaviour {
                     string prefabName = (idxclone<0)?name:name.Remove(idxclone,"(Clone)".Length);
                     int id = currentBuilding.collider.gameObject.GetInstanceID();
                     string newName = prefabName+""+id;
+                    //handling unit laut
+                    if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitLaut)
+                    {
+                        currentBuilding.position = new Vector3(p.x, BasicUnitMovement.UNIT_LAUTY, p.z);
+                    }
                     HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,newName,prefabName,currentBuilding.position));
                     //change name of the new added unit
                     currentBuilding.collider.gameObject.name = newName;
