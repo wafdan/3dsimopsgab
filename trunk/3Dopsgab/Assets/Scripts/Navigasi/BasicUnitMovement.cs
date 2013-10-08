@@ -104,7 +104,7 @@ public class BasicUnitMovement : MonoBehaviour
     }
 
     private float waterUnitLandDetectRange = 30f;
-    public static float UNIT_LAUTY = 6;
+    public static float UNIT_LAUTY = 4;
     void Update()
     {
         if (MenuUnit.testMovementMode)
