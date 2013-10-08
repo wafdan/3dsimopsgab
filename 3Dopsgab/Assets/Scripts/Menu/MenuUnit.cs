@@ -375,10 +375,10 @@ public class MenuUnit : MonoBehaviour {
 
         if (editUnitMode)
         {
-            float groupW = Screen.width/4;
+            float groupW = Screen.width;
             float groupH = 50;
-            float groupX = Screen.width/2 - groupW / 2;
-            float groupY = 40;
+            float groupX = 0;//Screen.width/2 - groupW / 2;
+            float groupY = 0;
 
             float btW = 100;
             float btH = 40;
@@ -386,11 +386,11 @@ public class MenuUnit : MonoBehaviour {
             float btY = 40;
 
             GUI.BeginGroup(new Rect(groupX, groupY, groupW, groupH));
-            if (GUI.Button(new Rect(0, 0, btW, btH), "Tes Eksekusi"))
+            if (GUI.Button(new Rect(0, 0, btW, btH), (!testMovementMode?"Tes Eksekusi":"Berhenti")))
             {
                 testMovementMode = !testMovementMode;
             }
-            if (GUI.Button(new Rect(btW+1, 0, btW*2, btH), "Kembali ke \nForm Kegiatan"))
+            if (GUI.Button(new Rect(btW+1, 0, btW*2, btH), "Kembali ke Form Kegiatan"))
             {
                 showHUDTop = !showHUDTop;
                 HistoryManager.showHistory = false;

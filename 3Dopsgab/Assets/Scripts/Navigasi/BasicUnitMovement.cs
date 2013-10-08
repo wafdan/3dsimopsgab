@@ -13,6 +13,7 @@ public class BasicUnitMovement : MonoBehaviour
 
     public bool action = false;
     public bool isSelected = false;
+    public bool isUnitLaut; //diset di Editor prefabnya
     public Vector3 goal;
 
     public GameObject moveEffectObject;
@@ -102,6 +103,8 @@ public class BasicUnitMovement : MonoBehaviour
         goal = newGoal;
     }
 
+    private float waterUnitLandDetectRange = 30f;
+    public static float UNIT_LAUTY = 6;
     void Update()
     {
         if (MenuUnit.testMovementMode)
@@ -111,6 +114,25 @@ public class BasicUnitMovement : MonoBehaviour
             {
                 if (curWaypointIdx < waypoints.Count)
                 {
+                    
+                    //water unit handling
+                    if (isUnitLaut)
+                    {
+                        
+                        Debug.Log("unit laut bergerak");            
+                        RaycastHit hit;
+                        Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0,7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
+
+                        if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0,0,7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
+                        {
+                            if (hit.collider.gameObject.tag == "daratan")
+                            {
+                                Debug.Log("Daratan!!");  
+                                return;
+                            }
+                        }
+                    }
+
                     Vector3 target = waypoints[curWaypointIdx];
                     Vector3 moveDir = target - myTransform.position;
                     velocity = rigidbody.velocity;
@@ -158,6 +180,7 @@ public class BasicUnitMovement : MonoBehaviour
     public void addWaypoint(Vector3 wpItem)
     {
         if (waypoints == null) return;
+        if (isUnitLaut) { wpItem.y = UNIT_LAUTY; }
 
         goal = wpItem;
 
