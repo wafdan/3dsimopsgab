@@ -24,6 +24,7 @@ public class OperationManager : MonoBehaviour
     //attributes
 
     public static ArrayList operationList = new ArrayList();
+    public static ArrayList queryResultList = new ArrayList();
     public static int InstanceIdx = 0;
 
     public static bool addToOperationList(OperationItem a)
@@ -41,6 +42,7 @@ public class OperationManager : MonoBehaviour
         return true;
 	}
      */
+
     public static bool undoOperation(OperationItem a)
     {
         Debug.Log("loading : " + a.ToString());
