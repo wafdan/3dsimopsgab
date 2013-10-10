@@ -1,6 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\LepasLandas.cs">
+    <Files>
+      <File FileName="Assets\Scripts\Unit\cameraToTarget.cs" Line="16" Column="32" />
+      <File FileName="Assets\Scripts\Unit\LepasLandas.cs" Line="25" Column="4" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

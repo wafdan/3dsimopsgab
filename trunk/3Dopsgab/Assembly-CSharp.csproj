@@ -78,10 +78,12 @@
      <Compile Include="Assets\Scripts\Unit\BehaviourBase.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIRanjau.cs" />
+     <Compile Include="Assets\Scripts\Unit\LepasLandas.cs" />
      <Compile Include="Assets\Scripts\Unit\RanjauHancur.cs" />
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
      <Compile Include="Assets\Scripts\Unit\amphibi.cs" />
+     <Compile Include="Assets\Scripts\Unit\cameraToTarget.cs" />
      <Compile Include="Assets\Scripts\Unit\jetPatrol.cs" />
      <Compile Include="Assets\TerrainToolkit\TerrainToolkit.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\AddSomeForce.cs" />
