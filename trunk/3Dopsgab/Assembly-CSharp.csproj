@@ -80,6 +80,9 @@
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIRanjau.cs" />
      <Compile Include="Assets\Scripts\Unit\LepasLandas.cs" />
+     <Compile Include="Assets\Scripts\Unit\Penerjunan\GerakHerculesMengeluarkanPenerjun.cs" />
+     <Compile Include="Assets\Scripts\Unit\Penerjunan\Penerjun.cs" />
+     <Compile Include="Assets\Scripts\Unit\Penerjunan\gerakKameraHerculesPenerjun.cs" />
      <Compile Include="Assets\Scripts\Unit\RanjauHancur.cs" />
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
