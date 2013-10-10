@@ -116,16 +116,21 @@ public class BasicUnitMovement : MonoBehaviour
     private Vector3[] belokPoints;
     private int belokIdx;
     private Vector3 startBelokPoint=Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
+    //smooth rotate belok
+    private Quaternion startRot;
+    private Quaternion rotation;
+    private float step;
+    private float lastStep;
 
     void Update()
     {
         if (MenuUnit.testMovementMode)
         {
 
-            if (isSmooth)
-                followWaypointSmooth();
+            //if (isSmooth)
+            //    followWaypointSmooth();
 
-            if (!isSmooth)
+            //if (!isSmooth)
                 followWaypoint();
 
         }
@@ -155,7 +160,7 @@ public class BasicUnitMovement : MonoBehaviour
         //}
         updateSeluns();
     }
-
+    /*
     private void followWaypointSmooth()
     {
         Debug.Log("execute smooth movement of: " + gameObject.name);
@@ -205,6 +210,7 @@ public class BasicUnitMovement : MonoBehaviour
             }
         }
     }
+    */
 
     void followWaypoint()
     {
@@ -241,8 +247,16 @@ public class BasicUnitMovement : MonoBehaviour
 
                 if (distToNextPoint < 10f && curWaypointIdx < waypoints.Count - 1)
                 {
-                    if (startBelokPoint == Vector3.zero)
+                    if (startBelokPoint == Vector3.zero){
                         startBelokPoint = myTransform.position;
+                        //init rotate
+                        if (isUnitUdara)
+                        {
+                            startRot = myTransform.rotation;
+                            rotation = Quaternion.AngleAxis(40f, myTransform.forward);
+                            step = 0.0f;
+                        }
+                    }
                     belokMode = true;
                 }
                 else
@@ -263,6 +277,32 @@ public class BasicUnitMovement : MonoBehaviour
                             Vector3 targetBelok = belokPoints[belokIdx];
                             myTransform.LookAt(targetBelok);
                             myTransform.position = Vector3.MoveTowards(myTransform.position, targetBelok, Time.deltaTime * moveSpeed);
+
+                            if (isUnitUdara)
+                            {
+                                //rotate banking
+                                float rotAm = 0f;
+                                if (myTransform.InverseTransformPoint(target).x < 0.0f)
+                                {
+                                    rotAm = -70f; //kiri
+                                }
+                                else if (myTransform.InverseTransformPoint(target).x > 0.0f)
+                                {
+                                    rotAm = 70f; //kanan
+                                }
+
+
+
+                                Debug.DrawRay(transform.position, transform.forward * 30, Color.red);
+                                step += Time.deltaTime * moveSpeed; //1.0f itu rate
+                                transform.RotateAround(transform.position, myTransform.forward,
+                                   rotAm);//* (Mathf.SmoothStep(0.0f, 1.0f, step) - lastStep));
+
+                                lastStep = Mathf.SmoothStep(0.0f, 1.0f, step);
+                                //transform.rotation = startRot * Quaternion.Slerp(Quaternion.identity,
+                                //rotation,Mathf.SmoothStep(0.0f, 1.0f, step));
+                                //end rotate
+                            }
                             float dist = Vector3.Distance(myTransform.position, targetBelok);
                             if (dist <= 0.5f)
                                 belokIdx++;
@@ -272,6 +312,9 @@ public class BasicUnitMovement : MonoBehaviour
                                 belokMode = false;
                                 belokIdx = 0;
                                 startBelokPoint = Vector3.zero;
+                                //reinit rotate
+                                startRot = Quaternion.identity;
+                                step = 0.0f;
                             }
 
                         }
@@ -425,6 +468,7 @@ public class BasicUnitMovement : MonoBehaviour
         goal = wpItem;
 
         LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
+        lineRenderer.SetWidth(0.1f, 0.1f);
         lineRenderer.SetVertexCount(waypoints.Count + 2);
         if (lastPoint == Vector3.zero)
             lastPoint = gameObject.transform.position;
