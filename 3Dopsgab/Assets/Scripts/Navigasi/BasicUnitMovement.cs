@@ -107,51 +107,27 @@ public class BasicUnitMovement : MonoBehaviour
     private float waterUnitLandDetectRange = 30f;
     public static float UNIT_LAUT_Y = 4;
     public static float UNIT_UDARA_Y = 50;
-	
-	void Update()
+
+    //smooth paths
+    List<Vector3> waypointsSmooth;
+    bool isSmooth = false;
+    private int curWaypointSmoothIdx;
+    private bool belokMode = false;
+    private Vector3[] belokPoints;
+    private int belokIdx;
+    private Vector3 startBelokPoint=Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
+
+    void Update()
     {
         if (MenuUnit.testMovementMode)
         {
-            Debug.Log("execute movement of: " + gameObject.name);
-            if (waypoints.Count > 0)
-            {
-                if (curWaypointIdx < waypoints.Count)
-                {
-                    
-                    //water unit handling
-                    if (isUnitLaut)
-                    {
-                        
-                        Debug.Log("unit laut bergerak");            
-                        RaycastHit hit;
-                        Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0,7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
 
-                        if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0,0,7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
-                        {
-                            if (hit.collider.gameObject.tag == "daratan")
-                            {
-                                Debug.Log("Daratan!!");  
-                                return;
-                            }
-                        }
-                    }
+            if (isSmooth)
+                followWaypointSmooth();
 
-                    Vector3 target = waypoints[curWaypointIdx];
-                    Vector3 moveDir = target - myTransform.position;
-                    velocity = rigidbody.velocity;
+            if (!isSmooth)
+                followWaypoint();
 
-                    myTransform.LookAt(target);
-                    myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
-
-                    if (Vector3.Distance(myTransform.position, target) <= 0.1f)
-                    {
-                        curWaypointIdx++;
-                        if (curWaypointIdx < waypoints.Count)
-                            myTransform.LookAt(waypoints[curWaypointIdx]);
-                    }
-
-                }
-            }
         }
         else
         {
@@ -178,6 +154,267 @@ public class BasicUnitMovement : MonoBehaviour
         //	}
         //}
         updateSeluns();
+    }
+
+    private void followWaypointSmooth()
+    {
+        Debug.Log("execute smooth movement of: " + gameObject.name);
+        if (waypointsSmooth.Count > 0)
+        {
+            if (curWaypointSmoothIdx < waypointsSmooth.Count)
+            {
+
+                //water unit handling
+                if (isUnitLaut)
+                {
+
+                    Debug.Log("unit laut bergerak");
+                    RaycastHit hit;
+                    Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
+
+                    if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
+                    {
+                        if (hit.collider.gameObject.tag == "daratan")
+                        {
+                            Debug.Log("Daratan!!");
+                            return;
+                        }
+                    }
+                }
+
+                Vector3 target = waypointsSmooth[curWaypointSmoothIdx];
+                Vector3 moveDir = target - myTransform.position;
+                velocity = rigidbody.velocity;
+
+                myTransform.LookAt(target);
+                myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
+
+                float distToNextPoint = Vector3.Distance(myTransform.position, target);
+
+                Debug.LogError("Distance to next point: " + distToNextPoint);
+
+                if (distToNextPoint <= 0.1f)
+                {
+                    curWaypointSmoothIdx++;
+                    if (curWaypointSmoothIdx < waypointsSmooth.Count)
+                        myTransform.LookAt(waypointsSmooth[curWaypointSmoothIdx]);
+                    else
+                        isSmooth = false;
+                }
+
+            }
+        }
+    }
+
+    void followWaypoint()
+    {
+        Debug.Log("execute movement of: " + gameObject.name);
+        if (waypoints.Count > 0)
+        {
+            if (curWaypointIdx < waypoints.Count)
+            {
+
+                //water unit handling
+                if (isUnitLaut)
+                {
+
+                    Debug.Log("unit laut bergerak");
+                    RaycastHit hit;
+                    Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
+
+                    if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
+                    {
+                        if (hit.collider.gameObject.tag == "daratan")
+                        {
+                            Debug.Log("Daratan!!");
+                            return;
+                        }
+                    }
+                }
+
+                Vector3 target = waypoints[curWaypointIdx];
+                Vector3 moveDir = target - myTransform.position;
+
+
+                float distToNextPoint = Vector3.Distance(myTransform.position, target);
+                //float distToTuj;
+
+                if (distToNextPoint < 10f && curWaypointIdx < waypoints.Count - 1)
+                {
+                    if (startBelokPoint == Vector3.zero)
+                        startBelokPoint = myTransform.position;
+                    belokMode = true;
+                }
+                else
+                {
+                    belokMode = false;
+                    belokIdx = 0;
+                }
+
+                if (belokMode)
+                {
+                    
+                    belokPoints = getBelokPoints(startBelokPoint, target, 3f);
+                    Debug.LogError("Belook..");
+                    if (belokPoints.Length > 0)
+                    {
+                        if (belokIdx < belokPoints.Length)
+                        {
+                            Vector3 targetBelok = belokPoints[belokIdx];
+                            myTransform.LookAt(targetBelok);
+                            myTransform.position = Vector3.MoveTowards(myTransform.position, targetBelok, Time.deltaTime * moveSpeed);
+                            float dist = Vector3.Distance(myTransform.position, targetBelok);
+                            if (dist <= 0.5f)
+                                belokIdx++;
+                            if (belokIdx >= belokPoints.Length)
+                            {
+                                curWaypointIdx++; //pas nyampe, ganti target, kalo enggak, dia bisa bolak-balik doang di tempat
+                                belokMode = false;
+                                belokIdx = 0;
+                                startBelokPoint = Vector3.zero;
+                            }
+
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    Debug.LogError("Lurus..");
+
+                    myTransform.LookAt(target);
+                    myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
+
+                    if (distToNextPoint <= 0.1f)
+                    {
+                        curWaypointIdx++;
+                        if (curWaypointIdx < waypoints.Count)
+                            myTransform.LookAt(waypoints[curWaypointIdx]);
+                    }
+
+                }
+            }
+        }
+    }
+
+    private Vector3[] getBelokPoints(Vector3 start, Vector3 edge, float smoothness)
+    {
+        if (curWaypointIdx >= waypoints.Count - 1) return new Vector3[0];
+
+        // jadi ada 3 point, belokPoint, targetPoint, dan tujuanPoint
+
+        Vector3 end = 10f * Vector3.Normalize(waypoints[curWaypointIdx + 1] - edge) + edge;
+        float distToTuj = Vector3.Distance(myTransform.position, end);
+
+        //Debug.DrawRay(Vector3.zero, start, Color.red);
+        //Debug.DrawRay(Vector3.zero, end, Color.red);
+
+        //ketiganya di-smooth-kan biar beloknya ga tajem2 amat, jadi ga nyentuh target
+        Vector3[] belokPoints = new Vector3[] { start, edge, end };
+
+
+        int pointsLength = 3; // jadi ada 3 point, belokPoint, targetPoint, dan tujuanPoint
+        int curvedLength = (pointsLength * Mathf.RoundToInt(smoothness)) - 1; // banyaknya control points
+        List<Vector3> curvedPoints = new List<Vector3>(curvedLength); // list hasil
+        List<Vector3> points;
+
+        float t = 0.0f;
+        // pioc = pointInTimeOnCurve
+        for (int pitoc = 0; pitoc < curvedLength + 1; pitoc++)
+        {
+            t = myInverseLerp(0, curvedLength, pitoc);
+
+            points = new List<Vector3>(belokPoints);
+
+            for (int j = pointsLength - 1; j > 0; j--)
+            {
+                for (int i = 0; i < j; i++)
+                {
+                    points[i] = (1 - t) * points[i] + t * points[i + 1];
+                }
+            }
+
+            curvedPoints.Add(points[0]);
+        }
+
+        return curvedPoints.ToArray();
+    }
+
+    void belok(Vector3 start, Vector3 edge, float smoothness)
+    {
+        //if (curWaypointIdx < waypoints.Count - 1)
+        //{
+
+
+        //foreach (Vector3 point in curvedPoints)
+        //{
+        //myTransform.LookAt(point);
+        //myTransform.position = Vector3.MoveTowards(myTransform.position, point, Time.deltaTime * moveSpeed * 0.3f);
+        //}
+        //curWaypointIdx += pointsLength;
+
+        //myTransform.LookAt(end);
+        //myTransform.position = Vector3.MoveTowards(myTransform.position, end, Time.deltaTime * moveSpeed);
+        //if(curWaypointIdx <1)
+        //Debug.LogError("transPos: " + myTransform.position.ToString() + " end: " + end.ToString() + " distToTuj: " + distToTuj);
+        //            if (distToTuj <= 3f)
+        //            {
+        //                curWaypointIdx++;
+        //                if (curWaypointIdx < waypoints.Count)
+        //                    myTransform.LookAt(waypoints[curWaypointIdx]);
+        //                belokMode = false;
+        //                
+        //            }
+
+
+        //        }
+    }
+
+    IEnumerator moveToBelok(Vector3 point)
+    {
+        myTransform.LookAt(point);
+        myTransform.position = Vector3.MoveTowards(myTransform.position, point, Time.deltaTime * moveSpeed * 0.1f);
+        yield return new WaitForSeconds(1);
+    }
+
+    /* katanya sih lebih cepet dari implementasi aslinya Unity. copyright http://pastebin.com/7wnvR4se */
+    public float myInverseLerp(float from, float to, float value)
+    {
+        if (from < to)
+        {
+            if (value < from)
+            {
+                return 0f;
+            }
+            else if (value > to)
+            {
+                return 1f;
+            }
+            else
+            {
+                return (value - from) / (to - from);
+            }
+        }
+        else
+        {
+            if (from <= to)
+            {
+                return 0f;
+            }
+            else if (value < to)
+            {
+                return 1f;
+            }
+            else if (value > from)
+            {
+                return 0f;
+            }
+            else
+            {
+                return 1f - (value - to) / (from - to);
+            }
+        }
     }
 
     public void addWaypoint(Vector3 wpItem)
