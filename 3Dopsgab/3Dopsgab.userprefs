@@ -1,9 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\LepasLandas.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\Penerjunan\Penerjun.cs">
     <Files>
       <File FileName="Assets\Scripts\Unit\LepasLandas.cs" Line="38" Column="37" />
       <File FileName="Assets\Scripts\Unit\cameraToTarget.cs" Line="16" Column="32" />
+      <File FileName="Assets\Scripts\Unit\Penerjunan\GerakHerculesMengeluarkanPenerjun.cs" Line="55" Column="34" />
+      <File FileName="Assets\Scripts\Unit\Penerjunan\Penerjun.cs" Line="19" Column="7" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
