@@ -254,8 +254,8 @@ public class BasicUnitMovement : MonoBehaviour
                 if (belokMode)
                 {
                     
-                    belokPoints = getBelokPoints(startBelokPoint, target, 3f);
-                    Debug.LogError("Belook..");
+                    belokPoints = getBelokPoints(startBelokPoint, target, 7f);
+                    Debug.Log("Belook..");
                     if (belokPoints.Length > 0)
                     {
                         if (belokIdx < belokPoints.Length)
@@ -281,7 +281,7 @@ public class BasicUnitMovement : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("Lurus..");
+                    Debug.Log("Lurus..");
 
                     myTransform.LookAt(target);
                     myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
