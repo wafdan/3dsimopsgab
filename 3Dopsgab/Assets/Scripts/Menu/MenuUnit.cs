@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.IO;
@@ -50,7 +50,6 @@ public class MenuUnit : MonoBehaviour
     private float kegListH = Screen.height * 0.5f;
     private Vector2 scrollPosKegList = Vector2.zero;
     private float kegScrollvH = Screen.height * 0.5f;
-    public GUIStyle styleKegListItem; //diaturnya di editor
 
     //textures
     //udara
@@ -400,16 +399,10 @@ public class MenuUnit : MonoBehaviour
         for (int i = 0; i < OperationManager.operationList.Count; i++)
         {
             curOpItem = (OperationItem)OperationManager.operationList[i];
-            //kalo satuannya bukan satuan yg lagi dimainkan, lewat.
-            if (curOpItem.satuan != PlayerPrefs.GetString("satuan"))
-            {
-                continue;
-            }
-            //kalo harinya bukan hari yg lagi dipilih, lewat.
             if (curOpItem.posisiHari != Hari[comboBoxControl.GetSelectedItemIndex()].text){
                 continue;
             }
-            GUI.BeginGroup(new Rect(hisItemX + 10, hisItemY, hisItemW, hisItemH),styleKegListItem);
+            GUI.BeginGroup(new Rect(hisItemX + 10, hisItemY, hisItemW, hisItemH));
             //if (GUI.Button(new Rect(hisItemX+10, hisItemY, hisItemW, hisItemH), OperationManager.operationList[i].ToString()))
             if (GUI.Button(new Rect(0, 0, hisItemW * 0.8f, hisItemH), curOpItem.ToString()))
             {
