@@ -33,13 +33,13 @@ public class MenuOpsiH : MonoBehaviour {
 		GUI.Box (new Rect(0,0,width,height),"",style);
 		GUI.skin.box.normal.textColor = Color.red;
 		//create the bounding box for menu
-		GUI.Label( new Rect( cornerBox_X + 10 ,cornerBox_Y,wBox + 100,hBox - 155), "Simpan dan lanjutkan kegiatan hari berikutnya?");
+		GUI.Label( new Rect( cornerBox_X + 160 ,cornerBox_Y,wBox + 100,hBox - 155), "Simpan dan lanjutkan kegiatan hari berikutnya?");
 		
-		if( GUI.Button( new Rect( cornerBox_X + 195, cornerBox_Y + 30, wBox-150,20), "Ya")){
+		if( GUI.Button( new Rect( cornerBox_X + 345, cornerBox_Y + 30, wBox-150,20), "Ya")){
 			Application.LoadLevel("TFG Seskoad");
 		}
 		
-		if( GUI.Button( new Rect( cornerBox_X + 250, cornerBox_Y + 30, wBox-150,20), "Tidak")){
+		if( GUI.Button( new Rect( cornerBox_X + 400, cornerBox_Y + 30, wBox-150,20), "Tidak")){
 			
 		}
 	}
