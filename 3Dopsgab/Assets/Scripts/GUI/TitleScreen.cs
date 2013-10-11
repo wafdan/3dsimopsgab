@@ -67,6 +67,7 @@ public class TitleScreen : MonoBehaviour {
 		if (GUI.Button( new Rect( cornerBox_X + 122, cornerBox_Y + 100, wBox-205,20), "Ok")){
 			notif = !notif;
 			if (Password == "admin" && Satuan != ""){
+                HistoryManager.showHistory = false;
 				Application.LoadLevel("Game play");
 			}
 		}
