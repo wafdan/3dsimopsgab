@@ -60,6 +60,11 @@ public class BasicUnitMovement : MonoBehaviour
     private int curWaypointIdx = 0;
     private Vector3 velocity;
 
+    //targetting Related
+    public List<Vector3> tarpoints;
+    private int curTarpointIdx = 0;
+    private GameObject targetEffectObject; //diambil dari Resources
+
     void Start()
     {
         //waypoints = new ArrayList(new Vector3[] { new Vector3(-114, 9, 383), new Vector3(-176, 9, 288) });
@@ -72,10 +77,14 @@ public class BasicUnitMovement : MonoBehaviour
         myTransform = transform;
 
         //if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
+        targetEffectObject = Resources.Load("TargetEffect") as GameObject;
 
         goal = transform.position;
         initWaypoint();
+        initTarpoint();
         idx = 0;
+
+        StartCoroutine(fire());
 
     }
 
@@ -99,6 +108,19 @@ public class BasicUnitMovement : MonoBehaviour
         }
     }
 
+    private void initTarpoint()
+    {
+        if (tarpoints == null)
+            tarpoints = new List<Vector3>();
+        if (tarpoints.Count > 0)
+        {
+            for (int i = 0, len = tarpoints.Count; i < len; i++)
+            {
+                Instantiate(targetEffectObject, (Vector3)tarpoints[i], targetEffectObject.transform.rotation);
+            }
+        }
+    }
+
     public void MoveOrder(Vector3 newGoal)
     {
         goal = newGoal;
@@ -115,7 +137,7 @@ public class BasicUnitMovement : MonoBehaviour
     private bool belokMode = false;
     private Vector3[] belokPoints;
     private int belokIdx;
-    private Vector3 startBelokPoint=Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
+    private Vector3 startBelokPoint = Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
     //smooth rotate belok
     private Quaternion startRot;
     private Quaternion rotation;
@@ -126,91 +148,20 @@ public class BasicUnitMovement : MonoBehaviour
     {
         if (MenuUnit.testMovementMode)
         {
-
-            //if (isSmooth)
-            //    followWaypointSmooth();
-
-            //if (!isSmooth)
-                followWaypoint();
-
+            followWaypoint();
         }
         else
         {
             //Debug.Log("stop movement of: " + gameObject.name);
         }
-        //Debug.DrawRay(transform.position,Vector3.back*100,Color.green);
-
-        /* INI DITUNDA DULU, JANGAN DIHAPUS!
-        if (action == true && isSelected == true)
-        {
-            if (!checkIfGoalSame(transform.position, goal))
-            {
-                myTransform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-
-                myTransform.LookAt(goal);
-                transform.position += (goal - transform.position).normalized * moveSpeed * Time.deltaTime;
-            }
-        }
-        */
-
         //foreach(Collider obj in Physics.OverlapSphere(goal, goalRadius)) {
         //	if(obj.gameObject == gameObject) {
         //		transform.position = goal;
         //	}
         //}
+
         updateSeluns();
     }
-    /*
-    private void followWaypointSmooth()
-    {
-        Debug.Log("execute smooth movement of: " + gameObject.name);
-        if (waypointsSmooth.Count > 0)
-        {
-            if (curWaypointSmoothIdx < waypointsSmooth.Count)
-            {
-
-                //water unit handling
-                if (isUnitLaut)
-                {
-
-                    Debug.Log("unit laut bergerak");
-                    RaycastHit hit;
-                    Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
-
-                    if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
-                    {
-                        if (hit.collider.gameObject.tag == "daratan")
-                        {
-                            Debug.Log("Daratan!!");
-                            return;
-                        }
-                    }
-                }
-
-                Vector3 target = waypointsSmooth[curWaypointSmoothIdx];
-                Vector3 moveDir = target - myTransform.position;
-                velocity = rigidbody.velocity;
-
-                myTransform.LookAt(target);
-                myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
-
-                float distToNextPoint = Vector3.Distance(myTransform.position, target);
-
-                Debug.LogError("Distance to next point: " + distToNextPoint);
-
-                if (distToNextPoint <= 0.1f)
-                {
-                    curWaypointSmoothIdx++;
-                    if (curWaypointSmoothIdx < waypointsSmooth.Count)
-                        myTransform.LookAt(waypointsSmooth[curWaypointSmoothIdx]);
-                    else
-                        isSmooth = false;
-                }
-
-            }
-        }
-    }
-    */
 
     void followWaypoint()
     {
@@ -247,7 +198,8 @@ public class BasicUnitMovement : MonoBehaviour
 
                 if (distToNextPoint < 10f && curWaypointIdx < waypoints.Count - 1)
                 {
-                    if (startBelokPoint == Vector3.zero){
+                    if (startBelokPoint == Vector3.zero)
+                    {
                         startBelokPoint = myTransform.position;
                         //init rotate
                         if (isUnitUdara)
@@ -267,7 +219,7 @@ public class BasicUnitMovement : MonoBehaviour
 
                 if (belokMode)
                 {
-                    
+
                     belokPoints = getBelokPoints(startBelokPoint, target, 7f);
                     Debug.Log("Belook..");
                     if (belokPoints.Length > 0)
@@ -321,7 +273,7 @@ public class BasicUnitMovement : MonoBehaviour
 
                     }
 
-                }
+                } //end belokMode
                 else
                 {
                     Debug.Log("Lurus..");
@@ -336,11 +288,33 @@ public class BasicUnitMovement : MonoBehaviour
                             myTransform.LookAt(waypoints[curWaypointIdx]);
                     }
 
-                }
-            }
-        }
+                } //end lurus
+
+                ////cek target serangan
+                //if (tarpoints.Count > 0)
+                //{
+                //    if (curTarpointIdx < tarpoints.Count)
+                //    {
+                        
+                //        Vector3 curTarget = tarpoints[curTarpointIdx];
+                //        float distToTar = Vector3.Distance(myTransform.position, curTarget);
+                //        //Debug.Log("dist: " + distToTar.ToString());
+                        
+                //        StartCoroutine(fire(curTarget));
+
+
+                //    }
+                //}
+
+            }// end curwpidx < count
+
+        }  
+
     }
 
+
+    float dMisToTar = 0.0f;
+    private bool doneFiring;
     private Vector3[] getBelokPoints(Vector3 start, Vector3 edge, float smoothness)
     {
         if (curWaypointIdx >= waypoints.Count - 1) return new Vector3[0];
@@ -382,43 +356,6 @@ public class BasicUnitMovement : MonoBehaviour
         }
 
         return curvedPoints.ToArray();
-    }
-
-    void belok(Vector3 start, Vector3 edge, float smoothness)
-    {
-        //if (curWaypointIdx < waypoints.Count - 1)
-        //{
-
-
-        //foreach (Vector3 point in curvedPoints)
-        //{
-        //myTransform.LookAt(point);
-        //myTransform.position = Vector3.MoveTowards(myTransform.position, point, Time.deltaTime * moveSpeed * 0.3f);
-        //}
-        //curWaypointIdx += pointsLength;
-
-        //myTransform.LookAt(end);
-        //myTransform.position = Vector3.MoveTowards(myTransform.position, end, Time.deltaTime * moveSpeed);
-        //if(curWaypointIdx <1)
-        //Debug.LogError("transPos: " + myTransform.position.ToString() + " end: " + end.ToString() + " distToTuj: " + distToTuj);
-        //            if (distToTuj <= 3f)
-        //            {
-        //                curWaypointIdx++;
-        //                if (curWaypointIdx < waypoints.Count)
-        //                    myTransform.LookAt(waypoints[curWaypointIdx]);
-        //                belokMode = false;
-        //                
-        //            }
-
-
-        //        }
-    }
-
-    IEnumerator moveToBelok(Vector3 point)
-    {
-        myTransform.LookAt(point);
-        myTransform.position = Vector3.MoveTowards(myTransform.position, point, Time.deltaTime * moveSpeed * 0.1f);
-        yield return new WaitForSeconds(1);
     }
 
     /* katanya sih lebih cepet dari implementasi aslinya Unity. copyright http://pastebin.com/7wnvR4se */
@@ -494,6 +431,17 @@ public class BasicUnitMovement : MonoBehaviour
         //collider.gameObject.name = newName;
     }
 
+
+    public void addTargetpoint(Vector3 tp)
+    {
+        Debug.Log("ahooyaa");
+        Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
+        if (tarpoints == null) return;
+        Debug.Log("oho");
+        //Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
+        tarpoints.Add(tp);
+    }
+
     public void removeLastWayPoint()
     {
         if (waypoints.Count > 0)
@@ -534,6 +482,45 @@ public class BasicUnitMovement : MonoBehaviour
             }
         }
          * */
+    }
+
+    public IEnumerator fire()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            if (MenuUnit.testMovementMode)
+            {
+                if (tarpoints.Count > 0)
+                {
+                    foreach (Vector3 target in tarpoints)
+                    {
+                        //Vector3 target;
+                        GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
+                        Transform mt = missile.transform;
+                        bool isMoving = true;
+                        while (isMoving)
+                        {
+                            mt.LookAt(target);
+                            Debug.DrawRay(mt.position, mt.forward * 30);
+                            mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed);
+                            yield return null;
+
+                            float distToTar = Vector3.Distance(mt.position, target);
+                            Debug.Log("DistToTar " + distToTar);
+
+                            //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
+                            if (distToTar <= 0.1f)
+                            {
+                                isMoving = false;
+                            }
+                            //Debug.Log("firing to " + target.ToString());
+                        }
+                    }
+                }
+                break;
+            }
+        }
     }
 
     void OnGUI()
@@ -647,4 +634,5 @@ public class BasicUnitMovement : MonoBehaviour
         else
             return false;
     }
+
 }

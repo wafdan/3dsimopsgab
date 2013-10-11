@@ -26,6 +26,9 @@ public class UnitManager : MonoBehaviour
     private List<GameObject> unitsToBeProcessed;
     public static string UNIT_TAG = "Building";
     private GUIStyle historyStyle;
+    private bool targettingMode = false; //jika true maka klik kanan jadi menentukan sasaran, bukan waypoint
+
+    private bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
 
     void Start()
     {
@@ -83,7 +86,7 @@ public class UnitManager : MonoBehaviour
 
     void Update()
     {
-
+        if (mouseOverGUI) return;
         if (Camera.main.enabled)
         {
             Ray ray;
@@ -156,10 +159,18 @@ public class UnitManager : MonoBehaviour
                                     //lineRenderer.SetPosition(bum.idx+1, bum.goal);
                                     //bum.lastPoint = bum.goal;
                                     //bum.idx++;
+                                    if (targettingMode)
+                                    {
+                                        Debug.Log("targetting mode!");
+                                        bum.addTargetpoint(hit.point);
+                                    }
+                                    else
+                                    {
 
-                                    if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
-                                        return;
-                                    bum.addWaypoint(hit.point);
+                                        if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
+                                            return;
+                                        bum.addWaypoint(hit.point);
+                                    }
                                 }
                             }
 
@@ -302,6 +313,8 @@ public class UnitManager : MonoBehaviour
     {
         if (menuVisible && Camera.main.enabled)
             showSelectedUnitMenu();
+        else
+            mouseOverGUI = false;
 
         if (HistoryManager.showHistory)
             showHistoryGUI();
@@ -312,12 +325,13 @@ public class UnitManager : MonoBehaviour
 
     private float selectedUnitUdaraHeight = BasicUnitMovement.UNIT_UDARA_Y; // nilai ketinggian unit udara berdasarkan slider
     private float sliderUdaraH, btKembaliH; //tambahan ketinggian menu, opsional
+    private float btMenuLain; //tambahan menu lain opsional
     void showSelectedUnitMenu()
     {
         //screenPos = Camera.main.WorldToScreenPoint(transform.position);
         screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
 
-        menuH = 30f + 25f * ((float)unitOrderList.Length) + sliderUdaraH+btKembaliH;
+        menuH = 30f + 25f * ((float)unitOrderList.Length) + sliderUdaraH + btMenuLain + btKembaliH;
         menuW = 300;
         menuX = screenPos.x;
         menuY = Screen.height - screenPos.y - menuH;
@@ -328,7 +342,18 @@ public class UnitManager : MonoBehaviour
         menuItemW = menuW - 10;
         menuItemH = 25;
 
-        GUI.Box(new Rect(menuX, menuY, menuW, menuH), "menu unit");
+        Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
+        GUI.Box(boxRect, "menu unit");
+
+        //cek apalah mouse ada di dalam rect, utk mencegah deselect yg tidak diinginkan akibat click yg nembus GUI ke objek di belakangnya
+        if (boxRect.Contains(Event.current.mousePosition))
+        {
+            mouseOverGUI = true;
+        }
+        else
+        {
+            mouseOverGUI = false;
+        }
 
         foreach (string order in unitOrderList)
         {
@@ -367,9 +392,18 @@ public class UnitManager : MonoBehaviour
             selectedUnitUdaraHeight = GUI.HorizontalSlider(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), selectedUnitUdaraHeight, 0.0f, 100.0f);
             menuItemY += menuItemH + 2;
         }
+        btMenuLain = 25;
+        if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Set Sasaran Serangan"))
+        {
+            targettingMode = true;
+            Debug.Log("true targetting!");
+        }
+        menuItemY += menuItemH + 2;
+
         btKembaliH = 25;
         if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Kembali"))
         {
+            targettingMode = false;
             menuVisible = false;
         }
     }
