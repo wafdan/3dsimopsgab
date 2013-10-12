@@ -378,8 +378,8 @@ public class UnitManager : MonoBehaviour
                 showAturKetinggian = false;
             //else
                 //selectedUnitUdaraHeight = gob.transform.position.y;
-            else
-            gob.transform.position = new Vector3(gob.transform.position.x, selectedUnitUdaraHeight, gob.transform.position.z);    
+            //else
+            //gob.transform.position = new Vector3(gob.transform.position.x, selectedUnitUdaraHeight, gob.transform.position.z);    
         }
         if (showAturKetinggian)
         {
