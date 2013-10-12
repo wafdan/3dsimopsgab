@@ -62,6 +62,7 @@ public class BasicUnitMovement : MonoBehaviour
 
     //targetting Related
     public List<Vector3> tarpoints;
+    public List<GameObject> tarPointObjects;
     private int curTarpointIdx = 0;
     private GameObject targetEffectObject; //diambil dari Resources
 
@@ -84,7 +85,7 @@ public class BasicUnitMovement : MonoBehaviour
         initTarpoint();
         idx = 0;
 
-        StartCoroutine(fire());
+        StartCoroutine(attackMove());
 
     }
 
@@ -112,11 +113,14 @@ public class BasicUnitMovement : MonoBehaviour
     {
         if (tarpoints == null)
             tarpoints = new List<Vector3>();
+        if (tarPointObjects == null)
+            tarPointObjects = new List<GameObject>();
         if (tarpoints.Count > 0)
         {
             for (int i = 0, len = tarpoints.Count; i < len; i++)
             {
-                Instantiate(targetEffectObject, (Vector3)tarpoints[i], targetEffectObject.transform.rotation);
+                GameObject go = Instantiate(targetEffectObject, (Vector3)tarpoints[i], targetEffectObject.transform.rotation) as GameObject;
+                tarPointObjects.Add(go);
             }
         }
     }
@@ -129,7 +133,7 @@ public class BasicUnitMovement : MonoBehaviour
     private float waterUnitLandDetectRange = 30f;
     public static float UNIT_LAUT_Y = 4;
     public static float UNIT_UDARA_Y = 50;
-
+    public float ATTACK_RANGE = 50f;
     //smooth paths
     List<Vector3> waypointsSmooth;
     bool isSmooth = false;
@@ -295,11 +299,11 @@ public class BasicUnitMovement : MonoBehaviour
                 //{
                 //    if (curTarpointIdx < tarpoints.Count)
                 //    {
-                        
+
                 //        Vector3 curTarget = tarpoints[curTarpointIdx];
                 //        float distToTar = Vector3.Distance(myTransform.position, curTarget);
                 //        //Debug.Log("dist: " + distToTar.ToString());
-                        
+
                 //        StartCoroutine(fire(curTarget));
 
 
@@ -308,13 +312,14 @@ public class BasicUnitMovement : MonoBehaviour
 
             }// end curwpidx < count
 
-        }  
+        }
 
     }
 
 
     float dMisToTar = 0.0f;
     private bool doneFiring;
+    private float distMinToTar = float.MaxValue; // jarak minimum unit ke sasaran, diupdate terus
     private Vector3[] getBelokPoints(Vector3 start, Vector3 edge, float smoothness)
     {
         if (curWaypointIdx >= waypoints.Count - 1) return new Vector3[0];
@@ -434,10 +439,11 @@ public class BasicUnitMovement : MonoBehaviour
 
     public void addTargetpoint(Vector3 tp)
     {
-        Debug.Log("ahooyaa");
-        Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
+        //Debug.Log("ahooyaa");
+        GameObject go = Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation) as GameObject;
+        tarPointObjects.Add(go);
         if (tarpoints == null) return;
-        Debug.Log("oho");
+        //Debug.Log("oho");
         //Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
         tarpoints.Add(tp);
     }
@@ -484,43 +490,142 @@ public class BasicUnitMovement : MonoBehaviour
          * */
     }
 
-    public IEnumerator fire()
+    public IEnumerator attackMove()
     {
         while (true)
         {
-            yield return new WaitForSeconds(1);
+            yield return null;
             if (MenuUnit.testMovementMode)
             {
                 if (tarpoints.Count > 0)
                 {
-                    foreach (Vector3 target in tarpoints)
+                    //foreach (Vector3 target in tarpoints)
+                    //{
+                    /* serangan serial */
+                    //yield return StartCoroutine(fireMissile(target)); 
+                    /* serangan paralel */
+
+                    while (curTarpointIdx < tarPointObjects.Count)
                     {
-                        //Vector3 target;
-                        GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
-                        Transform mt = missile.transform;
-                        bool isMoving = true;
-                        while (isMoving)
-                        {
-                            mt.LookAt(target);
-                            Debug.DrawRay(mt.position, mt.forward * 30);
-                            mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed);
-                            yield return null;
-
-                            float distToTar = Vector3.Distance(mt.position, target);
-                            Debug.Log("DistToTar " + distToTar);
-
-                            //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
-                            if (distToTar <= 0.1f)
-                            {
-                                isMoving = false;
-                            }
-                            //Debug.Log("firing to " + target.ToString());
-                        }
+                        StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx]));
+                        curTarpointIdx++;
                     }
                 }
-                break;
+
             }
+
         }
+    }
+
+    /*
+    IEnumerator fireMissile(Vector3 target)
+    {
+        while (true)
+        {
+            yield return null;
+
+            float distUnitToTar = Vector3.Distance(myTransform.position, target);
+            //Debug.Log("DistUnitToTar: " + distUnitToTar);
+            Debug.DrawRay(myTransform.position, (target - myTransform.position).normalized * ATTACK_RANGE, Color.yellow);
+
+            if (distUnitToTar <= ATTACK_RANGE)
+            {
+                //Vector3 target;
+                GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
+                Transform mt = missile.transform;
+                //bool isMoving = true;
+                //while (isMoving)
+                while (true)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    mt.LookAt(target);
+                    //Debug.DrawRay(mt.position, mt.forward * 30);
+                    mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 5f);
+
+
+                    float distToTar = Vector3.Distance(mt.position, target);
+
+
+                    //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
+                    if (distToTar <= 0.1f)
+                    {
+                        //isMoving = false;
+                        //break; // kalo break doang, nanti dia nembak berkali2
+                        //Destroy(targetObj);//hapus target object kalo udah kena
+
+                        Destroy(missile); // missilenya juga lah..
+                        //break;
+                        yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
+                    }
+                    //Debug.Log("firing to " + target.ToString());
+                }//endwhile
+            }//endif
+
+        }//endwhile
+
+    }
+
+    */
+
+    IEnumerator fireMissile(GameObject targetObj)
+    {
+        //Debug.Log("TEMBAK! : " + targetObj.transform.position.ToString());
+        Vector3 target = targetObj.transform.position;
+        distMinToTar = Vector3.Distance(myTransform.position, target);
+
+        while (true)
+        {
+
+            yield return null;
+
+            float distUnitToTar = Vector3.Distance(myTransform.position, target);
+
+            //Debug.LogError("DistUnitToTar: " + distUnitToTar);
+            Debug.DrawRay(myTransform.position, (target - myTransform.position).normalized * ATTACK_RANGE, Color.yellow);
+
+
+
+
+
+
+            if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
+            {
+                //Vector3 target;
+                GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
+                Transform mt = missile.transform;
+
+                while (true)
+                {
+                    yield return null;
+                    if (mt != null)
+                    {
+                        mt.LookAt(target);
+                        //Debug.DrawRay(mt.position, mt.forward * 30);
+                        mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 5f);
+
+
+                        float distToTar = Vector3.Distance(mt.position, target);
+
+
+                        //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
+                        if (distToTar <= 0.1f)
+                        {
+                            //isMoving = false;
+                            //break; // kalo break doang, nanti dia nembak berkali2
+                            Destroy(targetObj);//hapus target object kalo udah kena
+
+                            Destroy(missile); // missilenya juga lah..
+                            //break;
+                            yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
+                        }
+                    }
+                    //Debug.Log("firing to " + target.ToString());
+
+                }//endwhile
+            }//endif
+
+        }//endwhile
+
     }
 
     void OnGUI()
