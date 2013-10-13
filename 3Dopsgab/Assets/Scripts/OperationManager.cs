@@ -61,6 +61,11 @@ public class OperationManager : MonoBehaviour
         return false;
     }
 
+    public static void playOperations()
+    {
+
+    }
+
     public void OnApplicationQuit()
     {
         //foreach (LevelSerializer.SaveEntry sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName])

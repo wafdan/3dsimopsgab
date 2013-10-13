@@ -45,7 +45,9 @@ public class HistoryManager : MonoBehaviour
         if (a == null) return false;
         historyList.Add(a);
         LevelSerializer.SaveGame(a.ToString());
-        Debug.Log("saved as: " + a.ToString() + " max saves:" + LevelSerializer.MaxGames);
+        LevelSerializer.SerializeLevelToFile("testSaveGame.tfgsg");
+        //UnitySerializer.SerializeToFile(LevelSerializer.SavedGames, "somePath");
+        Debug.Log("saved as: " + a.ToString() + " max saves:" + LevelSerializer.MaxGames + " in: " + Application.persistentDataPath);
         return true;
     }
     /*
@@ -57,6 +59,8 @@ public class HistoryManager : MonoBehaviour
      */
     public static bool undoHistory(HistoryItem a)
     {
+        
+        //endcobian
         Debug.Log("loading : " + a.ToString());
         foreach (LevelSerializer.SaveEntry sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName])
         {
