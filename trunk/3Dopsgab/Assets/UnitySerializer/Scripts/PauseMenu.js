@@ -35,7 +35,7 @@ function OnGUI() {
 	   GUILayout.BeginVertical();
 	   GUILayout.BeginHorizontal();
 	   GUILayout.FlexibleSpace();
-	   GUILayout.Label("Press P to Pause");
+	   //GUILayout.Label("Press P to Pause");
 	   GUILayout.FlexibleSpace();
 	   GUILayout.EndHorizontal();
 	   GUILayout.EndVertical();
