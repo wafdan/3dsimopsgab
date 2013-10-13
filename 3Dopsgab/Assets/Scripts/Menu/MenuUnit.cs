@@ -104,6 +104,7 @@ public class MenuUnit : MonoBehaviour
     private GameObject unitManagerObject;
 
     public bool tampil = false;
+	public bool list = false;
 
     public Rect winRect;   //windows basic rect
     public string location;
@@ -311,7 +312,7 @@ public class MenuUnit : MonoBehaviour
                 float groupY = 40;
 
                 float btW = 100;
-                float btH = 40;
+                float btH = 25;
                 float btX = Screen.width / 2 - btW / 2;
                 float btY = 40;
 
@@ -326,7 +327,7 @@ public class MenuUnit : MonoBehaviour
                     HistoryManager.showHistory = false;
                     editUnitMode = !editUnitMode;
                 }
-                if (GUI.Button(new Rect(btW * 3 + 1, 0, btW * 2, btH), (Camera.main.orthographic == true) ? "Kamera Perspektif" : "Kamera Ortogonal"))
+                if (GUI.Button(new Rect(btW * 3 + 1, 0, btW * 2 - 70, btH), (Camera.main.orthographic == true) ? "Kamera Perspektif" : "Kamera Ortogonal"))
                 {
                     Camera.main.orthographic = !Camera.main.orthographic;
                 }
@@ -426,76 +427,80 @@ public class MenuUnit : MonoBehaviour
         selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 130, 30), Hari[selectedItemIndex], Hari, listStyle);
 
         // tombol tambah kegiatan
-        GUI.Box(new Rect(addKegX, leftGroupY, addKegW, addKegH), "Tambah Kegiatan");
-        if (GUI.Button(new Rect(285, leftGroupY + 2, 30, 20), "+"))
+        GUI.Box(new Rect(addKegX, leftGroupY, addKegW + 30, addKegH), "Kegiatan");
+        if (GUI.Button(new Rect(320, leftGroupY + 3, 30, 20), "v"))
+        {
+            list = !list; // jadi true saja
+        }
+		if (GUI.Button(new Rect(285, leftGroupY + 3, 30, 20), "+"))
         {
             //showFormKegiatan = !showFormKegiatan;
-            showFormKegiatan = true; // jadi true saja
+            showFormKegiatan = !showFormKegiatan; // jadi true saja
             nowEditingOpId = GA_NGEDIT;
         }
         // box List kegiatan
-        GUI.Box(new Rect(addKegX, leftGroupY + addKegH + 2, kegListW, kegListH + 20), "List Kegiatan");
+        if(list){
+			GUI.Box(new Rect(addKegX, leftGroupY + addKegH + 2, kegListW + 30, kegListH + 20), "");
 
-        float hisItemX = 0; //relative to scrollview
-        float hisItemY = 0; //relative to scrollview
-        float hisItemH = 40;
-        float hisItemW = kegListW * 0.9f;
+        	float hisItemX = 0; //relative to scrollview
+        	float hisItemY = 0; //relative to scrollview
+        	float hisItemH = 40;
+        	float hisItemW = kegListW * 0.9f;
 
-        scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH + 20, kegListW, kegListH), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH), false, true);
-        for (int i = 0; i < OperationManager.operationList.Count; i++)
-        {
-            curOpItem = (OperationItem)OperationManager.operationList[i];
-            //kalo satuannya bukan satuan yg lagi dimainkan, lewat.
-            if (curOpItem.satuan != PlayerPrefs.GetString("satuan"))
-            {
-                continue;
-            }
-            //kalo harinya bukan hari yg lagi dipilih, lewat.
-            if (curOpItem.posisiHari != Hari[comboBoxControl.GetSelectedItemIndex()].text)
-            {
-                continue;
-            }
-            GUI.BeginGroup(new Rect(hisItemX + 10, hisItemY, hisItemW, hisItemH), styleKegListItem);
-            //if (GUI.Button(new Rect(hisItemX+10, hisItemY, hisItemW, hisItemH), OperationManager.operationList[i].ToString()))
-            if (GUI.Button(new Rect(0, 0, hisItemW * 0.8f, hisItemH), curOpItem.ToString()))
-            {
-                nowEditingOpId = i; //set posisi ngedit
-                // tampilkan detail info di dalam form kegiatan
-                NamaKeg = curOpItem.name;
-                Lokasi = curOpItem.location;
-                Deskripsi = curOpItem.location;
-                //edit item lainnya menyusul...
+        	scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 30, kegListH), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH), false, true);
+        	for (int i = 0; i < OperationManager.operationList.Count; i++)
+        	{
+            	curOpItem = (OperationItem)OperationManager.operationList[i];
+            	//kalo satuannya bukan satuan yg lagi dimainkan, lewat.
+            	if (curOpItem.satuan != PlayerPrefs.GetString("satuan"))
+            	{
+                	continue;
+            	}
+            	//kalo harinya bukan hari yg lagi dipilih, lewat.
+            	if (curOpItem.posisiHari != Hari[comboBoxControl.GetSelectedItemIndex()].text)
+            	{
+                	continue;
+            	}
+            	GUI.BeginGroup(new Rect(hisItemX + 40, hisItemY + 5, hisItemW, hisItemH), styleKegListItem);
+            	//if (GUI.Button(new Rect(hisItemX+10, hisItemY, hisItemW, hisItemH), OperationManager.operationList[i].ToString()))
+            	if (GUI.Button(new Rect(0, 0, hisItemW * 0.8f, hisItemH), curOpItem.ToString()))
+            	{
+                	nowEditingOpId = i; //set posisi ngedit
+                	// tampilkan detail info di dalam form kegiatan
+                	NamaKeg = curOpItem.name;
+                	Lokasi = curOpItem.location;
+                	Deskripsi = curOpItem.location;
+                	//edit item lainnya menyusul...
 
-                showFormKegiatan = true; //tampilkan formnya
-            }
-            if (GUI.Button(new Rect(hisItemW * 0.8f, 0, hisItemW * 0.2f, hisItemH * 0.5f), "play"))
-            {
-                //OperationManager.playOperation((OperationItem)OperationManager.operationList[i]);
-                //curOpItem = (OperationItem)OperationManager.operationList[i];
-                //showHUDTop = false;
-                showPlayMode = true;
-                HistoryManager.showHistory = false;
-                curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
-            }
-            if (GUI.Button(new Rect(hisItemW * 0.8f, hisItemH * 0.5f, hisItemW * 0.2f, hisItemH * 0.5f), "hapus"))
-            {
-                //anda yakin hapus?
-            }
-            GUI.EndGroup();
-            hisItemY += hisItemH + 3;
-            kegScrollvH = ((hisItemH + 3) * (i + 1) <= kegScrollvH ? kegScrollvH : (hisItemH + 3) * (i + 1));
+                	showFormKegiatan = true; //tampilkan formnya
+            	}
+            	if (GUI.Button(new Rect(hisItemW * 0.8f, 0, hisItemW * 0.2f, hisItemH * 0.5f), "play"))
+            	{
+                	//OperationManager.playOperation((OperationItem)OperationManager.operationList[i]);
+                	//curOpItem = (OperationItem)OperationManager.operationList[i];
+                	//showHUDTop = false;
+                	showPlayMode = true;
+                	HistoryManager.showHistory = false;
+                	curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
+            	}
+            	if (GUI.Button(new Rect(hisItemW * 0.8f, hisItemH * 0.5f, hisItemW * 0.2f, hisItemH * 0.5f), "hapus"))
+            	{
+                	//anda yakin hapus?
+            	}
+            	GUI.EndGroup();
+            	hisItemY += hisItemH + 3;
+            	kegScrollvH = ((hisItemH + 3) * (i + 1) <= kegScrollvH ? kegScrollvH : (hisItemH + 3) * (i + 1));
 
-        }
-        GUI.EndScrollView();
-        // penyesuaian posisi scroll bar
-        if (lastOpCount != OperationManager.operationList.Count)
-        {
-            float newScrollPosY = (OperationManager.operationList.Count * (hisItemH + 1) - kegListH);
-            scrollPosKegList.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosKegList.y;
-            lastOpCount = OperationManager.operationList.Count;
-        }
-
-        
+        	}
+        	GUI.EndScrollView();
+        	// penyesuaian posisi scroll bar
+        	if (lastOpCount != OperationManager.operationList.Count)
+        	{
+            	float newScrollPosY = (OperationManager.operationList.Count * (hisItemH + 1) - kegListH);
+            	scrollPosKegList.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosKegList.y;
+            	lastOpCount = OperationManager.operationList.Count;
+        	}
+		}
 
         if (showFormKegiatan)
         {
@@ -537,17 +542,19 @@ public class MenuUnit : MonoBehaviour
                 winRect = new Rect(500, 20, 150, 20);
                 winRect = GUILayout.Window(1, winRect, DoMyWindow, "Browser");
             }
+			GUI.backgroundColor = Color.blue;
             GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 280, wBox - 120, 25), "Konfigurasi Unit : ");
-            if (GUI.Button(new Rect(cornerBox_X + 115, cornerBox_Y + 280, wBox * 0.5f, 40), "Atur Pergerakan\nUnit"))
+            if (GUI.Button(new Rect(cornerBox_X + 115, cornerBox_Y + 280, wBox * 0.5f, 25), "Atur Pergerakan"))
             {
 
                 editUnitMode = true;
                 HistoryManager.showHistory = true;
             }
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 380, wBox, 40), submitKegInfo);
-            if (GUI.Button(new Rect(cornerBox_X + 60, cornerBox_Y + 430, wBox - 180, 40), "Simpan"))
+            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 410, wBox, 40), submitKegInfo);
+            if (GUI.Button(new Rect(cornerBox_X + 60, cornerBox_Y + 460, wBox - 180, 25), "Simpan"))
             {
-                if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
+                list = true;
+				if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
                 {
                     submitKegInfo = "Nama, Lokasi, dan Deskripsi kegiatan \nharus diisi.";
                     return;
@@ -579,13 +586,13 @@ public class MenuUnit : MonoBehaviour
                 }
 
             }
-            if (GUI.Button(new Rect(cornerBox_X + 140, cornerBox_Y + 430, wBox - 180, 40), "Batal"))
+            if (GUI.Button(new Rect(cornerBox_X + 140, cornerBox_Y + 460, wBox - 180, 25), "Batal"))
             {
                 showFormKegiatan = false;
                 nowEditingOpId = GA_NGEDIT;
             }
         }
-        GUI.Label(new Rect(340, 7, 100, 20), ketSatuan);
+        GUI.Label(new Rect(360, 2, 100, 20), ketSatuan);
     }
 
     private void getMilitaryUnitGUI()
