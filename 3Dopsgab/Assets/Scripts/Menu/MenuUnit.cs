@@ -12,6 +12,11 @@ public class MenuUnit : MonoBehaviour
     public string NamaKeg;
     public string FilePendukung;
     public string Deskripsi;
+    public string JamMulai;
+    public string MenitMulai;
+    public string HariDurasi;
+    public string JamDurasi;
+    public string MenitDurasi;
 
     //alusista
     private bool showHUDTop = true;
@@ -380,12 +385,10 @@ public class MenuUnit : MonoBehaviour
             if (m_fileBrowser != null)
             {
                 m_fileBrowser.OnGUI();
-                //Debug.Log("save mfilebrowser ga null");
             }
             else
             {
                 OnGUIMain();
-                //Debug.Log("save mfilebrowser null");
             }
         }
         else
@@ -472,35 +475,41 @@ public class MenuUnit : MonoBehaviour
                 	Deskripsi = curOpItem.location;
                 	//edit item lainnya menyusul...
 
-                	showFormKegiatan = true; //tampilkan formnya
-            	}
-            	if (GUI.Button(new Rect(hisItemW * 0.8f, 0, hisItemW * 0.2f, hisItemH * 0.5f), "play"))
-            	{
-                	//OperationManager.playOperation((OperationItem)OperationManager.operationList[i]);
-                	//curOpItem = (OperationItem)OperationManager.operationList[i];
-                	//showHUDTop = false;
-                	showPlayMode = true;
-                	HistoryManager.showHistory = false;
-                	curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
-            	}
-            	if (GUI.Button(new Rect(hisItemW * 0.8f, hisItemH * 0.5f, hisItemW * 0.2f, hisItemH * 0.5f), "hapus"))
-            	{
-                	//anda yakin hapus?
-            	}
-            	GUI.EndGroup();
-            	hisItemY += hisItemH + 3;
-            	kegScrollvH = ((hisItemH + 3) * (i + 1) <= kegScrollvH ? kegScrollvH : (hisItemH + 3) * (i + 1));
+                showFormKegiatan = true; //tampilkan formnya
+            }
+            if (GUI.Button(new Rect(hisItemW * 0.8f, 0, hisItemW * 0.2f, hisItemH * 0.5f), "play"))
+            {
+                //OperationManager.playOperation((OperationItem)OperationManager.operationList[i]);
+                //curOpItem = (OperationItem)OperationManager.operationList[i];
+                //showHUDTop = false;
+                showPlayMode = true;
+                HistoryManager.showHistory = false;
+                curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
+                ///string startTime = "7:00 AM";
+                //string endTime = "2:00 PM";
 
-        	}
-        	GUI.EndScrollView();
-        	// penyesuaian posisi scroll bar
-        	if (lastOpCount != OperationManager.operationList.Count)
-        	{
-            	float newScrollPosY = (OperationManager.operationList.Count * (hisItemH + 1) - kegListH);
-            	scrollPosKegList.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosKegList.y;
-            	lastOpCount = OperationManager.operationList.Count;
-        	}
-		}
+                ////TimeSpan duration = DateTime.Parse(endTime).Subtract(DateTime.Parse(startTime));
+                ////Debug.Log("start: " + startTime + " end: " + endTime + " duration: " + duration);
+            }
+            if (GUI.Button(new Rect(hisItemW * 0.8f, hisItemH * 0.5f, hisItemW * 0.2f, hisItemH * 0.5f), "hapus"))
+            {
+                //anda yakin hapus?
+            }
+            GUI.EndGroup();
+            hisItemY += hisItemH + 3;
+            kegScrollvH = ((hisItemH + 3) * (i + 1) <= kegScrollvH ? kegScrollvH : (hisItemH + 3) * (i + 1));
+
+        }
+        GUI.EndScrollView();
+        // penyesuaian posisi scroll bar
+        if (lastOpCount != OperationManager.operationList.Count)
+        {
+            float newScrollPosY = (OperationManager.operationList.Count * (hisItemH + 1) - kegListH);
+            scrollPosKegList.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosKegList.y;
+            lastOpCount = OperationManager.operationList.Count;
+        }
+
+        
 
         if (showFormKegiatan)
         {
@@ -509,6 +518,13 @@ public class MenuUnit : MonoBehaviour
             float hBox = Screen.height * 0.5f;
             float cornerBox_X = (Screen.width - wBox);
             float cornerBox_Y = (Screen.height - hBox) / 60;
+
+            float txtFieldHplusMargin = 30;
+            float txtAreaH = 125;
+            float posFieldY = cornerBox_Y;//posisi awal Y utk field, diinkremen selalu;
+            float timeW = 25;
+            float timeH = 25;
+
 
             GUIStyle style = new GUIStyle();
             style.normal.background = background;
@@ -520,41 +536,69 @@ public class MenuUnit : MonoBehaviour
             //GUI.color = Color.red;
             GUI.backgroundColor = Color.blue;
 
-            GUI.Box(new Rect(cornerBox_X, cornerBox_Y, wBox + 20, hBox + 190), ":: Form Kegiatan ::");
+            GUI.Box(new Rect(cornerBox_X, cornerBox_Y, wBox + txtFieldHplusMargin, hBox + 190), ":: Form Kegiatan ::");
+            posFieldY += txtFieldHplusMargin;
 
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 40, wBox - 120, 25), "Nama Kegiatan : ");
-            NamaKeg = GUI.TextField(new Rect(cornerBox_X + 110, cornerBox_Y + 40, wBox - 120, 25), NamaKeg, 25);
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Nama Kegiatan : ");
+            NamaKeg = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, wBox - 120, 25), NamaKeg, 25);
+            posFieldY += txtFieldHplusMargin;
 
-            GUI.Label(new Rect(cornerBox_X + 60, cornerBox_Y + 70, wBox - 120, 25), "Lokasi : ");
-            Lokasi = GUI.TextField(new Rect(cornerBox_X + 110, cornerBox_Y + 70, wBox - 120, 25), Lokasi, 25);
+            GUI.Label(new Rect(cornerBox_X + 60, posFieldY, wBox - 120, 25), "Lokasi : ");
+            Lokasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, wBox - 120, 25), Lokasi, 25);
+            posFieldY += txtFieldHplusMargin;
 
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 100, wBox - 120, 25), "Deskripsi : ");
-            Deskripsi = GUI.TextArea(new Rect(cornerBox_X + 10, cornerBox_Y + 125, wBox - 20, 120), Deskripsi, 200);
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Deskripsi : ");
+            posFieldY += txtFieldHplusMargin;
+            Deskripsi = GUI.TextArea(new Rect(cornerBox_X + 10, posFieldY, wBox - 20, 120), Deskripsi, 200);
+            posFieldY += txtAreaH;
 
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 250, wBox - 120, 25), "File Pendukung : ");
-            if (GUI.Button(new Rect(cornerBox_X + 115, cornerBox_Y + 252, wBox - 180, 20), "Upload"))
-            {
-                tampil = !tampil;
-            }
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Waktu Mulai : ");
+            JamMulai = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW, timeH), JamMulai, 2);
+            GUI.Label(new Rect(cornerBox_X + 110 + timeW+2, posFieldY, 5, 25), ":");
+            MenitMulai = GUI.TextField(new Rect(cornerBox_X + 110 + timeW+5, posFieldY, timeW, timeH), MenitMulai, 2);
+            posFieldY += txtFieldHplusMargin;
+
+            //durasi
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Durasi : ");
+            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW, timeH), HariDurasi, 2);
+            GUI.Label(new Rect(cornerBox_X + 110 + timeW + 2, posFieldY, 40, 25), "Hari");
+            posFieldY += txtFieldHplusMargin;
+            
+            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW, timeH), JamDurasi, 2);
+            GUI.Label(new Rect(cornerBox_X + 110 + timeW + 2, posFieldY, 40, 25), "Jam");
+            posFieldY += txtFieldHplusMargin;
+
+            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW, timeH), MenitDurasi, 2);
+            GUI.Label(new Rect(cornerBox_X + 110 + timeW + 2, posFieldY, 40, 25), "Menit");
+            posFieldY += txtFieldHplusMargin;
+
+            // file pendukung
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "File Pendukung : ");
+            if (GUI.Button(new Rect(cornerBox_X + 115, posFieldY, wBox - 180, 20), "Upload"))
+            {tampil = !tampil;}
+            posFieldY += txtFieldHplusMargin;
+
             if (tampil)
             {
                 GUI.backgroundColor = Color.white;
                 winRect = new Rect(500, 20, 150, 20);
                 winRect = GUILayout.Window(1, winRect, DoMyWindow, "Browser");
             }
-			GUI.backgroundColor = Color.blue;
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 280, wBox - 120, 25), "Konfigurasi Unit : ");
-            if (GUI.Button(new Rect(cornerBox_X + 115, cornerBox_Y + 280, wBox * 0.5f, 25), "Atur Pergerakan"))
-            {
 
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Konfigurasi Unit : ");
+            if (GUI.Button(new Rect(cornerBox_X + 115, posFieldY, wBox * 0.5f, 40), "Atur Pergerakan\nUnit"))
+            {
                 editUnitMode = true;
                 HistoryManager.showHistory = true;
             }
-            GUI.Label(new Rect(cornerBox_X + 10, cornerBox_Y + 410, wBox, 40), submitKegInfo);
-            if (GUI.Button(new Rect(cornerBox_X + 60, cornerBox_Y + 460, wBox - 180, 25), "Simpan"))
+            posFieldY += txtAreaH;
+
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox, 40), submitKegInfo);
+            posFieldY += txtFieldHplusMargin;
+
+            if (GUI.Button(new Rect(cornerBox_X + 60, posFieldY, wBox - 180, 40), "Simpan"))
             {
-                list = true;
-				if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
+                if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
                 {
                     submitKegInfo = "Nama, Lokasi, dan Deskripsi kegiatan \nharus diisi.";
                     return;
@@ -586,7 +630,7 @@ public class MenuUnit : MonoBehaviour
                 }
 
             }
-            if (GUI.Button(new Rect(cornerBox_X + 140, cornerBox_Y + 460, wBox - 180, 25), "Batal"))
+            if (GUI.Button(new Rect(cornerBox_X + 140, posFieldY, wBox - 180, 40), "Batal"))
             {
                 showFormKegiatan = false;
                 nowEditingOpId = GA_NGEDIT;
