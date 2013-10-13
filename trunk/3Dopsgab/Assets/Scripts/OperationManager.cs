@@ -94,6 +94,8 @@ public class OperationItem
     public Object unitConfig;
     public string startTime;
     public string endTime;
+    public bool hasUnitMovement;
+    public bool hasVideo;
 
     public OperationItem()
     {

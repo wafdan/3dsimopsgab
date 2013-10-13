@@ -129,6 +129,22 @@ public class FileBrowser
     }
     protected GUIStyle m_centredText;
 
+    protected GUIStyle DriveList
+    {
+        get
+        {
+            if (m_driveList == null)
+            {
+                m_driveList = new GUIStyle(GUI.skin.box);
+                m_driveList.alignment = TextAnchor.MiddleLeft;
+                m_driveList.fixedHeight = 50f;
+                m_driveList.stretchWidth = false;
+            }
+            return m_driveList;
+        }
+    }
+    protected GUIStyle m_driveList;
+
     protected string m_name;
     protected Rect m_screenRect;
 
@@ -308,7 +324,7 @@ public class FileBrowser
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.BeginVertical();
+        GUILayout.BeginVertical(GUILayout.Width(50));
         string[] allDrives = Directory.GetLogicalDrives();
         foreach (string d in allDrives)
         {
