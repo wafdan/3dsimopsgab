@@ -39,7 +39,6 @@ public class MainScript : MonoBehaviour {
 		{"NAS-332", new UnitOrder("NAS-332", SAT3, new string[]{"Combat Air Patrol","Ferry","Red Plan","Landing"})}
 	};
 	
-	
 }
 
 public class UnitOrder {

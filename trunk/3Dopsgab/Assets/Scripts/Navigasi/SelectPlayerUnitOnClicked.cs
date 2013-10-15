@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SelectPlayerUnitOnClicked : MonoBehaviour {
 	
-   private UnitManager unitManager;
+    //private UnitManager unitManager;
    private CameraMovement cam;
 	
    void Start() {
@@ -24,5 +24,5 @@ public class SelectPlayerUnitOnClicked : MonoBehaviour {
     //    else {
     //        unitManager.SelectSingleUnit(gameObject);
     //    }
-    }
+    //}
 }

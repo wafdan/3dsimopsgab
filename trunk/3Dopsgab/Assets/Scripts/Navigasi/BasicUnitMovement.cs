@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-[DoNotSerialize]
+//[DoNotSerialize]
 public class BasicUnitMovement : MonoBehaviour
 {
 
@@ -62,8 +62,10 @@ public class BasicUnitMovement : MonoBehaviour
 
     //targetting Related
     public List<Vector3> tarpoints;
+    [SerializeThis]
     public List<GameObject> tarPointObjects;
-    private int curTarpointIdx = 0;
+    [SerializeThis]
+    public int curTarpointIdx = 0;
     private GameObject targetEffectObject; //diambil dari Resources
 
     void Start()
@@ -446,6 +448,16 @@ public class BasicUnitMovement : MonoBehaviour
         //Debug.Log("oho");
         //Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
         tarpoints.Add(tp);
+
+        //add to history
+        //prepare to add to history
+        string name = transform.collider.gameObject.name;
+        int idxclone = transform.collider.gameObject.name.IndexOf("(Clone)");
+        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
+        int id = transform.collider.gameObject.GetInstanceID();
+        string newName = name;
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, newName, prefabName, tp));
+
     }
 
     public void removeLastWayPoint()
@@ -507,6 +519,7 @@ public class BasicUnitMovement : MonoBehaviour
 
                     while (curTarpointIdx < tarPointObjects.Count)
                     {
+                        //RadicalRoutineExtensions.StartExtendedCoroutine(gameObject,(fireMissile(tarPointObjects[curTarpointIdx]))); 
                         StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx]));
                         curTarpointIdx++;
                     }
