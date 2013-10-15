@@ -23,6 +23,7 @@ public class HistoryManager : MonoBehaviour
 
     //attributes
     public static bool showHistory = false;
+    [DoNotSerialize]
     public static ArrayList historyList = new ArrayList();
     public static int InstanceIdx = 0;
     //operations
@@ -32,6 +33,7 @@ public class HistoryManager : MonoBehaviour
     public static string HISTORY_ADD_WAYPOINT = "Tambah rute";
     public static string HISTORY_MOD_WAYPOINT = "Tambah rute";
     public static string HISTORY_DEL_WAYPOINT = "Tambah rute";
+    public static string HISTORY_ADD_TARPOINT = "Tambah target";
 
     public static bool addToHistory(string a)
     {
@@ -44,9 +46,14 @@ public class HistoryManager : MonoBehaviour
     {
         if (a == null) return false;
         historyList.Add(a);
-        LevelSerializer.SaveGame(a.ToString());
-        LevelSerializer.SerializeLevelToFile("testSaveGame.tfgsg");
-        //UnitySerializer.SerializeToFile(LevelSerializer.SavedGames, "somePath");
+
+        //save undo sebagai save game
+        LevelSerializer.PlayerName=PlayerPrefs.GetString("satuan");
+        LevelSerializer.SaveGame("UnitConfig "+a.ToString());
+        if (LevelSerializer.SavedGames.Count >= LevelSerializer.MaxGames)
+        {
+            LevelSerializer.MaxGames++;
+        }
         Debug.Log("saved as: " + a.ToString() + " max saves:" + LevelSerializer.MaxGames + " in: " + Application.persistentDataPath);
         return true;
     }
@@ -59,22 +66,30 @@ public class HistoryManager : MonoBehaviour
      */
     public static bool undoHistory(HistoryItem a)
     {
-        
+        LevelSerializer.SaveEntry sgret = null;
         //endcobian
         Debug.Log("loading : " + a.ToString());
         foreach (LevelSerializer.SaveEntry sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName])
         {
-            Debug.Log("\t\tsave entries: " + sg.Name);
-            if (sg.Name == a.ToString())
+            //Debug.Log("\t\tsave entries: " + sg.Name);
+            //if (sg.Name == a.ToString())
+            if (sg.Name == "UnitConfig "+a.ToString())
             {
-                sg.Load();
+                sgret = sg;
                 //LevelSerializer.LoadNow(sg.Data);
-                Debug.Log("berhasil Load");
-                return true;
+                break;
             }
         }
-        Debug.Log("gagal Load");
-        return false;
+        if (sgret != null)
+        {
+            sgret.Load(); 
+            //LevelSerializer.LoadNow(sgret.Data);
+            Debug.Log("berhasil Load "+sgret.Name); return true;
+        }
+        else
+        {
+            Debug.Log("gagal Load");return false;
+        }
     }
 
     public void OnApplicationQuit()

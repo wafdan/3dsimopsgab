@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+using System.IO;
 [SerializeAll]
 public class OperationManager : MonoBehaviour
 {
@@ -24,8 +26,14 @@ public class OperationManager : MonoBehaviour
     //attributes
 
     public static ArrayList operationList = new ArrayList();
-    public static ArrayList queryResultList = new ArrayList();
+    public static DateTime hariH = DateTime.Now;
     public static int InstanceIdx = 0;
+    public static string FILE_EXT=".tfgsg";
+
+    public static void setHariH(DateTime newHariH)
+    {
+        hariH = newHariH;
+    }
 
     public static bool addToOperationList(OperationItem a)
     {
@@ -80,6 +88,33 @@ public class OperationManager : MonoBehaviour
     {
 
     }
+
+    public static void saveGameToFile(string filename)
+    {
+        LevelSerializer.SerializeLevelToFile(filename);
+        LevelSerializer.SavedGames.Clear();
+        HistoryManager.historyList.Clear();
+        Debug.Log("Saved as " + filename);
+    }
+
+    public static bool deleteSavedGame(string filename)
+    {
+        try
+        {
+            // A.
+            // Try to delete the file.
+            File.Delete(filename);
+            Debug.Log("berhasil delete");
+            return true;
+        }
+        catch (IOException)
+        {
+            // B.
+            // We could not delete the file.
+            Debug.Log("gagal delete");
+            return false;
+        }
+    }
 }
 
 public class OperationItem
@@ -91,8 +126,9 @@ public class OperationItem
     public Vector3 locationPoint;
     public string description;
     public string files;
-    public Object unitConfig;
+    public UnityEngine.Object unitConfig;
     public string startTime;
+    public TimeSpan duration;
     public string endTime;
     public bool hasUnitMovement;
     public bool hasVideo;
@@ -125,21 +161,7 @@ public class OperationItem
         endTime = "00:00";
     }
 
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, Object newUnitConfig)
-    {
-        this.satuan = satuan;
-        this.posisiHari = posHar;
-        this.name = nama;
-        this.location = lokasi;
-        this.description = deskripsi;
-        this.locationPoint = Vector3.zero;
-        this.files = file;
-        this.unitConfig = newUnitConfig;
-        startTime = "00:00";
-        endTime = "00:00";
-    }
-
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, Object newUnitConfig)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, UnityEngine.Object newUnitConfig)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -153,9 +175,41 @@ public class OperationItem
         endTime = "00:00";
     }
 
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig)
+    {
+        this.satuan = satuan;
+        this.posisiHari = posHar;
+        this.name = nama;
+        this.location = lokasi;
+        this.description = deskripsi;
+        this.locationPoint = Vector3.zero;
+        this.files = file;
+        this.unitConfig = newUnitConfig;
+        startTime = "00:00";
+        endTime = "00:00";
+    }
+
+    //yg dipake
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig,string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
+    {
+        this.satuan = satuan;
+        this.posisiHari = posHar;
+        this.name = nama;
+        this.location = lokasi;
+        this.description = deskripsi;
+        this.locationPoint = Vector3.zero;
+        this.files = file;
+        this.unitConfig = newUnitConfig;
+        this.startTime = startTime;
+        this.duration = duration;
+        endTime = "00:00";
+        this.hasVideo = hasFile;
+        this.hasUnitMovement = hasUnit;
+    }
+
     public override string ToString()
     {
-        return name + "\nlokasi: " + location;
+        return name + "\nLokasi: " + location;
     }
 
 }
