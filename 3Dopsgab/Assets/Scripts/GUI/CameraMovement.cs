@@ -11,6 +11,9 @@ public class CameraMovement : MonoBehaviour
 	private const int RotateAmount = 10;
 	private const int RotateSpeed = 100;
 	
+	void start(){
+	}
+	
 	void Update ()
 	{
 		MoveCamera ();
@@ -23,21 +26,53 @@ public class CameraMovement : MonoBehaviour
 			float xpos = Input.mousePosition.x;
 			float ypos = Input.mousePosition.y;
 			Vector3 movement = Vector3.zero;
+			
+			Vector3 origin = Camera.main.transform.position;
+			Vector3 destination = origin;
 		
 			int width = Screen.width;
 			int height = Screen.height;
 		
 			//horizontal movement
 			if ((xpos >= 0 && xpos < ScrollWidth || Input.GetKey (KeyCode.A)))
+			{			
 				movement.x -= ScrollSpeed;
+				if( origin.x >= 320f)
+				{
+					origin = new Vector3(320f, origin.y, origin.z);	
+				}
+			}	
+			
 			else if (xpos <= width && xpos > width - ScrollWidth || Input.GetKey (KeyCode.D))
+			{
 				movement.x += ScrollSpeed;
+				
+				if( origin.x <= -310f)
+				{
+					origin = new Vector3(-310f, origin.y, origin.z);	
+				}
+			}
 		
 			//vertical camera movement
 			if (ypos >= 0 && ypos < ScrollWidth || Input.GetKey (KeyCode.S))
+			{
 				movement.z -= ScrollSpeed;
+				
+				if( origin.z > 550f)
+				{
+					origin = new Vector3( origin.x, origin.y, 550f);	
+				}
+			}
 			else if (ypos <= height && ypos > height - ScrollWidth || Input.GetKey (KeyCode.W))
+			{
 				movement.z += ScrollSpeed;
+				
+				if( origin.z < 200f)
+				{
+					origin = new Vector3( origin.x, origin.y, 200f);	
+				}
+				
+			}
 		
 			movement = Camera.main.transform.TransformDirection (movement);
 			movement.y = 30;
@@ -45,8 +80,7 @@ public class CameraMovement : MonoBehaviour
 			//away from the ground
 			movement.y = ScrollSpeed * Input.GetAxis ("Mouse ScrollWheel");
 		
-			Vector3 origin = Camera.main.transform.position;
-			Vector3 destination = origin;
+			
 			if (movement != Vector3.zero)
 				destination += movement;
 		
@@ -57,6 +91,7 @@ public class CameraMovement : MonoBehaviour
 		
 			if (origin != destination)
 				Camera.main.transform.position = Vector3.MoveTowards (origin, destination, ScrollSpeed * Time.deltaTime);
+			
 		}
 	}
 
@@ -73,4 +108,19 @@ public class CameraMovement : MonoBehaviour
 				Camera.main.transform.eulerAngles = Vector3.MoveTowards (origin, destination, Time.deltaTime * RotateSpeed);
 		}
 	}
+	
+	// Turn on the bit using an OR operation:
+    public void Show() {
+    Camera.main.cullingMask = 1 << LayerMask.NameToLayer("Water");
+    }
+     
+    // Turn off the bit using an AND operation with the complement of the shifted int:
+    public void Hide() {
+    camera.cullingMask = ~(1 << LayerMask.NameToLayer("Water"));
+    }
+     
+    // Toggle the bit using a XOR operation:
+    //private void Toggle() {
+    //camera.cullingMask ^= 1 << LayerMask.NameToLayer("SomeLayer");
+    //}
 }
