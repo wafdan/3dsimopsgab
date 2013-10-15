@@ -4,6 +4,7 @@ using System.Collections;
 public class SelectPlayerUnitOnClicked : MonoBehaviour {
 	
    private UnitManager unitManager;
+   private CameraMovement cam;
 	
    void Start() {
        GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
@@ -12,6 +13,8 @@ public class SelectPlayerUnitOnClicked : MonoBehaviour {
    void Clicked() {
 	Application.LoadLevel(1);	
     Application.LoadLevelAdditive("Sangatta Serang");
+	
+	//camera.cullingMask = ~(1 << LayerMask.NameToLayer("Water"));
 	
 	//    BasicUnitMovement.isSelected = true;
     //    if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {

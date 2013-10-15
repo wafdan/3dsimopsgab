@@ -638,7 +638,7 @@ public class MenuUnit : MonoBehaviour
         }
         GUI.Label(new Rect(360, 2, 100, 20), ketSatuan);
     }
-
+	}
     private void getMilitaryUnitGUI()
     {
         GUI.backgroundColor = Color.yellow;
