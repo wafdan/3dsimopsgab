@@ -72,6 +72,7 @@
      <Compile Include="Assets\Scripts\Navigasi\DetectClicks.cs" />
      <Compile Include="Assets\Scripts\Navigasi\DragSelect.cs" />
      <Compile Include="Assets\Scripts\Navigasi\MoveSelectedUnitOnRightClick.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\SelectLocationOnClicked.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectPlayerUnitOnClicked.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectPlayerUnitOnTrigger.cs" />
      <Compile Include="Assets\Scripts\Navigasi\boxMovement.cs" />
