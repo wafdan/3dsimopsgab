@@ -30,12 +30,11 @@ public class LepasLandas : MonoBehaviour {
 			StartCoroutine(destroyPlan());
 		}
 		
-		Debug.Log(rotationSpeed);
 	}
 	
 	IEnumerator destroyPlan()
 	{
-		yield return new WaitForSeconds(10f);
+		yield return new WaitForSeconds(8f);
 		Destroy(myTransform.gameObject);
 	}
 }
