@@ -24,5 +24,5 @@ public class SelectPlayerUnitOnClicked : MonoBehaviour {
     //    else {
     //        unitManager.SelectSingleUnit(gameObject);
     //    }
-    //}
+    }
 }
