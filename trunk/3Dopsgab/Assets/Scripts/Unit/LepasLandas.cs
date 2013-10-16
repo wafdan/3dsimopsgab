@@ -21,7 +21,7 @@ public class LepasLandas : MonoBehaviour {
 		
 		myTransform.Translate(Vector3.forward * kecepatanPesawat * acceleration * Time.deltaTime);	
 		
-		if( acceleration > 3f)
+		if( acceleration > 5f)
 		{
 			rotationSpeed -= (4*Time.deltaTime);
 			
