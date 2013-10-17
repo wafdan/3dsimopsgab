@@ -9,7 +9,6 @@ public class Penerjun : MonoBehaviour {
 	void Start () {
 		myTransform = transform;
 		StartCoroutine(penerjunOut());
-		
 	}
 	
 	// Update is called once per frame

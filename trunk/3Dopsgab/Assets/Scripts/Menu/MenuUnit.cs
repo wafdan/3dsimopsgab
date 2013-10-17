@@ -39,8 +39,22 @@ public class MenuUnit : MonoBehaviour
     private string ketSatuan;
 
     GUIContent[] Hari;
-    private ComboBox comboBoxControl = new ComboBox();
-    private GUIStyle listStyle = new GUIStyle();
+    private ComboBox comboBoxControl;
+    private GUIStyle listStyle
+    {
+        get
+        {
+            if (m_styleList == null)
+            {
+                m_styleList = new GUIStyle();
+                m_styleList.normal.textColor = Color.white;
+                m_styleList.hover.background = new Texture2D(2, 2);
+                m_styleList.padding.bottom = 6;
+            }
+            return m_styleList;
+        }
+    }
+    protected GUIStyle m_styleList;
 
     //drag unit ke peta
     private BuildingPlacement buildingPlacement;
@@ -135,7 +149,7 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_saveItemDel;
 
-    public Font courierFont;
+    public Font courierFont; //diambil dari editor
     protected GUIStyle stylePlayLabel
     {
         get
@@ -146,14 +160,58 @@ public class MenuUnit : MonoBehaviour
                 m_playLabel.alignment = TextAnchor.MiddleLeft;
                 m_playLabel.font = courierFont;
                 m_playLabel.normal.textColor = Color.red;
-                m_playLabel.fontStyle = FontStyle.Bold;
-                m_playLabel.margin.left = 20;
             }
             return m_playLabel;
         }
     }
     protected GUIStyle m_playLabel;
 
+
+    protected GUIStyle stylePlayField
+    {
+        get
+        {
+            if (m_playField == null)
+            {
+                m_playField = new GUIStyle(GUI.skin.label);
+                m_playField.alignment = TextAnchor.MiddleRight;
+                m_playField.font = courierFont;
+                m_playField.fixedWidth = 150f;
+            }
+            return m_playField;
+        }
+    }
+    protected GUIStyle m_playField;
+
+    protected GUIStyle stylePlayBtBack
+    {
+        get
+        {
+            if (m_playBtBack == null)
+            {
+                m_playBtBack = new GUIStyle(GUI.skin.button);
+                m_playBtBack.alignment = TextAnchor.MiddleCenter;
+                m_playBtBack.fixedWidth = 120;
+            }
+            return m_playBtBack;
+        }
+    }
+    protected GUIStyle m_playBtBack;
+
+
+    protected GUIStyle stylePlayDesc
+    {
+        get
+        {
+            if (m_stylePlayDesc == null)
+            {
+                m_stylePlayDesc = new GUIStyle(GUI.skin.box);
+                //m_stylePlayDesc.normal.background = new Texture2D(2, 2);
+            }
+            return m_stylePlayDesc;
+        }
+    }
+    protected GUIStyle m_stylePlayDesc;
 
     //textures
     //udara
@@ -225,9 +283,41 @@ public class MenuUnit : MonoBehaviour
     public Texture2D fileTexture;                   //the file texture
     public Texture2D dirTexture;                    //the directory texture
 
+    ///
+    private int lastOpCount = 0;
+
+    private OperationItem curOpItem;
+    private OperationItem curOpPlaying;
+    private string curOpInfo;
+    private string submitKegInfo;
+    [SerializeThis]
+    private bool editUnitMode;
+    int width = Screen.width;
+    int height = Screen.height;
+
+    //Time box
+    int timeBoxWidth = 100;
+    int timeBoxHeight = 65;
+
+    //menu kegiatan
+    int kegiatanW = 200;
+    int kegiatanH = 30;
+    public static bool testMovementMode = false;
+    public static int GA_NGEDIT = -1; //index -1 utk menandakan bahwa form kegiatan ga lagi dipake ngedit
+    private int nowEditingOpId = GA_NGEDIT; //index operation item yg sedang diedit di form kegiatan
+
+    private bool hasSaveUnit = false; //udah save pergerakan unit apa belum
+
+    // save game window
+    string NamaFileSave = "";
+    string filenameToDelete = "";
+
+    // position of description scroll
+    Vector2 playGUIkegScrollPos = Vector2.zero;
 
     void Start()
     {
+        comboBoxControl = new ComboBox();
         unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
         unitManager = unitManagerObject.GetComponent<UnitManager>();
 
@@ -269,64 +359,7 @@ public class MenuUnit : MonoBehaviour
         Hari[30] = new GUIContent("H + 13");
         Hari[31] = new GUIContent("H + 14");
 
-        listStyle.normal.textColor = Color.white;
-        listStyle.onHover.background =
-        listStyle.hover.background = new Texture2D(2, 2);
-        listStyle.padding.left =
-        listStyle.padding.right =
-        listStyle.padding.top =
-        listStyle.padding.bottom = 6;
-
         initTextures();
-    }
-
-    private void initTextures()
-    {
-        //udara
-        Sukhoi = (Texture2D)Resources.Load("Sukhoi");
-        F16 = (Texture2D)Resources.Load("F16");
-        F5 = (Texture2D)Resources.Load("F-5");
-        Hawk = (Texture2D)Resources.Load("Hawk");
-        TU16 = (Texture2D)Resources.Load("TU-16");
-        B737 = (Texture2D)Resources.Load("Boeing-737");
-        C130 = (Texture2D)Resources.Load("C-130");
-        C212 = (Texture2D)Resources.Load("C-212");
-        CN235 = (Texture2D)Resources.Load("CN235");
-        NAS332 = (Texture2D)Resources.Load("NAS-332");
-        EC120B = (Texture2D)Resources.Load("EC120B");
-        SA330 = (Texture2D)Resources.Load("SA-330");
-        Bell412 = (Texture2D)Resources.Load("Bell-412");
-
-        //laut
-        KRIayani = (Texture2D)Resources.Load("KRIayani");
-        KRIabdulhalim = (Texture2D)Resources.Load("KRIAbdulhalim");
-        KRIfatahilah = (Texture2D)Resources.Load("KRIfatahilah");
-        KRIpulaurempang = (Texture2D)Resources.Load("KRIpulaurempang");
-        KRIpulaurenggat = (Texture2D)Resources.Load("KRIpulaurenggat");
-        KRItelukpenyu = (Texture2D)Resources.Load("KRItelukpenyu");
-        KRItelukende = (Texture2D)Resources.Load("KRItelukende");
-        KRItelukbanten = (Texture2D)Resources.Load("KRItelukbanten");
-        KRImakasar = (Texture2D)Resources.Load("KRImakasar");
-        KRIsurabaya = (Texture2D)Resources.Load("KRIsurabaya");
-        KRInanggala = (Texture2D)Resources.Load("KRInanggala");
-        KRIcakra = (Texture2D)Resources.Load("KRIcakra");
-        KRIteukuumar = (Texture2D)Resources.Load("KRIteukuumar");
-        KRIcutnyakdien = (Texture2D)Resources.Load("KRIcutnyakdien");
-
-        //darat
-        leopard = (Texture2D)Resources.Load("Leopard");
-        scorpion = (Texture2D)Resources.Load("Scorpion");
-        amx13 = (Texture2D)Resources.Load("AMX-13");
-        anoa = (Texture2D)Resources.Load("APS-3 Anoa");
-        amfibi = (Texture2D)Resources.Load("Amfibi");
-
-        //personel
-        infanteri = (Texture2D)Resources.Load("infanteri");
-
-        //alutsista lain
-        arhanud = (Texture2D)Resources.Load("Arhanud");
-        radar = (Texture2D)Resources.Load("Radar");
-        howitzer = (Texture2D)Resources.Load("Howitzer");
     }
 
     void Awake()
@@ -336,7 +369,6 @@ public class MenuUnit : MonoBehaviour
         index = 0;
         path = location;
     }
-
 
     void Update()
     {
@@ -366,35 +398,11 @@ public class MenuUnit : MonoBehaviour
         yield return new WaitForSeconds(1);
     }
 
-    private int lastOpCount = 0;
-
-    private OperationItem curOpItem;
-    private OperationItem curOpPlaying;
-    private string curOpInfo;
-    private string submitKegInfo;
-    [SerializeThis]
-    private bool editUnitMode;
-    int width = Screen.width;
-    int height = Screen.height;
-
-    //Time box
-    int timeBoxWidth = 100;
-    int timeBoxHeight = 65;
-
-    //menu kegiatan
-    int kegiatanW = 200;
-    int kegiatanH = 30;
-    public static bool testMovementMode = false;
-    public static int GA_NGEDIT = -1; //index -1 utk menandakan bahwa form kegiatan ga lagi dipake ngedit
-    private int nowEditingOpId = GA_NGEDIT; //index operation item yg sedang diedit di form kegiatan
-
-    private bool hasSaveUnit = false; //udah save pergerakan unit apa belum
-
     void OnGUI()
     {
         if (!gamePaused)
         {
-            if (showPlayMode) { getPlayKegiatanGUI(curOpPlaying); } // ini spesial, bisa mendahului showHUDTop
+            if (showPlayMode) { getPlayKegiatanGUI(curOpPlaying); return; } // ini spesial, bisa mendahului showHUDTop
             //if (!showHUDTop) return; //kalo showHUDTop false berarti Hide semua GUI (kecuali khusus play mode di atas)
 
             GUI.backgroundColor = Color.yellow;
@@ -463,8 +471,6 @@ public class MenuUnit : MonoBehaviour
         }
     }
 
-    string NamaFileSave = "";
-    string filenameToDelete = "";
     private void showSaveWindow()
     {
         if (!showConfirmDeleteSave)
@@ -525,7 +531,8 @@ public class MenuUnit : MonoBehaviour
             //} 
             GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal();
-            if(GUILayout.Button("<< Kembali")){
+            if (GUILayout.Button("<< Kembali"))
+            {
                 showSaveBrowser = false;
             }
             GUILayout.EndHorizontal();
@@ -536,9 +543,9 @@ public class MenuUnit : MonoBehaviour
         if (showConfirmDeleteSave)
         {
             //delete
-            GUILayout.BeginArea(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100),GUI.skin.box);
+            GUILayout.BeginArea(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), GUI.skin.box);
             GUILayout.BeginVertical();
-            GUILayout.Label("Yakin hapus?",styleSaveList);
+            GUILayout.Label("Yakin hapus?", styleSaveList);
             GUILayout.Space(30);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Ya"))
@@ -590,24 +597,30 @@ public class MenuUnit : MonoBehaviour
     }
     //end onGUI
 
-    Vector2 playGUIkegScrollPos = Vector2.zero;
     private void getPlayKegiatanGUI(OperationItem op)
     {
+
         float boxH = 300;
         float boxW = 400;
         float boxX = Screen.width / 2 - boxW / 2;
         float boxY = Screen.height / 2 - boxH / 2;
+        if (!op.hasUnitMovement)
+        {
+            boxH = 300;
+            boxW = 400;
+            boxX = Screen.width - boxW;
+            boxY = 0;
+        }
         //button, relative to box
         float btW = boxW / 3;
         float btH = 20;
         float btX = boxW / 2 - btW / 2;
         float btY = boxH - btH - 2;
-        
-        GUILayout.BeginArea(new Rect(boxX, boxY, boxW, boxH),GUI.skin.box);
+
+        GUILayout.BeginArea(new Rect(boxX, boxY, boxW, boxH), stylePlayDesc);
         GUILayout.BeginVertical();
         //GUILayout.Label(curOpInfo, playLabelStyle);
-        GUI.backgroundColor = Color.white;
-        GUILayout.Label(curOpPlaying.posisiHari+" "+curOpPlaying.startTime, stylePlayLabel);
+
         //string durasi="";
         //if (curOpPlaying.duration.Days > 0)
         //    durasi += curOpPlaying.duration.Days.ToString() + " hari,";
@@ -617,30 +630,72 @@ public class MenuUnit : MonoBehaviour
         //    durasi += curOpPlaying.duration.Minutes.ToString() + " menit,";
         //if(durasi!="")
         //    GUILayout.Label(durasi, stylePlayLabel);
-        GUI.backgroundColor = Color.grey;
-        GUILayout.Label("Nama Kegiatan:");
-        GUI.backgroundColor = Color.white;
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Nama Kegiatan :", stylePlayField);
         GUILayout.Label(curOpPlaying.name, stylePlayLabel);
-        GUI.backgroundColor = Color.grey;
-        GUILayout.Label("Deskripsi:");
-        GUI.backgroundColor = Color.white;
-        playGUIkegScrollPos = GUILayout.BeginScrollView(playGUIkegScrollPos, GUILayout.Width(boxW-10), GUILayout.Height(50));
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Waktu :", stylePlayField);
+        GUILayout.Label(curOpPlaying.posisiHari + " " + curOpPlaying.startTime + " sampai " + curOpPlaying.endTime, stylePlayLabel);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Lokasi :", stylePlayField);
+        GUILayout.Label(curOpPlaying.location, stylePlayLabel);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Deskripsi :", stylePlayField);
+        playGUIkegScrollPos = GUILayout.BeginScrollView(playGUIkegScrollPos);//, GUILayout.Width(boxW-10), GUILayout.Height(50));
         GUILayout.Label(curOpPlaying.description, stylePlayLabel);
         GUILayout.EndScrollView();
-        GUI.backgroundColor = Color.grey;
-        GUILayout.Label("Lokasi:");
-        GUI.backgroundColor = Color.white;
-        GUILayout.Label(curOpPlaying.location, stylePlayLabel);
-        GUI.backgroundColor = Color.grey;
+        GUILayout.EndHorizontal();
+
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Kembali"))
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Kembali", stylePlayBtBack))
         {
             showPlayMode = !showPlayMode;
+            curOpPlayIdx = 0;
             //showHUDTop = !showHUDTop;
         }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal(styleSaveList);
+        if (GUILayout.Button("<< Sebelumnya", stylePlayBtBack))
+        {
+            for (int i = curOpPlayIdx - 1; i >= 0; i--)
+            {
+                OperationItem opCek = ((OperationItem)OperationManager.operationList[i]);
+                if (opCek.satuan == PlayerPrefs.GetString("satuan"))
+                {
+                    curOpPlaying = opCek;
+                    curOpPlayIdx = i;
+                    break;
+                }
+            }
+        }
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Selanjutnya >>", stylePlayBtBack))
+        {
+            for (int i = curOpPlayIdx + 1; i < OperationManager.operationList.Count; i++)
+            {
+                OperationItem opCek = ((OperationItem)OperationManager.operationList[i]);
+                if (opCek.satuan == PlayerPrefs.GetString("satuan"))
+                {
+                    curOpPlaying = opCek;
+                    curOpPlayIdx = i;
+                    break;
+                }
+            }
+        }
+
+        GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.EndArea();
-
         //GUI.BeginGroup(new Rect(boxX, boxY, boxW, boxH));
         //GUI.Box(new Rect(0, 0, boxW, boxH), "");
         //GUI.Label(new Rect(0, 0, boxW, boxH), curOpInfo, playLabelStyle);
@@ -734,6 +789,8 @@ public class MenuUnit : MonoBehaviour
                     showPlayMode = true;
                     HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
+                    curOpPlayIdx = i;
+                    Debug.LogError("CUR IDX PLAY:" + curOpPlayIdx);
                     //curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
                     ///string startTime = "7:00 AM";
                     //string endTime = "2:00 PM";
@@ -899,6 +956,8 @@ public class MenuUnit : MonoBehaviour
                     {
                         //ngedit
                         //waktu mulai
+                        JamMulai = JamMulai == "" ? "00" : JamMulai;
+                        MenitMulai = MenitMulai == "" ? "00" : MenitMulai;
                         string waktuMulai = JamMulai + ":" + MenitMulai;
                         //durasi
                         HariDurasi = HariDurasi == "" ? "0" : HariDurasi;
@@ -911,6 +970,8 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).description = Deskripsi;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).startTime = waktuMulai;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).duration = durasi;
+                        string format = "dd/MM/yyyy HH:mm";
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).endTime = DateTime.Parse(waktuMulai).Add(durasi).ToString(format);
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasVideo = toggleFile;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
                         emptyTheField();
@@ -1268,6 +1329,55 @@ public class MenuUnit : MonoBehaviour
         }
     }
 
+    private void initTextures()
+    {
+        //udara
+        Sukhoi = (Texture2D)Resources.Load("Sukhoi");
+        F16 = (Texture2D)Resources.Load("F16");
+        F5 = (Texture2D)Resources.Load("F-5");
+        Hawk = (Texture2D)Resources.Load("Hawk");
+        TU16 = (Texture2D)Resources.Load("TU-16");
+        B737 = (Texture2D)Resources.Load("Boeing-737");
+        C130 = (Texture2D)Resources.Load("C-130");
+        C212 = (Texture2D)Resources.Load("C-212");
+        CN235 = (Texture2D)Resources.Load("CN235");
+        NAS332 = (Texture2D)Resources.Load("NAS-332");
+        EC120B = (Texture2D)Resources.Load("EC120B");
+        SA330 = (Texture2D)Resources.Load("SA-330");
+        Bell412 = (Texture2D)Resources.Load("Bell-412");
+
+        //laut
+        KRIayani = (Texture2D)Resources.Load("KRIayani");
+        KRIabdulhalim = (Texture2D)Resources.Load("KRIAbdulhalim");
+        KRIfatahilah = (Texture2D)Resources.Load("KRIfatahilah");
+        KRIpulaurempang = (Texture2D)Resources.Load("KRIpulaurempang");
+        KRIpulaurenggat = (Texture2D)Resources.Load("KRIpulaurenggat");
+        KRItelukpenyu = (Texture2D)Resources.Load("KRItelukpenyu");
+        KRItelukende = (Texture2D)Resources.Load("KRItelukende");
+        KRItelukbanten = (Texture2D)Resources.Load("KRItelukbanten");
+        KRImakasar = (Texture2D)Resources.Load("KRImakasar");
+        KRIsurabaya = (Texture2D)Resources.Load("KRIsurabaya");
+        KRInanggala = (Texture2D)Resources.Load("KRInanggala");
+        KRIcakra = (Texture2D)Resources.Load("KRIcakra");
+        KRIteukuumar = (Texture2D)Resources.Load("KRIteukuumar");
+        KRIcutnyakdien = (Texture2D)Resources.Load("KRIcutnyakdien");
+
+        //darat
+        leopard = (Texture2D)Resources.Load("Leopard");
+        scorpion = (Texture2D)Resources.Load("Scorpion");
+        amx13 = (Texture2D)Resources.Load("AMX-13");
+        anoa = (Texture2D)Resources.Load("APS-3 Anoa");
+        amfibi = (Texture2D)Resources.Load("Amfibi");
+
+        //personel
+        infanteri = (Texture2D)Resources.Load("infanteri");
+
+        //alutsista lain
+        arhanud = (Texture2D)Resources.Load("Arhanud");
+        radar = (Texture2D)Resources.Load("Radar");
+        howitzer = (Texture2D)Resources.Load("Howitzer");
+    }
+
     //begin file browser
     protected string m_textPath;
     protected FileBrowser m_fileBrowser;
@@ -1278,7 +1388,7 @@ public class MenuUnit : MonoBehaviour
     private bool showSaveUnitDialog = false;
     private bool showConfirmDeleteSave = false;
     private bool showPauseMenu = true;
-    
+    private int curOpPlayIdx;
 
     protected void OnGUIMain()
     {
@@ -1388,7 +1498,6 @@ public class MenuUnit : MonoBehaviour
         }
         return selected;
     }
-
 
     private Texture2D MakeTex(int width, int height, Color col)
     {

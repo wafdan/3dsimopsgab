@@ -30,6 +30,11 @@ public class OperationManager : MonoBehaviour
     public static int InstanceIdx = 0;
     public static string FILE_EXT=".tfgsg";
 
+    public void Start()
+    {
+        StartCoroutine(playOperation());
+    }
+
     public static void setHariH(DateTime newHariH)
     {
         hariH = newHariH;
@@ -84,9 +89,29 @@ public class OperationManager : MonoBehaviour
     }
 
 
-    public static void playOperation(OperationItem p)
+    public static IEnumerator playOperation()
     {
+        while (true)
+        {
+            //cek if playmode, do this..
+            //cek start mulai playnya dari mana
+            //mulai dari posisi itu
+            //IF otomatis, looping for posisi itu hingga akhir di operationList 
+            //  IF kondisi satuan, hari, sesuai,
+            //  play dengan waktu tertentu, misal fix 10 detik per slide.
+            //  oh ya ada tombol "next" dan "prev" untuk play mode.
+            //  IF hasUnit
+            //    posisikan GUI di pojok kanan atas, kecil.
+            //    testEksekusi = true (Coroutine?)
+            //  IF hasVids
+            //    testEksekusi = false;
+            //    playVids... (Coroutine?)
+            //  getNextOperation..
+            //  endloop
 
+            // pada akhirnya, playmode = false
+            yield return null;
+        }
     }
 
     public static void saveGameToFile(string filename)
@@ -202,14 +227,15 @@ public class OperationItem
         this.unitConfig = newUnitConfig;
         this.startTime = startTime;
         this.duration = duration;
-        endTime = "00:00";
+        string format = "dd/MM/yyyy HH:mm";
+        endTime = DateTime.Parse(startTime).Add(duration).ToString(format);
         this.hasVideo = hasFile;
         this.hasUnitMovement = hasUnit;
     }
 
     public override string ToString()
     {
-        return name + "\nLokasi: " + location;
+        return name + "\nLokasi: " + location+"\nSatuan: "+satuan;
     }
 
 }
