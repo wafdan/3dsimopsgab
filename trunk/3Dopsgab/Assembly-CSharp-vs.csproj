@@ -89,8 +89,10 @@
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
      <Compile Include="Assets\Scripts\Unit\amphibi.cs" />
      <Compile Include="Assets\Scripts\Unit\cameraToTarget.cs" />
+     <Compile Include="Assets\Scripts\Unit\charControllerPenerjun.cs" />
      <Compile Include="Assets\Scripts\Unit\jetPatrol.cs" />
      <Compile Include="Assets\Scripts\Unit\modelMajuPesawat.cs" />
+     <Compile Include="Assets\Scripts\Unit\parasuthilang.cs" />
      <Compile Include="Assets\TerrainToolkit\TerrainToolkit.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\AddSomeForce.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\AdditionalData.cs" />
