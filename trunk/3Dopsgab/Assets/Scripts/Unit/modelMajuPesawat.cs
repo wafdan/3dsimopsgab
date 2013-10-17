@@ -19,7 +19,7 @@ public class modelMajuPesawat : MonoBehaviour {
 	
 	IEnumerator destroyModel()
 	{
-		yield return new WaitForSeconds(8f);
+		yield return new WaitForSeconds(16f);
 		Destroy(myTransform.gameObject);
 	}
 }

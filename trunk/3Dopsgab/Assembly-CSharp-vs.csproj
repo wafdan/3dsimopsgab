@@ -88,7 +88,8 @@
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
      <Compile Include="Assets\Scripts\Unit\amphibi.cs" />
-     <Compile Include="Assets\Scripts\Unit\cameraToTarget.cs" />
+     <Compile Include="Assets\Scripts\Unit\cameraPenerbanganLepasLandas.cs" />
+     <Compile Include="Assets\Scripts\Unit\cameraPenerjunanUnit.cs" />
      <Compile Include="Assets\Scripts\Unit\charControllerPenerjun.cs" />
      <Compile Include="Assets\Scripts\Unit\jetPatrol.cs" />
      <Compile Include="Assets\Scripts\Unit\modelMajuPesawat.cs" />
