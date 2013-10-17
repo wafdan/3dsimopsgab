@@ -19,7 +19,7 @@ public class GerakHerculesMengeluarkanPenerjun : MonoBehaviour {
 	private Transform myTransform;
 	public Transform penerjun;
 	
-	private float ratePenerjun = 0.4f;
+	private float ratePenerjun = 1f;
 	private float nextPenerjun = 0;
 	
 	// Use this for initialization
@@ -37,7 +37,7 @@ public class GerakHerculesMengeluarkanPenerjun : MonoBehaviour {
 			kecepatanHercules = 100;
 		}
 		
-		if( Time.time >= 5.0f && Time.time < 9.0f)
+		if( Time.time >= 5.0f && Time.time < 8.0f)
 		{
 			//terjunkan = true;
 			//kecepatanHercules = 70;
@@ -59,7 +59,7 @@ public class GerakHerculesMengeluarkanPenerjun : MonoBehaviour {
 		}
 		
 		myTransform.Translate(Vector3.forward * kecepatanHercules * Time.deltaTime);
-		Debug.Log(kecepatanHercules);
+		//Debug.Log(kecepatanHercules);
 	}
 	
 	void TurunkanPenerjun() 
