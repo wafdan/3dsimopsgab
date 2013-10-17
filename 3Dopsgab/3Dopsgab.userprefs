@@ -1,13 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\cameraToTarget.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\modelMajuPesawat.cs">
     <Files>
+      <File FileName="Assets\Scripts\Unit\cameraPenerbanganLepasLandas.cs" Line="15" Column="30" />
       <File FileName="Assets\Scripts\Unit\Penerjunan\GerakHerculesMengeluarkanPenerjun.cs" Line="40" Column="41" />
       <File FileName="Assets\Scripts\Menu\MenuUnit.cs" Line="429" Column="1" />
       <File FileName="Assets\Scripts\Unit\Penerjunan\Penerjun.cs" Line="12" Column="3" />
       <File FileName="Assets\Scripts\Unit\charControllerPenerjun.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Unit\parasuthilang.cs" Line="24" Column="3" />
-      <File FileName="Assets\Scripts\Unit\cameraToTarget.cs" Line="38" Column="3" />
+      <File FileName="Assets\Scripts\Unit\modelMajuPesawat.cs" Line="22" Column="37" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
