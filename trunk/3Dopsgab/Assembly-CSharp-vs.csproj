@@ -78,11 +78,14 @@
      <Compile Include="Assets\Scripts\OperationManager.cs" />
      <Compile Include="Assets\Scripts\Unit\Actor.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanKapal.cs" />
+     <Compile Include="Assets\Scripts\Unit\BantuanTembakanUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourBase.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
+     <Compile Include="Assets\Scripts\Unit\CameraLedakanCampTank.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIRanjau.cs" />
      <Compile Include="Assets\Scripts\Unit\LepasLandas.cs" />
-     <Compile Include="Assets\Scripts\Unit\Missile.cs" />
+     <Compile Include="Assets\Scripts\Unit\MissileLaut.cs" />
+     <Compile Include="Assets\Scripts\Unit\MissileUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\Penerjunan\GerakHerculesMengeluarkanPenerjun.cs" />
      <Compile Include="Assets\Scripts\Unit\Penerjunan\Penerjun.cs" />
      <Compile Include="Assets\Scripts\Unit\Penerjunan\charControllerPenerjun.cs" />
