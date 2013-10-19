@@ -22,11 +22,13 @@ public class cameraPenerjunanUnit : MonoBehaviour {
 		if( stopMoving == false)
 		{
 			myTransform.Translate(Vector3.down * 1 * Time.deltaTime);
+			myTransform.Translate(Vector3.forward * 2f * Time.deltaTime);
 		}
 		else
 		{
 			myTransform.Translate(Vector3.right * 1 * Time.deltaTime);
 			myTransform.Translate(Vector3.up * 1 * Time.deltaTime);
+			Camera.main.fieldOfView = 25;
 		}
 	}
 	
