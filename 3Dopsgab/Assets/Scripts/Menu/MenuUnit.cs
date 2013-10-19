@@ -2,11 +2,24 @@
 using System.Collections;
 using System;
 using System.IO;
+using UnityEditor;
 
 public class MenuUnit : MonoBehaviour
 {
-
-    //tambah kegiatan
+	//File Browser
+	protected string lokasiUpload = "Assets\\Upload\\";
+    protected string m_textPath;
+    protected FileBrowser m_fileBrowser;
+    [SerializeField]
+    protected Texture2D m_directoryImage,
+                        m_fileImage;
+    private bool showSaveBrowser = false;
+    private bool showSaveUnitDialog = false;
+    private bool showConfirmDeleteSave = false;
+    private bool showPauseMenu = true;
+    private int curOpPlayIdx;
+	
+	//tambah kegiatan
     public Texture2D background;
     public string Lokasi;
     public string NamaKeg;
@@ -19,6 +32,7 @@ public class MenuUnit : MonoBehaviour
     public string MenitDurasi;
     public bool toggleFile = false;
     public bool toggleUnitConfig = false;
+	//public bool toggleScene = false;
 
     //alusista
     private bool showHUDTop = true;
@@ -290,8 +304,10 @@ public class MenuUnit : MonoBehaviour
     private OperationItem curOpPlaying;
     private string curOpInfo;
     private string submitKegInfo;
+	private string submitUpload;
     [SerializeThis]
     private bool editUnitMode;
+	private bool editScene;
     int width = Screen.width;
     int height = Screen.height;
 
@@ -362,14 +378,14 @@ public class MenuUnit : MonoBehaviour
         initTextures();
     }
 
-    void Awake()
+/*    void Awake()
     {
         location = "C:\\.*" + path;
         strs = new string[20];
         index = 0;
         path = location;
     }
-
+*/
     void Update()
     {
         if (!showPlayMode)
@@ -400,7 +416,11 @@ public class MenuUnit : MonoBehaviour
 
     void OnGUI()
     {
-        if (!gamePaused)
+        if (m_fileBrowser != null) {
+			m_fileBrowser.OnGUI();
+		}
+		
+		if (!gamePaused)
         {
             if (showPlayMode) { getPlayKegiatanGUI(curOpPlaying); return; } // ini spesial, bisa mendahului showHUDTop
             //if (!showHUDTop) return; //kalo showHUDTop false berarti Hide semua GUI (kecuali khusus play mode di atas)
@@ -576,19 +596,19 @@ public class MenuUnit : MonoBehaviour
         float btY = 40;
 
         GUI.BeginGroup(new Rect(groupX, groupY, groupW, groupH));
-        if (GUI.Button(new Rect(0, 0, btW, btH), (!testMovementMode ? "Tes Eksekusi" : "Berhenti")))
+        if (GUI.Button(new Rect(0, 0, btW, btH - 15), (!testMovementMode ? "Tes Eksekusi" : "Berhenti")))
         {
             testMovementMode = !testMovementMode;
         }
         //kembali ke form kegiatan
-        if (GUI.Button(new Rect(btW + 1, 0, btW * 2, btH), "Kembali ke Form Kegiatan"))
+        if (GUI.Button(new Rect(btW + 1, 0, btW * 2, btH -15), "Kembali ke Form Kegiatan"))
         {
 
             HistoryManager.showHistory = false;
             editUnitMode = !editUnitMode;
         }
         //menu kamera
-        if (GUI.Button(new Rect(btW * 3 + 1, 0, btW * 2, btH), (Camera.main.orthographic == true) ? "Kamera Perspektif" : "Kamera Ortogonal"))
+        if (GUI.Button(new Rect(btW * 3 + 1, 0, btW + 30, btH - 15), (Camera.main.orthographic == true) ? "Kamera Perspektif" : "Kamera Ortogonal"))
         {
             Camera.main.orthographic = !Camera.main.orthographic;
         }
@@ -713,11 +733,11 @@ public class MenuUnit : MonoBehaviour
         float leftGroupY = 0;
         //combobox hari
         int selectedItemIndex = comboBoxControl.GetSelectedItemIndex();
-        selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 130, 30), Hari[selectedItemIndex], Hari, listStyle);
+        selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 142, 25), Hari[selectedItemIndex], Hari, listStyle);
 
-        GUI.Box(new Rect(addKegX, leftGroupY, addKegW + 30, addKegH), "Kegiatan");
+        GUI.Box(new Rect(addKegX - 10, leftGroupY, addKegW + 30, addKegH), "Kegiatan");
         // tombol tambah kegiatan
-        if (GUI.Button(new Rect(285, leftGroupY + 2, 30, 20), "+"))
+        if (GUI.Button(new Rect(275, leftGroupY + 2, 30, 20), "+"))
         {
             //showFormKegiatan = !showFormKegiatan;
             showFormKegiatan = true; // jadi true saja
@@ -725,21 +745,21 @@ public class MenuUnit : MonoBehaviour
             nowEditingOpId = GA_NGEDIT;
         }
         //tombol toggle show list kegiatan
-        if (GUI.Button(new Rect(317, leftGroupY + 2, 30, 20), "v"))
+        if (GUI.Button(new Rect(307, leftGroupY + 2, 30, 20), "v"))
         {
             list = !list; // jadi true saja
         }
         // box List kegiatan
         if (list)
         {
-            GUI.Box(new Rect(addKegX, leftGroupY + addKegH + 2, kegListW + 30, kegListH + 20), "");
+            GUI.Box(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 5, kegListH - 30), "");
 
             float hisItemX = 0; //relative to scrollview
             float hisItemY = 0; //relative to scrollview
             float hisItemH = 40;
             float hisItemW = kegListW * 0.9f;
 
-            scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 30, kegListH), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH), false, true);
+            scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 10, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
             for (int i = 0; i < OperationManager.operationList.Count; i++)
             {
                 curOpItem = (OperationItem)OperationManager.operationList[i];
@@ -844,7 +864,7 @@ public class MenuUnit : MonoBehaviour
             //GUI.color = Color.red;
             GUI.backgroundColor = Color.blue;
 
-            GUI.Box(new Rect(cornerBox_X, cornerBox_Y, wBox + txtFieldHplusMargin, hBox + 190), ":: Form Kegiatan ::");
+            GUI.Box(new Rect(cornerBox_X, cornerBox_Y, wBox + txtFieldHplusMargin, hBox + 100), ":: Form Kegiatan ::");
             posFieldY += txtFieldHplusMargin;
 
             GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Nama Kegiatan : ");
@@ -868,53 +888,75 @@ public class MenuUnit : MonoBehaviour
 
             //durasi
             GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Durasi : ");
-            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW * 2, timeH), HariDurasi, 4);
-            GUI.Label(new Rect(cornerBox_X + 110 + timeW * 2 + 2, posFieldY, 40, 25), " Hari");
-            posFieldY += txtFieldHplusMargin;
+            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 60, posFieldY, timeW + 5, timeH), HariDurasi, 4);
+            GUI.Label(new Rect(cornerBox_X + 60 + timeW + 5, posFieldY, 40, 25), " Hari");
+            //posFieldY += txtFieldHplusMargin;
 
-            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW * 2, timeH), JamDurasi, 4);
-            GUI.Label(new Rect(cornerBox_X + 110 + timeW * 2 + 2, posFieldY, 40, 25), " Jam");
-            posFieldY += txtFieldHplusMargin;
+            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 120, posFieldY, timeW + 5, timeH), JamDurasi, 4);
+            GUI.Label(new Rect(cornerBox_X + 120 + timeW + 5, posFieldY, 40, 25), " Jam");
+            //posFieldY += txtFieldHplusMargin;
 
-            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW * 2, timeH), MenitDurasi, 4);
-            GUI.Label(new Rect(cornerBox_X + 110 + timeW * 2 + 2, posFieldY, 40, 25), " Menit");
+            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 185, posFieldY, timeW + 5, timeH), MenitDurasi, 4);
+            GUI.Label(new Rect(cornerBox_X + 185 + timeW + 5, posFieldY, 40, 25), " Menit");
             posFieldY += txtFieldHplusMargin;
-
+			
             // file pendukung
-            //GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "File Pendukung : ");
-            toggleFile = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleFile, "File Pendukung : ");
-            if (toggleFile)
-            {
-                if (GUI.Button(new Rect(cornerBox_X + 115 + 10, posFieldY, wBox - 180, 20), "Upload"))
-                { tampil = !tampil; }
-
-
-                if (tampil)
-                {
-                    GUI.backgroundColor = Color.white;
-                    winRect = new Rect(500, 20, 150, 20);
-                    winRect = GUILayout.Window(1, winRect, DoMyWindow, "Browser");
-                }
-            }
-            posFieldY += txtFieldHplusMargin;
-
+            GUI.Label (new Rect(cornerBox_X + 125, posFieldY, wBox - 120, 25), submitUpload);
+			toggleFile = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleFile, "File Pendukung : ");
+			if (toggleFile){
+				posFieldY += txtFieldHplusMargin;
+				
+				GUI.BeginGroup(new Rect(cornerBox_X + 30, posFieldY, wBox * 0.5f, 25));
+				GUILayout.Label(m_textPath ?? "------ pilih file ------");
+				
+				GUI.EndGroup();
+				if (GUI.Button(new Rect(cornerBox_X + 115 + 45, posFieldY, wBox - 220, 20),"...")) {
+					m_fileBrowser = new FileBrowser(new Rect(500, 0, 600, 500),"Pilih File",FileSelectedCallback);
+					m_fileBrowser.SelectionPattern = "*.*";
+					m_fileBrowser.DirectoryImage = m_directoryImage;
+					m_fileBrowser.FileImage = m_fileImage;
+				}
+				if (GUI.Button(new Rect(cornerBox_X + 115 + 78, posFieldY, wBox - 195, 20),"Upload")){
+					string namaFile = Path.GetFileName(m_textPath);
+					if (m_textPath == null) {
+						submitUpload = "File belum dipilih";
+						return;
+					}
+					else{
+						FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
+						submitUpload = "File berhasil diupload";
+					}
+				}
+			}
+			posFieldY += txtFieldHplusMargin;
+			
+			GUI.backgroundColor = Color.blue;
             //konfigurasi unit
             //GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Konfigurasi Unit : ");
             toggleUnitConfig = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleUnitConfig, "Konfigurasi Unit : ");
             if (toggleUnitConfig)
             {
-                if (GUI.Button(new Rect(cornerBox_X + 115 + 10, posFieldY, wBox * 0.5f, 40), "Atur Pergerakan\nUnit"))
+                if (GUI.Button(new Rect(cornerBox_X + 115 + 10, posFieldY, wBox - 130, 25), "Atur Pergerakan"))
                 {
                     editUnitMode = true;
                     HistoryManager.showHistory = true;
                 }
             }
+			posFieldY += txtFieldHplusMargin;
+			
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Daftar Scene : ");
+            
+                GUI.Box(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), "");
+
+            	scrollPosKegList = GUI.BeginScrollView(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), scrollPosKegList, new Rect(0, 0, wBox + 100, wBox + 100), false, true);
+				GUI.EndScrollView();
+            
             posFieldY += txtAreaH;
 
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox, 40), submitKegInfo);
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY + 10, wBox, 40), submitKegInfo);
             posFieldY += txtFieldHplusMargin;
 
-            if (GUI.Button(new Rect(cornerBox_X + 60, posFieldY, wBox - 180, 40), "Simpan"))
+            if (GUI.Button(new Rect(cornerBox_X + 60, posFieldY + 20, wBox - 180, 30), "Simpan"))
             {
                 if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
                 {
@@ -982,13 +1024,13 @@ public class MenuUnit : MonoBehaviour
                 }
 
             }
-            if (GUI.Button(new Rect(cornerBox_X + 140, posFieldY, wBox - 180, 40), "Batal"))
+            if (GUI.Button(new Rect(cornerBox_X + 140, posFieldY + 20, wBox - 180, 30), "Batal"))
             {
                 showFormKegiatan = false;
                 nowEditingOpId = GA_NGEDIT;
             }
         }
-        GUI.Label(new Rect(360, 2, 100, 20), ketSatuan);
+        GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
     }
 
     private void emptyTheField()
@@ -1174,77 +1216,77 @@ public class MenuUnit : MonoBehaviour
             GUI.DrawTexture(new Rect(261, 525, 70, 70), KRIpulaurempang);
             if (GUI.Button(new Rect(261, 575, 70, kegiatanH), "PRP-729"))
             {
-                buildingPlacement.SetItem(buildings[15]);
+                buildingPlacement.SetItem(buildings[16]);
             }
 
 
             GUI.DrawTexture(new Rect(338, 525, 70, 70), KRIpulaurenggat);
             if (GUI.Button(new Rect(338, 575, 70, kegiatanH), "PRE-711"))
             {
-                buildingPlacement.SetItem(buildings[16]);
+                buildingPlacement.SetItem(buildings[17]);
             }
 
 
             GUI.DrawTexture(new Rect(415, 525, 70, 70), KRItelukpenyu);
             if (GUI.Button(new Rect(415, 575, 70, kegiatanH), "TPN-315"))
             {
-                buildingPlacement.SetItem(buildings[17]);
+                buildingPlacement.SetItem(buildings[18]);
             }
 
 
             GUI.DrawTexture(new Rect(492, 525, 70, 70), KRItelukende);
             if (GUI.Button(new Rect(492, 575, 70, kegiatanH), "TLE-517"))
             {
-                buildingPlacement.SetItem(buildings[18]);
+                buildingPlacement.SetItem(buildings[19]);
             }
 
 
             GUI.DrawTexture(new Rect(569, 525, 70, 70), KRItelukbanten);
             if (GUI.Button(new Rect(569, 575, 70, kegiatanH), "TBT-516"))
             {
-                buildingPlacement.SetItem(buildings[19]);
+                buildingPlacement.SetItem(buildings[20]);
             }
 
 
             GUI.DrawTexture(new Rect(646, 525, 70, 70), KRImakasar);
             if (GUI.Button(new Rect(646, 575, 70, kegiatanH), "MKS-590"))
             {
-                buildingPlacement.SetItem(buildings[20]);
+                buildingPlacement.SetItem(buildings[21]);
             }
 
 
             GUI.DrawTexture(new Rect(723, 525, 70, 70), KRIsurabaya);
             if (GUI.Button(new Rect(723, 575, 70, kegiatanH), "SBY-591"))
             {
-                buildingPlacement.SetItem(buildings[21]);
+                buildingPlacement.SetItem(buildings[22]);
             }
 
 
             GUI.DrawTexture(new Rect(800, 525, 70, 70), KRInanggala);
             if (GUI.Button(new Rect(800, 575, 70, kegiatanH), "NGL-402"))
             {
-                buildingPlacement.SetItem(buildings[22]);
+                buildingPlacement.SetItem(buildings[23]);
             }
 
 
             GUI.DrawTexture(new Rect(877, 525, 70, 70), KRIcakra);
             if (GUI.Button(new Rect(877, 575, 70, kegiatanH), "CKR-401"))
             {
-                buildingPlacement.SetItem(buildings[23]);
+                buildingPlacement.SetItem(buildings[24]);
             }
 
 
             GUI.DrawTexture(new Rect(954, 525, 70, 70), KRIteukuumar);
             if (GUI.Button(new Rect(954, 575, 70, kegiatanH), "TMR-385"))
             {
-                buildingPlacement.SetItem(buildings[24]);
+                buildingPlacement.SetItem(buildings[25]);
             }
 
 
             GUI.DrawTexture(new Rect(1031, 525, 70, 70), KRIcutnyakdien);
             if (GUI.Button(new Rect(1031, 575, 70, kegiatanH), "CND-375"))
             {
-                buildingPlacement.SetItem(buildings[25]);
+                buildingPlacement.SetItem(buildings[26]);
             }
         }
         else if (showDarat)
@@ -1255,35 +1297,35 @@ public class MenuUnit : MonoBehaviour
             GUI.DrawTexture(new Rect(30, 525, 70, 70), leopard);
             if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Leopard"))
             {
-                buildingPlacement.SetItem(buildings[26]);
+                buildingPlacement.SetItem(buildings[27]);
             }
 
 
             GUI.DrawTexture(new Rect(107, 525, 70, 70), scorpion);
             if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "Scorpion"))
             {
-                buildingPlacement.SetItem(buildings[27]);
+                buildingPlacement.SetItem(buildings[28]);
             }
 
 
             GUI.DrawTexture(new Rect(184, 525, 70, 70), amx13);
             if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "AMX-13"))
             {
-                buildingPlacement.SetItem(buildings[28]);
+                buildingPlacement.SetItem(buildings[29]);
             }
 
 
             GUI.DrawTexture(new Rect(261, 525, 70, 70), anoa);
             if (GUI.Button(new Rect(261, 575, 70, kegiatanH), "Anoa"))
             {
-                buildingPlacement.SetItem(buildings[29]);
+                buildingPlacement.SetItem(buildings[30]);
             }
 
 
             GUI.DrawTexture(new Rect(338, 525, 70, 70), amfibi);
             if (GUI.Button(new Rect(338, 575, 70, kegiatanH), "Amfibi"))
             {
-                buildingPlacement.SetItem(buildings[30]);
+                buildingPlacement.SetItem(buildings[31]);
             }
         }
         else if (showPersonel)
@@ -1294,7 +1336,7 @@ public class MenuUnit : MonoBehaviour
             GUI.DrawTexture(new Rect(30, 525, 70, 70), infanteri);
             if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Infanteri"))
             {
-                buildingPlacement.SetItem(buildings[34]);
+                buildingPlacement.SetItem(buildings[32]);
             }
         }
 
@@ -1306,21 +1348,21 @@ public class MenuUnit : MonoBehaviour
             GUI.DrawTexture(new Rect(30, 525, 70, 70), arhanud);
             if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Arhanud"))
             {
-                buildingPlacement.SetItem(buildings[31]);
+                buildingPlacement.SetItem(buildings[33]);
             }
 
 
             GUI.DrawTexture(new Rect(107, 525, 70, 70), radar);
             if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "Radar"))
             {
-                buildingPlacement.SetItem(buildings[32]);
+                buildingPlacement.SetItem(buildings[34]);
             }
 
 
             GUI.DrawTexture(new Rect(184, 525, 70, 70), howitzer);
             if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "Howitzer"))
             {
-                buildingPlacement.SetItem(buildings[33]);
+                buildingPlacement.SetItem(buildings[35]);
             }
         }
         else
@@ -1379,7 +1421,7 @@ public class MenuUnit : MonoBehaviour
     }
 
     //begin file browser
-    protected string m_textPath;
+/*    protected string m_textPath;
     protected FileBrowser m_fileBrowser;
     [SerializeField]
     protected Texture2D m_directoryImage,
@@ -1389,7 +1431,7 @@ public class MenuUnit : MonoBehaviour
     private bool showConfirmDeleteSave = false;
     private bool showPauseMenu = true;
     private int curOpPlayIdx;
-
+*/
     protected void OnGUIMain()
     {
         float bPosW = 300;
@@ -1425,14 +1467,15 @@ public class MenuUnit : MonoBehaviour
 
     //end file browser
 
-    void DoMyWindow(int windowID)
+/*    void DoMyWindow(int windowID)
     {
 
         OpenFileWindow(location);
         GUI.DragWindow();
     }
-
-    void OpenFileWindow(string location)
+*/
+	
+/*    void OpenFileWindow(string location)
     {
         scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Width(400), GUILayout.Height(400));
         GUILayout.BeginVertical();
@@ -1441,8 +1484,9 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndScrollView();
         GUILayout.Label("Selected:" + path);
     }
+*/
 
-    void FileBrowser(string location, int spaceNum, int index)
+/*    void FileBrowser(string location, int spaceNum, int index)
     {
         FileInfo fileSelection;
         DirectoryInfo directoryInfo;
@@ -1480,8 +1524,10 @@ public class MenuUnit : MonoBehaviour
 
         GUILayout.EndVertical();
     }
+    
+    */
 
-    private object SelectList(ICollection list, object selected, GUIStyle style, Texture image, int spaceNum)
+/*    private object SelectList(ICollection list, object selected, GUIStyle style, Texture image, int spaceNum)
     {
         foreach (object item in list)
         {
@@ -1498,7 +1544,8 @@ public class MenuUnit : MonoBehaviour
         }
         return selected;
     }
-
+*/
+	
     private Texture2D MakeTex(int width, int height, Color col)
     {
         Color[] pix = new Color[width * height];

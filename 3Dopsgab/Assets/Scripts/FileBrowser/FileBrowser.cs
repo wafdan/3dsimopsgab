@@ -155,7 +155,7 @@ public class FileBrowser
     // Browsers need at least a rect, name and callback
     public FileBrowser(Rect screenRect, string name, FinishedCallback callback)
     {
-        m_name = name;
+		m_name = name;
         m_screenRect = screenRect;
         m_browserType = FileBrowserType.File;
         m_callback = callback;
