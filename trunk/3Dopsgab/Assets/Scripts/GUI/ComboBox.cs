@@ -66,7 +66,7 @@ public class ComboBox : MonoBehaviour {
  
 	    if( isClickedComboButton )
 	    {
-	        scrollPosition = GUI.BeginScrollView(new Rect(0, 30, 75, 270), scrollPosition, new Rect(0, 30, 45, 860));
+	        scrollPosition = GUI.BeginScrollView(new Rect(2, 25, 63, 270), scrollPosition, new Rect(0, 20, 40, 675));
 			Rect listRect = new Rect( rect.x, rect.y + listStyle.CalcHeight(listContent[0], 1.0f),
 					  rect.width, listStyle.CalcHeight(listContent[0], 1.0f) * listContent.Length );
  

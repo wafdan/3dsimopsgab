@@ -17,8 +17,6 @@ public class BantuanTembakanKapal : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
-		StartCoroutine(holdFire());
-		
 		myTransform = transform;
 		missileSource = myTransform.FindChild("SumberMissile");
 	}
@@ -26,7 +24,7 @@ public class BantuanTembakanKapal : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		if( Time.time > nextFire && Time.time > 2.0f)
+		if( Time.time > nextFire)
 		{
 			nextFire = fireRate + Time.time;
 			
@@ -34,11 +32,6 @@ public class BantuanTembakanKapal : MonoBehaviour {
 			
 			Instantiate( missile, launchPosition, missileSource.rotation);
 		}
-	}
-	
-	IEnumerator holdFire()
-	{
-		yield return new WaitForSeconds(4);	
 	}
 	
 }

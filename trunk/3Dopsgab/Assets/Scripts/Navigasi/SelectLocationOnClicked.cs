@@ -13,7 +13,7 @@ public class SelectLocationOnClicked : MonoBehaviour {
     void Clicked()
     {
         //Application.LoadLevel(1);
-        Application.LoadLevelAdditive("Sangatta Serang");
+        Application.LoadLevelAdditive("Sangatta");
 
         //camera.cullingMask = ~(1 << LayerMask.NameToLayer("Water"));
 
