@@ -251,9 +251,9 @@ public class BasicUnitMovement : MonoBehaviour
 
 
 
-                                Debug.DrawRay(transform.position, transform.forward * 30, Color.red);
+                                Debug.DrawRay(myTransform.position, myTransform.forward * 30, Color.red);
                                 step += Time.deltaTime * moveSpeed; //1.0f itu rate
-                                transform.RotateAround(transform.position, myTransform.forward,
+                                transform.RotateAround(myTransform.position, myTransform.forward,
                                    rotAm);//* (Mathf.SmoothStep(0.0f, 1.0f, step) - lastStep));
 
                                 lastStep = Mathf.SmoothStep(0.0f, 1.0f, step);
@@ -416,7 +416,7 @@ public class BasicUnitMovement : MonoBehaviour
         lineRenderer.SetWidth(0.1f, 0.1f);
         lineRenderer.SetVertexCount(waypoints.Count + 2);
         if (lastPoint == Vector3.zero)
-            lastPoint = gameObject.transform.position;
+            lastPoint = myTransform.position;
         if (waypoints.Count > 0)
             lastPoint = waypoints[waypoints.Count - 1];
         lineRenderer.SetPosition(waypoints.Count, lastPoint);
@@ -428,10 +428,10 @@ public class BasicUnitMovement : MonoBehaviour
 
         //add to history
         //prepare to add to history
-        string name = transform.collider.gameObject.name;
-        int idxclone = transform.collider.gameObject.name.IndexOf("(Clone)");
+        string name = myTransform.collider.gameObject.name;
+        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
         string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
-        int id = transform.collider.gameObject.GetInstanceID();
+        int id = myTransform.collider.gameObject.GetInstanceID();
         //string newName = prefabName + "" + id;
         string newName = name;
         HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, newName, prefabName, wpItem));
@@ -452,10 +452,10 @@ public class BasicUnitMovement : MonoBehaviour
 
         //add to history
         //prepare to add to history
-        string name = transform.collider.gameObject.name;
-        int idxclone = transform.collider.gameObject.name.IndexOf("(Clone)");
+        string name = myTransform.collider.gameObject.name;
+        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
         string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
-        int id = transform.collider.gameObject.GetInstanceID();
+        int id = myTransform.collider.gameObject.GetInstanceID();
         string newName = name;
         HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, newName, prefabName, tp));
 
