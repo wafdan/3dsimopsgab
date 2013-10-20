@@ -133,8 +133,8 @@ public class BasicUnitMovement : MonoBehaviour
     }
 
     private float waterUnitLandDetectRange = 30f;
-    public static float UNIT_LAUT_Y = 4;
-    public static float UNIT_UDARA_Y = 50;
+    public static float UNIT_LAUT_Y = 1.7f;
+    public static float UNIT_UDARA_Y = 20f;
     public float ATTACK_RANGE = 50f;
     //smooth paths
     List<Vector3> waypointsSmooth;
@@ -408,6 +408,7 @@ public class BasicUnitMovement : MonoBehaviour
     {
         if (waypoints == null) return;
         if (isUnitLaut) { wpItem.y = UNIT_LAUT_Y; }
+        if (isUnitUdara) { wpItem.y = UNIT_UDARA_Y; }
 
         goal = wpItem;
 

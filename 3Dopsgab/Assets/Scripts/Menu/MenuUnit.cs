@@ -332,6 +332,11 @@ public class MenuUnit : MonoBehaviour
     // position of description scroll
     Vector2 playGUIkegScrollPos = Vector2.zero;
     private ArrayList sceneNames = new ArrayList();
+    private UnitInfo[] unitUdaraList; // buat list menu unit udara
+    private UnitInfo[] unitLautList; // buat list menu unit laut
+    private UnitInfo[] unitDaratList; // buat list menu unit darat
+    private UnitInfo[] unitPersonelList; // buat list menu personel
+    private UnitInfo[] unitAlutList; // buat list menu alutsista
 
     void Start()
     {
@@ -1133,275 +1138,115 @@ public class MenuUnit : MonoBehaviour
 
         if (showUdara)
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
-
-
-            GUI.DrawTexture(new Rect(30, 525, 70, 70), Sukhoi);
-            if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Sukhoi"))
+            
+            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            for (int i=0, len=unitUdaraList.Length; i<len; i++)
             {
-                buildingPlacement.SetItem(buildings[0]);
+                UnitInfo uin = unitUdaraList[i];
+                if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box,GUILayout.Width(70));
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
+                {
+                    buildingPlacement.SetItem(uin.building);
+                }
+                GUILayout.EndVertical();
             }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            return;
 
-
-            GUI.DrawTexture(new Rect(107, 525, 70, 70), F16);
-            if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "F16"))
-            {
-                buildingPlacement.SetItem(buildings[1]);
-            }
-
-
-            GUI.DrawTexture(new Rect(184, 525, 70, 70), F5);
-            if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "F5"))
-            {
-                buildingPlacement.SetItem(buildings[2]);
-            }
-
-
-            GUI.DrawTexture(new Rect(261, 525, 70, 70), Hawk);
-            if (GUI.Button(new Rect(261, 575, 70, kegiatanH), "Hawk"))
-            {
-                buildingPlacement.SetItem(buildings[3]);
-            }
-
-
-            GUI.DrawTexture(new Rect(338, 525, 70, 70), TU16);
-            if (GUI.Button(new Rect(338, 575, 70, kegiatanH), "TU-16"))
-            {
-                buildingPlacement.SetItem(buildings[4]);
-            }
-
-
-            GUI.DrawTexture(new Rect(415, 525, 70, 70), B737);
-            if (GUI.Button(new Rect(415, 575, 70, kegiatanH), "B-737"))
-            {
-                buildingPlacement.SetItem(buildings[5]);
-            }
-
-
-            GUI.DrawTexture(new Rect(492, 525, 70, 70), C130);
-            if (GUI.Button(new Rect(492, 575, 70, kegiatanH), "C-130"))
-            {
-                buildingPlacement.SetItem(buildings[6]);
-            }
-
-
-            GUI.DrawTexture(new Rect(569, 525, 70, 70), C212);
-            if (GUI.Button(new Rect(569, 575, 70, kegiatanH), "C-212"))
-            {
-                buildingPlacement.SetItem(buildings[7]);
-            }
-
-
-            GUI.DrawTexture(new Rect(646, 525, 70, 70), CN235);
-            if (GUI.Button(new Rect(646, 575, 70, kegiatanH), "CN235"))
-            {
-                buildingPlacement.SetItem(buildings[8]);
-            }
-
-            GUI.DrawTexture(new Rect(723, 525, 70, 70), NAS332);
-            if (GUI.Button(new Rect(723, 575, 70, kegiatanH), "NAS-332"))
-            {
-                buildingPlacement.SetItem(buildings[9]);
-            }
-
-
-            GUI.DrawTexture(new Rect(800, 525, 70, 70), EC120B);
-            if (GUI.Button(new Rect(800, 575, 70, kegiatanH), "EC120B"))
-            {
-                buildingPlacement.SetItem(buildings[10]);
-            }
-
-
-            GUI.DrawTexture(new Rect(877, 525, 70, 70), SA330);
-            if (GUI.Button(new Rect(877, 575, 70, kegiatanH), "SA-330"))
-            {
-                buildingPlacement.SetItem(buildings[11]);
-            }
-
-
-            GUI.DrawTexture(new Rect(954, 525, 70, 70), Bell412);
-            if (GUI.Button(new Rect(954, 575, 70, kegiatanH), "Bell-412"))
-            {
-                buildingPlacement.SetItem(buildings[12]);
-            }
         }
         else if (showLaut)
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
-
-
-            GUI.DrawTexture(new Rect(30, 525, 70, 70), KRIayani);
-            if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "AYN-351"))
+            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            for (int i = 0, len = unitLautList.Length; i < len; i++)
             {
-                buildingPlacement.SetItem(buildings[13]);
+                UnitInfo uin = unitLautList[i];
+                if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box, GUILayout.Width(70));
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
+                {
+                    buildingPlacement.SetItem(uin.building);
+                }
+                GUILayout.EndVertical();
             }
-
-
-            GUI.DrawTexture(new Rect(107, 525, 70, 70), KRIabdulhalim);
-            if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "AHP-355"))
-            {
-                buildingPlacement.SetItem(buildings[14]);
-            }
-
-
-            GUI.DrawTexture(new Rect(184, 525, 70, 70), KRIfatahilah);
-            if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "FAT-361"))
-            {
-                buildingPlacement.SetItem(buildings[15]);
-            }
-
-
-            GUI.DrawTexture(new Rect(261, 525, 70, 70), KRIpulaurempang);
-            if (GUI.Button(new Rect(261, 575, 70, kegiatanH), "PRP-729"))
-            {
-                buildingPlacement.SetItem(buildings[16]);
-            }
-
-
-            GUI.DrawTexture(new Rect(338, 525, 70, 70), KRIpulaurenggat);
-            if (GUI.Button(new Rect(338, 575, 70, kegiatanH), "PRE-711"))
-            {
-                buildingPlacement.SetItem(buildings[17]);
-            }
-
-
-            GUI.DrawTexture(new Rect(415, 525, 70, 70), KRItelukpenyu);
-            if (GUI.Button(new Rect(415, 575, 70, kegiatanH), "TPN-315"))
-            {
-                buildingPlacement.SetItem(buildings[18]);
-            }
-
-
-            GUI.DrawTexture(new Rect(492, 525, 70, 70), KRItelukende);
-            if (GUI.Button(new Rect(492, 575, 70, kegiatanH), "TLE-517"))
-            {
-                buildingPlacement.SetItem(buildings[19]);
-            }
-
-
-            GUI.DrawTexture(new Rect(569, 525, 70, 70), KRItelukbanten);
-            if (GUI.Button(new Rect(569, 575, 70, kegiatanH), "TBT-516"))
-            {
-                buildingPlacement.SetItem(buildings[20]);
-            }
-
-
-            GUI.DrawTexture(new Rect(646, 525, 70, 70), KRImakasar);
-            if (GUI.Button(new Rect(646, 575, 70, kegiatanH), "MKS-590"))
-            {
-                buildingPlacement.SetItem(buildings[21]);
-            }
-
-
-            GUI.DrawTexture(new Rect(723, 525, 70, 70), KRIsurabaya);
-            if (GUI.Button(new Rect(723, 575, 70, kegiatanH), "SBY-591"))
-            {
-                buildingPlacement.SetItem(buildings[22]);
-            }
-
-
-            GUI.DrawTexture(new Rect(800, 525, 70, 70), KRInanggala);
-            if (GUI.Button(new Rect(800, 575, 70, kegiatanH), "NGL-402"))
-            {
-                buildingPlacement.SetItem(buildings[23]);
-            }
-
-
-            GUI.DrawTexture(new Rect(877, 525, 70, 70), KRIcakra);
-            if (GUI.Button(new Rect(877, 575, 70, kegiatanH), "CKR-401"))
-            {
-                buildingPlacement.SetItem(buildings[24]);
-            }
-
-
-            GUI.DrawTexture(new Rect(954, 525, 70, 70), KRIteukuumar);
-            if (GUI.Button(new Rect(954, 575, 70, kegiatanH), "TMR-385"))
-            {
-                buildingPlacement.SetItem(buildings[25]);
-            }
-
-
-            GUI.DrawTexture(new Rect(1031, 525, 70, 70), KRIcutnyakdien);
-            if (GUI.Button(new Rect(1031, 575, 70, kegiatanH), "CND-375"))
-            {
-                buildingPlacement.SetItem(buildings[26]);
-            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            return;
+            
         }
         else if (showDarat)
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
-
-
-            GUI.DrawTexture(new Rect(30, 525, 70, 70), leopard);
-            if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Leopard"))
+            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            for (int i = 0, len = unitDaratList.Length; i < len; i++)
             {
-                buildingPlacement.SetItem(buildings[27]);
+                UnitInfo uin = unitDaratList[i];
+                if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box, GUILayout.Width(70));
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
+                {
+                    buildingPlacement.SetItem(uin.building);
+                }
+                GUILayout.EndVertical();
             }
-
-
-            GUI.DrawTexture(new Rect(107, 525, 70, 70), scorpion);
-            if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "Scorpion"))
-            {
-                buildingPlacement.SetItem(buildings[28]);
-            }
-
-
-            GUI.DrawTexture(new Rect(184, 525, 70, 70), amx13);
-            if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "AMX-13"))
-            {
-                buildingPlacement.SetItem(buildings[29]);
-            }
-
-
-            GUI.DrawTexture(new Rect(261, 525, 70, 70), anoa);
-            if (GUI.Button(new Rect(261, 575, 70, kegiatanH), "Anoa"))
-            {
-                buildingPlacement.SetItem(buildings[30]);
-            }
-
-
-            GUI.DrawTexture(new Rect(338, 525, 70, 70), amfibi);
-            if (GUI.Button(new Rect(338, 575, 70, kegiatanH), "Amfibi"))
-            {
-                buildingPlacement.SetItem(buildings[31]);
-            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            return;
+            
         }
         else if (showPersonel)
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
-
-
-            GUI.DrawTexture(new Rect(30, 525, 70, 70), infanteri);
-            if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Infanteri"))
+            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            for (int i = 0, len = unitPersonelList.Length; i < len; i++)
             {
-                buildingPlacement.SetItem(buildings[32]);
+                UnitInfo uin = unitPersonelList[i];
+                if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box, GUILayout.Width(70));
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
+                {
+                    buildingPlacement.SetItem(uin.building);
+                }
+                GUILayout.EndVertical();
             }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            return;
+
         }
 
         else if (showAlutsista)
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
-
-
-            GUI.DrawTexture(new Rect(30, 525, 70, 70), arhanud);
-            if (GUI.Button(new Rect(30, 575, 70, kegiatanH), "Arhanud"))
+            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            for (int i = 0, len = unitAlutList.Length; i < len; i++)
             {
-                buildingPlacement.SetItem(buildings[33]);
+                UnitInfo uin = unitAlutList[i];
+                if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box, GUILayout.Width(70));
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
+                {
+                    buildingPlacement.SetItem(uin.building);
+                }
+                GUILayout.EndVertical();
             }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            return;
 
-
-            GUI.DrawTexture(new Rect(107, 525, 70, 70), radar);
-            if (GUI.Button(new Rect(107, 575, 70, kegiatanH), "Radar"))
-            {
-                buildingPlacement.SetItem(buildings[34]);
-            }
-
-
-            GUI.DrawTexture(new Rect(184, 525, 70, 70), howitzer);
-            if (GUI.Button(new Rect(184, 575, 70, kegiatanH), "Howitzer"))
-            {
-                buildingPlacement.SetItem(buildings[35]);
-            }
         }
         else
         {
@@ -1425,6 +1270,22 @@ public class MenuUnit : MonoBehaviour
         EC120B = (Texture2D)Resources.Load("EC120B");
         SA330 = (Texture2D)Resources.Load("SA-330");
         Bell412 = (Texture2D)Resources.Load("Bell-412");
+        // init unit infonya
+        unitUdaraList = new UnitInfo[] { 
+                new UnitInfo("Sukhoi", Sukhoi,buildings[0]), 
+                new UnitInfo("F16", F16,buildings[1]), 
+                new UnitInfo("F-5", F5,buildings[2]), 
+                new UnitInfo("Hawk", Hawk,buildings[3]), 
+                new UnitInfo("TU-16", TU16,buildings[4]), 
+                new UnitInfo("Boeing-737", B737,buildings[5]), 
+                new UnitInfo("C-130", C130,buildings[6]), 
+                new UnitInfo("C-212", C212,buildings[7]), 
+                new UnitInfo("CN235", CN235,buildings[8]), 
+                new UnitInfo("NAS-332", NAS332,buildings[9]), 
+                new UnitInfo("EC120B", EC120B,buildings[10]), 
+                new UnitInfo("SA-330", SA330,buildings[11]), 
+                new UnitInfo("Bell-412", Bell412,buildings[12])
+            };
 
         //laut
         KRIayani = (Texture2D)Resources.Load("KRIayani");
@@ -1441,21 +1302,57 @@ public class MenuUnit : MonoBehaviour
         KRIcakra = (Texture2D)Resources.Load("KRIcakra");
         KRIteukuumar = (Texture2D)Resources.Load("KRIteukuumar");
         KRIcutnyakdien = (Texture2D)Resources.Load("KRIcutnyakdien");
-
+        // init unit info unit laut
+        unitLautList = new UnitInfo[] { 
+                new UnitInfo("AYN-351", KRIayani,buildings[13]), 
+                new UnitInfo("AHP-355", KRIabdulhalim,buildings[14]), 
+                new UnitInfo("FAT-361", KRIfatahilah,buildings[15]), 
+                new UnitInfo("PRP-729", KRIpulaurempang,buildings[16]), 
+                new UnitInfo("PRE-711", KRIpulaurenggat,buildings[17]), 
+                new UnitInfo("TPN-315", KRItelukpenyu,buildings[18]), 
+                new UnitInfo("TLE-517", KRItelukende,buildings[19]), 
+                new UnitInfo("TBT-516", KRItelukbanten,buildings[20]), 
+                new UnitInfo("MKS-590", KRImakasar,buildings[21]), 
+                new UnitInfo("SBY-591", KRIsurabaya,buildings[22]), 
+                new UnitInfo("NGL-402", KRInanggala,buildings[23]), 
+                new UnitInfo("CKR-401", KRIcakra,buildings[24]), 
+                new UnitInfo("TMR-385", KRIteukuumar,buildings[25]),
+                new UnitInfo("CND-375", KRIcutnyakdien,buildings[26])
+            };
+        
         //darat
         leopard = (Texture2D)Resources.Load("Leopard");
         scorpion = (Texture2D)Resources.Load("Scorpion");
         amx13 = (Texture2D)Resources.Load("AMX-13");
         anoa = (Texture2D)Resources.Load("APS-3 Anoa");
         amfibi = (Texture2D)Resources.Load("Amfibi");
+        // init unit info unit darat
+        unitDaratList = new UnitInfo[] { 
+                new UnitInfo("Leopard", leopard,buildings[27]), 
+                new UnitInfo("Scorpion", scorpion,buildings[28]), 
+                new UnitInfo("AMX-13", amx13,buildings[29]), 
+                new UnitInfo("APS-3 Anoa", anoa,buildings[30]), 
+                new UnitInfo("Amfibi", amfibi,buildings[31])
+            };
 
         //personel
         infanteri = (Texture2D)Resources.Load("infanteri");
+        // init unit info personel
+        unitPersonelList = new UnitInfo[] { 
+                new UnitInfo("infanteri", infanteri,buildings[32])
+            };
+
 
         //alutsista lain
         arhanud = (Texture2D)Resources.Load("Arhanud");
         radar = (Texture2D)Resources.Load("Radar");
         howitzer = (Texture2D)Resources.Load("Howitzer");
+        // init unit info alutsista
+        unitAlutList = new UnitInfo[] { 
+                new UnitInfo("Arhanud", arhanud,buildings[33]),
+                new UnitInfo("Radar", radar,buildings[34]),
+                new UnitInfo("Howitzer", howitzer,buildings[35])
+            };
     }
 
     //begin file browser

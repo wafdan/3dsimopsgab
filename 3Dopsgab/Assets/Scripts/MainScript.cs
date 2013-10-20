@@ -60,3 +60,23 @@ public class UnitOrder {
 	}
 	
 }
+
+public class UnitInfo
+{
+    public string name;
+    public Texture2D texture;
+    public GameObject building;
+
+    public UnitInfo()
+    {
+        name = "";
+        texture = null;
+        building = null;
+    }
+    public UnitInfo(string n, Texture2D t, GameObject g)
+    {
+        name = n;
+        texture = t;
+        building = g;
+    }
+}
