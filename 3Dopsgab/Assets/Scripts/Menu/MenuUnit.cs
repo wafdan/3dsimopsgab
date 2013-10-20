@@ -772,14 +772,15 @@ public class MenuUnit : MonoBehaviour
         // box List kegiatan
         if (list)
         {
-            GUI.Box(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 5, kegListH - 30), "");
+            //GUI.Box(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 5, kegListH - 30), "");
 
             float hisItemX = 0; //relative to scrollview
             float hisItemY = 0; //relative to scrollview
-            float hisItemH = 40;
+            float hisItemH = 70;
             float hisItemW = kegListW * 0.9f;
-
-            scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 10, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
+            GUILayout.BeginArea(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 5, kegListH - 30), GUI.skin.box);
+            //scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 10, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
+            scrollPosKegList = GUI.BeginScrollView(new Rect(5, 0, kegListW, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
             for (int i = 0; i < OperationManager.operationList.Count; i++)
             {
                 curOpItem = (OperationItem)OperationManager.operationList[i];
@@ -799,7 +800,7 @@ public class MenuUnit : MonoBehaviour
                 { GUI.backgroundColor = Color.green; }
                 else
                 { GUI.backgroundColor = Color.yellow; }
-                GUI.BeginGroup(new Rect(hisItemX + 10, hisItemY, hisItemW, hisItemH));
+                GUI.BeginGroup(new Rect(0, hisItemY, hisItemW, hisItemH));
                 //if (GUI.Button(new Rect(hisItemX+10, hisItemY, hisItemW, hisItemH), OperationManager.operationList[i].ToString()))
                 if (GUI.Button(new Rect(0, 0, hisItemW * 0.8f, hisItemH), curOpItem.ToString(), styleKegListItem))
                 {
@@ -856,6 +857,7 @@ public class MenuUnit : MonoBehaviour
                 scrollPosKegList.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosKegList.y;
                 lastOpCount = OperationManager.operationList.Count;
             }
+            GUILayout.EndArea();
 
         }
 
