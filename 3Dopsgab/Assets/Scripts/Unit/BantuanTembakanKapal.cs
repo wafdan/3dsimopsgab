@@ -10,7 +10,7 @@ public class BantuanTembakanKapal : MonoBehaviour {
 	
 	private Vector3 launchPosition = new Vector3();
 	
-	private float fireRate = 5f;
+	private float fireRate = 3f;
 	private float nextFire = 0;
 	
 	
@@ -24,7 +24,7 @@ public class BantuanTembakanKapal : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		if( Time.time > nextFire)
+		if( Time.time > nextFire && Time.time > 3.0f)
 		{
 			nextFire = fireRate + Time.time;
 			
