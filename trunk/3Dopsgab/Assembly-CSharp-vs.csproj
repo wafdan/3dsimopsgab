@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\FileBrowser\CariFile.cs" />
      <Compile Include="Assets\Scripts\FileBrowser\FileBrowser.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraMovement.cs" />
+     <Compile Include="Assets\Scripts\GUI\CameraSangatta.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraScriptKRIRanjau.cs" />
      <Compile Include="Assets\Scripts\GUI\ComboBox.cs" />
      <Compile Include="Assets\Scripts\GUI\CreditScreen.cs" />
