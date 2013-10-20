@@ -12,15 +12,28 @@ public class BuildingPlacement : MonoBehaviour {
 	public LayerMask buildingsMask;
 	
 	private PlaceableBuilding placeableBuildingOld;
+    private float unitAltitude;
 	
 	// Update is called once per frame
 	void Update () {
 		Vector3 m = Input.mousePosition;
 		m = new Vector3(m.x,m.y,transform.position.y);
 		Vector3 p = camera.ScreenToWorldPoint(m);
-			
-		if (currentBuilding != null && !hasPlaced) {
-			currentBuilding.position = new Vector3(p.x,50,p.z);
+        if (currentBuilding != null)
+        {
+            BasicUnitMovement bm = currentBuilding.GetComponent<BasicUnitMovement>();
+            if (bm.isUnitUdara)
+                unitAltitude = BasicUnitMovement.UNIT_UDARA_Y;
+            if (bm.isUnitLaut)
+                unitAltitude = BasicUnitMovement.UNIT_LAUT_Y;
+        }
+        else
+        {
+            return;
+        }
+
+		if (!hasPlaced) {
+			currentBuilding.position = new Vector3(p.x,unitAltitude,p.z);
 			
 			if (Input.GetMouseButtonDown(0)) {
 				if (IsLegalPosition()) {
@@ -46,7 +59,7 @@ public class BuildingPlacement : MonoBehaviour {
 		else {
 			if (Input.GetMouseButtonDown(0)) {
 				RaycastHit hit = new RaycastHit();
-				Ray ray = new Ray(new Vector3(p.x,50,p.z), Vector3.down);
+				Ray ray = new Ray(new Vector3(p.x,unitAltitude,p.z), Vector3.down);
 				if (Physics.Raycast(ray, out hit,Mathf.Infinity,buildingsMask)) {
 					if (placeableBuildingOld != null) {
 						placeableBuildingOld.SetSelected(false);

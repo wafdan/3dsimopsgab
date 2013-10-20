@@ -21,7 +21,7 @@ public class LepasLandas : MonoBehaviour {
 		
 		myTransform.Translate(Vector3.forward * kecepatanPesawat * acceleration * Time.deltaTime);	
 		
-		if( acceleration > 5f)
+		if( acceleration > 3f)
 		{
 			rotationSpeed -= (4*Time.deltaTime);
 			
@@ -30,11 +30,12 @@ public class LepasLandas : MonoBehaviour {
 			StartCoroutine(destroyPlan());
 		}
 		
+		Debug.Log(rotationSpeed);
 	}
 	
 	IEnumerator destroyPlan()
 	{
-		yield return new WaitForSeconds(8f);
+		yield return new WaitForSeconds(10f);
 		Destroy(myTransform.gameObject);
 	}
 }
