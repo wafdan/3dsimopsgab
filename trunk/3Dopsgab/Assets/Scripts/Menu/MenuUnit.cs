@@ -490,15 +490,18 @@ public class MenuUnit : MonoBehaviour
                 float btX = cornXPausedMenu + 45;
                 float btY = cornYPausedMenu + 25;
 
+                if (editUnitMode) { GUI.enabled = false; } else { GUI.enabled = true; }
                 if (GUI.Button(new Rect(btX, btY, btW, btH), "Save/Load"))
                 {
                     showSaveBrowser = true;
                 }
+                GUI.enabled = true;
                 if (GUI.Button(new Rect(btX, btY + btHplusMargin * 2, btW, btH), "Kembali"))
                 {
                     gamePaused = false;
                     showSaveBrowser = false;
                 }
+                if (editUnitMode) { GUI.enabled = false; } else { GUI.enabled = true; }
                 if (GUI.Button(new Rect(btX, btY + btHplusMargin * 3, btW, btH), "Keluar"))
                 {
                     Application.LoadLevel("TFG Seskoad");
@@ -610,34 +613,52 @@ public class MenuUnit : MonoBehaviour
 
     private void getUnitControlButtonUI()
     {
-        float groupW = Screen.width;
-        float groupH = 50;
-        float groupX = 0;//Screen.width/2 - groupW / 2;
-        float groupY = 40;
+        float groupW = 200; //Screen.width;
+        float groupH = 150; //50;
+        float groupX = 5;//Screen.width/2 - groupW / 2;
+        float groupY = 50;
 
         float btW = 100;
         float btH = 40;
         float btX = Screen.width / 2 - btW / 2;
         float btY = 40;
 
-        GUI.BeginGroup(new Rect(groupX, groupY, groupW, groupH));
-        if (GUI.Button(new Rect(0, 0, btW, btH - 15), (!testMovementMode ? "Tes Eksekusi" : "Berhenti")))
-        {
-            testMovementMode = !testMovementMode;
-        }
-        //kembali ke form kegiatan
-        if (GUI.Button(new Rect(btW + 1, 0, btW * 2, btH - 15), "Kembali ke Form Kegiatan"))
-        {
-
-            HistoryManager.showHistory = false;
-            editUnitMode = !editUnitMode;
-        }
-        //menu kamera
-        if (GUI.Button(new Rect(btW * 3 + 1, 0, btW + 30, btH - 15), (Camera.main.orthographic == true) ? "Kamera Perspektif" : "Kamera Ortogonal"))
+        Color collam = GUI.backgroundColor;
+        GUILayout.BeginArea(new Rect(groupX, 0, groupW, 40), GUI.skin.box);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Kamera:",GUILayout.Width(50));
+        if (GUILayout.Button((Camera.main.orthographic == true) ? "Ortogonal" : "Perspektif"))
         {
             Camera.main.orthographic = !Camera.main.orthographic;
         }
-        GUI.EndGroup();
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
+
+        GUILayout.BeginArea(new Rect(groupX, groupY, groupW, groupH),GUI.skin.box);
+        GUILayout.BeginVertical();
+        GUI.backgroundColor = Color.red;
+        
+        if (GUILayout.Button((!testMovementMode ? "Tes Eksekusi" : "Berhenti")))
+        {
+            testMovementMode = !testMovementMode;
+        }
+        GUI.backgroundColor = Color.green;
+        if (GUILayout.Button("Simpan Pergerakan"))
+        {
+            //nah di sini simpan pergerakan unit
+
+        }
+        GUILayout.FlexibleSpace();
+        GUI.backgroundColor = Color.white;
+        if (GUILayout.RepeatButton("Kembali ke Form Kegiatan"))
+        {
+            HistoryManager.showHistory = false;
+            editUnitMode = !editUnitMode;
+        }
+        GUI.backgroundColor = Color.grey;
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+        return;
 
     }
     //end onGUI
