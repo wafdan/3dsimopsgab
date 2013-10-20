@@ -6,8 +6,8 @@ using UnityEditor;
 
 public class MenuUnit : MonoBehaviour
 {
-	//File Browser
-	protected string lokasiUpload = "Assets\\Upload\\";
+    //File Browser
+    protected string lokasiUpload = "Assets\\Upload\\";
     protected string m_textPath;
     protected FileBrowser m_fileBrowser;
     [SerializeField]
@@ -18,8 +18,8 @@ public class MenuUnit : MonoBehaviour
     private bool showConfirmDeleteSave = false;
     private bool showPauseMenu = true;
     private int curOpPlayIdx;
-	
-	//tambah kegiatan
+
+    //tambah kegiatan
     public Texture2D background;
     public string Lokasi;
     public string NamaKeg;
@@ -32,7 +32,7 @@ public class MenuUnit : MonoBehaviour
     public string MenitDurasi;
     public bool toggleFile = false;
     public bool toggleUnitConfig = false;
-	//public bool toggleScene = false;
+    //public bool toggleScene = false;
 
     //alusista
     private bool showHUDTop = true;
@@ -85,6 +85,7 @@ public class MenuUnit : MonoBehaviour
     private float kegListH = Screen.height * 0.5f;
     private float kegScrollvH = Screen.height * 0.5f;
     private Vector2 scrollPosKegList = Vector2.zero;
+    private Vector2 scrollSceneList = Vector2.zero;
 
     //private GUIStyle styleKegListItem; //diaturnya di editor, eh, di sini aja dink
     protected GUIStyle styleKegListItem
@@ -304,10 +305,10 @@ public class MenuUnit : MonoBehaviour
     private OperationItem curOpPlaying;
     private string curOpInfo;
     private string submitKegInfo;
-	private string submitUpload;
+    private string submitUpload;
     [SerializeThis]
     private bool editUnitMode;
-	private bool editScene;
+    private bool editScene;
     int width = Screen.width;
     int height = Screen.height;
 
@@ -330,6 +331,7 @@ public class MenuUnit : MonoBehaviour
 
     // position of description scroll
     Vector2 playGUIkegScrollPos = Vector2.zero;
+    private ArrayList sceneNames = new ArrayList();
 
     void Start()
     {
@@ -376,16 +378,33 @@ public class MenuUnit : MonoBehaviour
         Hari[31] = new GUIContent("H + 14");
 
         initTextures();
+        initSceneNames();
     }
 
-/*    void Awake()
+    private void initSceneNames()
     {
-        location = "C:\\.*" + path;
-        strs = new string[20];
-        index = 0;
-        path = location;
+        //ArrayList temp = new ArrayList();
+        foreach (UnityEditor.EditorBuildSettingsScene S in UnityEditor.EditorBuildSettings.scenes)
+        {
+            if (S.enabled)
+            {
+                string name = S.path.Substring(S.path.LastIndexOf('/') + 1);
+                name = name.Substring(0, name.Length - 6);
+                //temp.Add(name);
+                sceneNames.Add(name);
+            }
+        }
+        //return temp.ToArray();
     }
-*/
+
+    /*    void Awake()
+        {
+            location = "C:\\.*" + path;
+            strs = new string[20];
+            index = 0;
+            path = location;
+        }
+    */
     void Update()
     {
         if (!showPlayMode)
@@ -416,11 +435,12 @@ public class MenuUnit : MonoBehaviour
 
     void OnGUI()
     {
-        if (m_fileBrowser != null) {
-			m_fileBrowser.OnGUI();
-		}
-		
-		if (!gamePaused)
+        if (m_fileBrowser != null)
+        {
+            m_fileBrowser.OnGUI();
+        }
+
+        if (!gamePaused)
         {
             if (showPlayMode) { getPlayKegiatanGUI(curOpPlaying); return; } // ini spesial, bisa mendahului showHUDTop
             //if (!showHUDTop) return; //kalo showHUDTop false berarti Hide semua GUI (kecuali khusus play mode di atas)
@@ -601,7 +621,7 @@ public class MenuUnit : MonoBehaviour
             testMovementMode = !testMovementMode;
         }
         //kembali ke form kegiatan
-        if (GUI.Button(new Rect(btW + 1, 0, btW * 2, btH -15), "Kembali ke Form Kegiatan"))
+        if (GUI.Button(new Rect(btW + 1, 0, btW * 2, btH - 15), "Kembali ke Form Kegiatan"))
         {
 
             HistoryManager.showHistory = false;
@@ -888,49 +908,54 @@ public class MenuUnit : MonoBehaviour
 
             //durasi
             GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Durasi : ");
-            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 60, posFieldY, timeW + 5, timeH), HariDurasi, 4);
+            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 60, posFieldY, timeW + 5, timeH), HariDurasi, 2);
             GUI.Label(new Rect(cornerBox_X + 60 + timeW + 5, posFieldY, 40, 25), " Hari");
             //posFieldY += txtFieldHplusMargin;
 
-            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 120, posFieldY, timeW + 5, timeH), JamDurasi, 4);
+            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 120, posFieldY, timeW + 5, timeH), JamDurasi, 2);
             GUI.Label(new Rect(cornerBox_X + 120 + timeW + 5, posFieldY, 40, 25), " Jam");
             //posFieldY += txtFieldHplusMargin;
 
-            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 185, posFieldY, timeW + 5, timeH), MenitDurasi, 4);
+            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 185, posFieldY, timeW + 5, timeH), MenitDurasi, 2);
             GUI.Label(new Rect(cornerBox_X + 185 + timeW + 5, posFieldY, 40, 25), " Menit");
             posFieldY += txtFieldHplusMargin;
-			
+
             // file pendukung
-            GUI.Label (new Rect(cornerBox_X + 125, posFieldY, wBox - 120, 25), submitUpload);
-			toggleFile = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleFile, "File Pendukung : ");
-			if (toggleFile){
-				posFieldY += txtFieldHplusMargin;
-				
-				GUI.BeginGroup(new Rect(cornerBox_X + 30, posFieldY, wBox * 0.5f, 25));
-				GUILayout.Label(m_textPath ?? "------ pilih file ------");
-				
-				GUI.EndGroup();
-				if (GUI.Button(new Rect(cornerBox_X + 115 + 45, posFieldY, wBox - 220, 20),"...")) {
-					m_fileBrowser = new FileBrowser(new Rect(500, 0, 600, 500),"Pilih File",FileSelectedCallback);
-					m_fileBrowser.SelectionPattern = "*.*";
-					m_fileBrowser.DirectoryImage = m_directoryImage;
-					m_fileBrowser.FileImage = m_fileImage;
-				}
-				if (GUI.Button(new Rect(cornerBox_X + 115 + 78, posFieldY, wBox - 195, 20),"Upload")){
-					string namaFile = Path.GetFileName(m_textPath);
-					if (m_textPath == null) {
-						submitUpload = "File belum dipilih";
-						return;
-					}
-					else{
-						FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
-						submitUpload = "File berhasil diupload";
-					}
-				}
-			}
-			posFieldY += txtFieldHplusMargin;
-			
-			GUI.backgroundColor = Color.blue;
+            GUI.Label(new Rect(cornerBox_X + 125, posFieldY, wBox - 120, 25), submitUpload);
+            toggleFile = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleFile, "File Pendukung : ");
+            if (toggleFile)
+            {
+                posFieldY += txtFieldHplusMargin;
+
+                GUI.BeginGroup(new Rect(cornerBox_X + 30, posFieldY, wBox * 0.5f, 25));
+                GUILayout.Label(m_textPath ?? "------ pilih file ------");
+
+                GUI.EndGroup();
+                if (GUI.Button(new Rect(cornerBox_X + 115 + 45, posFieldY, wBox - 220, 20), "..."))
+                {
+                    m_fileBrowser = new FileBrowser(new Rect(500, 0, 600, 500), "Pilih File", FileSelectedCallback);
+                    m_fileBrowser.SelectionPattern = "*.*";
+                    m_fileBrowser.DirectoryImage = m_directoryImage;
+                    m_fileBrowser.FileImage = m_fileImage;
+                }
+                if (GUI.Button(new Rect(cornerBox_X + 115 + 78, posFieldY, wBox - 195, 20), "Upload"))
+                {
+                    string namaFile = Path.GetFileName(m_textPath);
+                    if (m_textPath == null)
+                    {
+                        submitUpload = "File belum dipilih";
+                        return;
+                    }
+                    else
+                    {
+                        FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
+                        submitUpload = "File berhasil diupload";
+                    }
+                }
+            }
+            posFieldY += txtFieldHplusMargin;
+
+            GUI.backgroundColor = Color.blue;
             //konfigurasi unit
             //GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Konfigurasi Unit : ");
             toggleUnitConfig = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleUnitConfig, "Konfigurasi Unit : ");
@@ -942,15 +967,26 @@ public class MenuUnit : MonoBehaviour
                     HistoryManager.showHistory = true;
                 }
             }
-			posFieldY += txtFieldHplusMargin;
-			
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Daftar Scene : ");
-            
-                GUI.Box(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), "");
+            posFieldY += txtFieldHplusMargin;
 
-            	scrollPosKegList = GUI.BeginScrollView(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), scrollPosKegList, new Rect(0, 0, wBox + 100, wBox + 100), false, true);
-				GUI.EndScrollView();
-            
+            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Daftar Scene : ");
+
+            GUI.Box(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), "");
+
+            GUILayout.BeginArea(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100));
+            scrollSceneList = GUI.BeginScrollView(new Rect(0, 0, wBox - 20, 100), scrollSceneList, new Rect(0, 0, wBox + 100, wBox + 100), false, true);
+            GUILayout.BeginVertical();
+            foreach (string sn in sceneNames)
+            {
+                if (GUILayout.Button(sn))
+                {
+                    //tinggal diimplementasi
+                }
+            }
+            GUILayout.EndVertical();
+            GUI.EndScrollView();
+            GUILayout.EndArea();
+
             posFieldY += txtAreaH;
 
             GUI.Label(new Rect(cornerBox_X + 10, posFieldY + 10, wBox, 40), submitKegInfo);
@@ -1421,17 +1457,17 @@ public class MenuUnit : MonoBehaviour
     }
 
     //begin file browser
-/*    protected string m_textPath;
-    protected FileBrowser m_fileBrowser;
-    [SerializeField]
-    protected Texture2D m_directoryImage,
-                        m_fileImage;
-    private bool showSaveBrowser = false;
-    private bool showSaveUnitDialog = false;
-    private bool showConfirmDeleteSave = false;
-    private bool showPauseMenu = true;
-    private int curOpPlayIdx;
-*/
+    /*    protected string m_textPath;
+        protected FileBrowser m_fileBrowser;
+        [SerializeField]
+        protected Texture2D m_directoryImage,
+                            m_fileImage;
+        private bool showSaveBrowser = false;
+        private bool showSaveUnitDialog = false;
+        private bool showConfirmDeleteSave = false;
+        private bool showPauseMenu = true;
+        private int curOpPlayIdx;
+    */
     protected void OnGUIMain()
     {
         float bPosW = 300;
@@ -1467,85 +1503,85 @@ public class MenuUnit : MonoBehaviour
 
     //end file browser
 
-/*    void DoMyWindow(int windowID)
-    {
-
-        OpenFileWindow(location);
-        GUI.DragWindow();
-    }
-*/
-	
-/*    void OpenFileWindow(string location)
-    {
-        scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Width(400), GUILayout.Height(400));
-        GUILayout.BeginVertical();
-        FileBrowser(location, 0, 0);
-        GUILayout.EndVertical();
-        GUILayout.EndScrollView();
-        GUILayout.Label("Selected:" + path);
-    }
-*/
-
-/*    void FileBrowser(string location, int spaceNum, int index)
-    {
-        FileInfo fileSelection;
-        DirectoryInfo directoryInfo;
-        DirectoryInfo directorySelection;
-
-        //
-        fileSelection = new FileInfo(location);
-        if (fileSelection.Attributes == FileAttributes.Directory)
-            directoryInfo = new DirectoryInfo(location);
-        else
-            directoryInfo = fileSelection.Directory;
-
-        //
-        GUILayout.BeginVertical();
-        foreach (DirectoryInfo dirInfo in directoryInfo.GetDirectories())
+    /*    void DoMyWindow(int windowID)
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(spaceNum);
-            GUILayout.Label(dirTexture, dirStyle, GUILayout.Width(12));
-            if (GUILayout.Button(dirInfo.Name, dirStyle))
-            {
-                strs[index] = dirInfo.FullName;
-                path = dirInfo.FullName;
-            }
-            GUILayout.EndHorizontal();
-            if (dirInfo.FullName == strs[index] && strs[index] != location)
-                FileBrowser(strs[index], spaceNum + 20, index + 1);
+
+            OpenFileWindow(location);
+            GUI.DragWindow();
         }
-
-        //list the special file with speical style and texture under current directory
-        //if( filter=="") filter = "*.*";
-        fileSelection = SelectList(directoryInfo.GetFiles(), null, fileStyle, fileTexture, spaceNum) as FileInfo;
-        if (fileSelection != null)
-            path = fileSelection.FullName;
-
-        GUILayout.EndVertical();
-    }
-    
     */
 
-/*    private object SelectList(ICollection list, object selected, GUIStyle style, Texture image, int spaceNum)
-    {
-        foreach (object item in list)
+    /*    void OpenFileWindow(string location)
         {
-            //just show the name of directory and file
-            FileSystemInfo info = item as FileSystemInfo;
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(spaceNum);
-            GUILayout.Label(image, style, GUILayout.Width(12));
-            if (GUILayout.Button(info.Name, style))
-            {
-                selected = item;
-            }
-            GUILayout.EndHorizontal();
+            scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Width(400), GUILayout.Height(400));
+            GUILayout.BeginVertical();
+            FileBrowser(location, 0, 0);
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+            GUILayout.Label("Selected:" + path);
         }
-        return selected;
-    }
-*/
-	
+    */
+
+    /*    void FileBrowser(string location, int spaceNum, int index)
+        {
+            FileInfo fileSelection;
+            DirectoryInfo directoryInfo;
+            DirectoryInfo directorySelection;
+
+            //
+            fileSelection = new FileInfo(location);
+            if (fileSelection.Attributes == FileAttributes.Directory)
+                directoryInfo = new DirectoryInfo(location);
+            else
+                directoryInfo = fileSelection.Directory;
+
+            //
+            GUILayout.BeginVertical();
+            foreach (DirectoryInfo dirInfo in directoryInfo.GetDirectories())
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(spaceNum);
+                GUILayout.Label(dirTexture, dirStyle, GUILayout.Width(12));
+                if (GUILayout.Button(dirInfo.Name, dirStyle))
+                {
+                    strs[index] = dirInfo.FullName;
+                    path = dirInfo.FullName;
+                }
+                GUILayout.EndHorizontal();
+                if (dirInfo.FullName == strs[index] && strs[index] != location)
+                    FileBrowser(strs[index], spaceNum + 20, index + 1);
+            }
+
+            //list the special file with speical style and texture under current directory
+            //if( filter=="") filter = "*.*";
+            fileSelection = SelectList(directoryInfo.GetFiles(), null, fileStyle, fileTexture, spaceNum) as FileInfo;
+            if (fileSelection != null)
+                path = fileSelection.FullName;
+
+            GUILayout.EndVertical();
+        }
+    
+        */
+
+    /*    private object SelectList(ICollection list, object selected, GUIStyle style, Texture image, int spaceNum)
+        {
+            foreach (object item in list)
+            {
+                //just show the name of directory and file
+                FileSystemInfo info = item as FileSystemInfo;
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(spaceNum);
+                GUILayout.Label(image, style, GUILayout.Width(12));
+                if (GUILayout.Button(info.Name, style))
+                {
+                    selected = item;
+                }
+                GUILayout.EndHorizontal();
+            }
+            return selected;
+        }
+    */
+
     private Texture2D MakeTex(int width, int height, Color col)
     {
         Color[] pix = new Color[width * height];
