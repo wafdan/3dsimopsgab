@@ -37,20 +37,20 @@ public class CameraSangatta : MonoBehaviour
 			if ((xpos >= 0 && xpos < ScrollWidth || Input.GetKey (KeyCode.A)))
 			{			
 				movement.x -= ScrollSpeed;
-				//if( origin.x >= 320f)
-				//{
-				//	origin = new Vector3(320f, origin.y, origin.z);	
-				//}
+				if( origin.x <= 1300f)
+				{
+					origin = new Vector3(1300f, origin.y, origin.z);	
+				}
 			}	
 			
 			else if (xpos <= width && xpos > width - ScrollWidth || Input.GetKey (KeyCode.D))
 			{
 				movement.x += ScrollSpeed;
 				
-				//if( origin.x <= -310f)
-				//{
-				//	origin = new Vector3(-310f, origin.y, origin.z);	
-				//}
+				if( origin.x >= 3230f)
+				{
+					origin = new Vector3(3230f, origin.y, origin.z);	
+				}
 			}
 		
 			//vertical camera movement
@@ -58,19 +58,19 @@ public class CameraSangatta : MonoBehaviour
 			{
 				movement.z -= ScrollSpeed;
 				
-				//if( origin.z > 550f)
-				//{
-				//	origin = new Vector3( origin.x, origin.y, 550f);	
-				//}
+				if( origin.z < -1300f)
+				{
+					origin = new Vector3( origin.x, origin.y, -1300f);	
+				}
 			}
 			else if (ypos <= height && ypos > height - ScrollWidth || Input.GetKey (KeyCode.W))
 			{
 				movement.z += ScrollSpeed;
 				
-				//if( origin.z < 200f)
-				//{
-				//	origin = new Vector3( origin.x, origin.y, 200f);	
-				//}
+				if( origin.z > 150f)
+				{
+					origin = new Vector3( origin.x, origin.y, 150f);	
+				}
 				
 			}
 		
