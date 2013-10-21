@@ -83,8 +83,9 @@
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourBase.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
+     <Compile Include="Assets\Scripts\Unit\CameraEmbarkasiLaut.cs" />
      <Compile Include="Assets\Scripts\Unit\CameraLedakanCampTank.cs" />
-     <Compile Include="Assets\Scripts\Unit\EmbarkasiLaut.cs" />
+     <Compile Include="Assets\Scripts\Unit\EmbarkasiTank.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIRanjau.cs" />
      <Compile Include="Assets\Scripts\Unit\LepasLandas.cs" />
      <Compile Include="Assets\Scripts\Unit\Missile.cs" />
