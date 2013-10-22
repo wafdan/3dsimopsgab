@@ -2,6 +2,8 @@
 using System.Collections;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Collections;
 [SerializeAll]
 public class OperationManager : MonoBehaviour
 {
@@ -26,9 +28,12 @@ public class OperationManager : MonoBehaviour
     //attributes
 
     public static ArrayList operationList = new ArrayList();
-    public static DateTime hariH = DateTime.Now;
     public static int InstanceIdx = 0;
     public static string FILE_EXT=".tfgsg";
+
+
+    public static DateTime HARI_HA = new DateTime(2007, 10, 1, 00, 00, 00);
+
 
     public void Start()
     {
@@ -37,7 +42,7 @@ public class OperationManager : MonoBehaviour
 
     public static void setHariH(DateTime newHariH)
     {
-        hariH = newHariH;
+        HARI_HA = newHariH;
     }
 
     public static bool addToOperationList(OperationItem a)
@@ -87,7 +92,6 @@ public class OperationManager : MonoBehaviour
         //}
         //Debug.Log("all saved operation removed");
     }
-
 
     public static IEnumerator playOperation()
     {
@@ -142,7 +146,7 @@ public class OperationManager : MonoBehaviour
     }
 }
 
-public class OperationItem
+public class OperationItem: IComparable
 {
     public string satuan;
     public string posisiHari;
@@ -152,9 +156,11 @@ public class OperationItem
     public string description;
     public string files;
     public UnityEngine.Object unitConfig;
-    public string startTime;
+    //public string startTime;
+    public DateTime startTime;
     public TimeSpan duration;
-    public string endTime;
+    //public string endTime;
+    public DateTime endTime;
     public bool hasUnitMovement;
     public bool hasVideo;
 
@@ -168,8 +174,8 @@ public class OperationItem
         description = "";
         files = "";
         unitConfig = null;
-        startTime = "";
-        endTime = "";
+        startTime = OperationManager.HARI_HA;
+        endTime = OperationManager.HARI_HA;
     }
 
     public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi)
@@ -182,8 +188,8 @@ public class OperationItem
         this.locationPoint = Vector3.zero;
         this.files = "";
         this.unitConfig = null;
-        startTime = "00:00";
-        endTime = "00:00";
+        startTime = OperationManager.HARI_HA;
+        endTime = OperationManager.HARI_HA;
     }
 
     public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, UnityEngine.Object newUnitConfig)
@@ -196,8 +202,8 @@ public class OperationItem
         this.locationPoint = Vector3.zero;
         this.files = "";
         this.unitConfig = newUnitConfig;
-        startTime = "00:00";
-        endTime = "00:00";
+        startTime = OperationManager.HARI_HA;
+        endTime = OperationManager.HARI_HA;
     }
 
     public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig)
@@ -210,12 +216,12 @@ public class OperationItem
         this.locationPoint = Vector3.zero;
         this.files = file;
         this.unitConfig = newUnitConfig;
-        startTime = "00:00";
-        endTime = "00:00";
+        startTime = OperationManager.HARI_HA;
+        endTime = OperationManager.HARI_HA;
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig,string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -225,12 +231,68 @@ public class OperationItem
         this.locationPoint = Vector3.zero;
         this.files = file;
         this.unitConfig = newUnitConfig;
-        this.startTime = startTime;
         this.duration = duration;
-        string format = "dd/MM/yyyy HH:mm";
-        endTime = DateTime.Parse(startTime).Add(duration).ToString(format);
+        //proses starttime dan endtime
+        prosesStartAndEndTime(startTime, posHar, duration);
+
         this.hasVideo = hasFile;
         this.hasUnitMovement = hasUnit;
+    }
+
+    public void prosesStartAndEndTime(string startTime, string posisiHari,TimeSpan durasi)
+    {
+        int jamStart = 0;
+        Int32.TryParse(startTime.Split(':')[0],out jamStart);
+
+        int menitStart = 0;
+        Int32.TryParse(startTime.Split(':')[1], out menitStart);
+
+        this.startTime = OperationManager.HARI_HA.AddDays(getPosHarInt(posisiHari)).AddHours(jamStart).AddMinutes(menitStart);
+        this.endTime = this.startTime.Add(durasi);
+
+    }
+
+    public int getPosHarInt()
+    {
+        string hPosHar = this.posisiHari.Substring(2).Replace(" ", "");
+        int posHarInt = 0;
+        Int32.TryParse(hPosHar, out posHarInt);
+
+        return posHarInt;
+    }
+
+    public int getPosHarInt(string posisiHari)
+    {
+        string hPosHar = posisiHari.Substring(2).Replace(" ", "");
+        int posHarInt = 0;
+        Int32.TryParse(hPosHar, out posHarInt);
+
+        return posHarInt;
+    }
+
+    public string getStartTimeString()
+    {
+        string r = "";
+        int posHarInt = this.getPosHarInt();
+        r += ((posHarInt<0)?("H"+posHarInt):(posHarInt>0)?("H+"+posHarInt):"hari H");
+        r += " pukul ";
+        r += this.startTime.ToString("HH:mm");
+        return r;
+    }
+
+    public string getEndTimeString()
+    {
+        string r = "";
+        int posHarInt = this.getPosHarEndInt();
+        r += ((posHarInt < 0) ? ("H" + posHarInt) : (posHarInt > 0) ? ("H+" + posHarInt) : "hari H");
+        r += " pukul ";
+        r += this.endTime.ToString("HH:mm");
+        return r;
+    }
+
+    private int getPosHarEndInt()
+    {
+        return (int)(this.endTime.Date - OperationManager.HARI_HA.Date).TotalDays;// -1;
     }
 
     public override string ToString()
@@ -238,5 +300,55 @@ public class OperationItem
         return name + "\nLokasi: " + location+"\nSatuan: "+satuan;
     }
 
+    int IComparable.CompareTo(object obj) //ascending
+    {
+        OperationItem oi = (OperationItem)obj;
+        if (this.getPosHarInt() < oi.getPosHarInt())
+        {
+            return -1;
+        }
+        else if (this.getPosHarInt() > oi.getPosHarInt())
+        {
+            return 1;
+        }
+        else
+        {// harinya sama
+            DateTime thisStartTime = this.startTime;
+            DateTime oiStartTime = oi.startTime;
+            if (thisStartTime.CompareTo(oiStartTime) <0)
+            {
+                return -1;
+            }
+            else if (thisStartTime.CompareTo(oiStartTime) > 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
 }
 
+class OperationItem_SortByHariStartTimeAscending : IComparer
+{
+    int System.Collections.IComparer.Compare(object xx, object yy)
+    {
+        OperationItem x = (OperationItem)xx;
+        OperationItem y = (OperationItem)yy;
+        if (x.getPosHarInt() > y.getPosHarInt()) return 1;
+        else if (x.getPosHarInt() < y.getPosHarInt()) return -1;
+        else
+        {
+            DateTime xStartTime = x.startTime;
+            DateTime yStartTime = y.startTime;
+            if (xStartTime.CompareTo(yStartTime) < 0)
+                return -1;
+            else if (xStartTime.CompareTo(yStartTime) > 0)
+                return 1;
+            else
+                return 0;
+        }
+    }
+}
