@@ -17,7 +17,7 @@ public class MenuUnit : MonoBehaviour
     private bool showSaveUnitDialog = false;
     private bool showConfirmDeleteSave = false;
     private bool showPauseMenu = true;
-    private int curOpPlayIdx;
+    public static int curOpPlayIdx;
 
     //tambah kegiatan
     public Texture2D background;
@@ -37,7 +37,7 @@ public class MenuUnit : MonoBehaviour
     //alusista
     private bool showHUDTop = true;
     private bool showFormKegiatan = false; // hanya true kalau mau nambah atw edit kegiatan saja
-    private bool showPlayMode = false; // play mode, bisa diakses semua unit
+    public static bool showPlayMode = false; // play mode, bisa diakses semua unit
     private bool showHari = false;
     private bool showAlutsista = false;
     private bool showLaut = false;
@@ -228,6 +228,23 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_stylePlayDesc;
 
+
+    protected GUIStyle styleClockPlay
+    {
+        get
+        {
+            if (m_clockPlay == null)
+            {
+                m_clockPlay = new GUIStyle(GUI.skin.box);
+                m_clockPlay.normal.textColor = Color.yellow;
+                m_clockPlay.font = courierFont;
+                //m_stylePlayDesc.normal.background = new Texture2D(2, 2);
+            }
+            return m_clockPlay;
+        }
+    }
+    protected GUIStyle m_clockPlay;
+
     //textures
     //udara
     Texture2D Sukhoi;
@@ -302,7 +319,7 @@ public class MenuUnit : MonoBehaviour
     private int lastOpCount = 0;
 
     private OperationItem curOpItem;
-    private OperationItem curOpPlaying;
+    public static OperationItem curOpPlaying;
     private string curOpInfo;
     private string submitKegInfo;
     private string submitUpload;
@@ -447,7 +464,11 @@ public class MenuUnit : MonoBehaviour
 
         if (!gamePaused)
         {
-            if (showPlayMode) { getPlayKegiatanGUI(curOpPlaying); return; } // ini spesial, bisa mendahului showHUDTop
+            if (showPlayMode)
+            { // ini spesial, bisa mendahului showHUDTop
+                getPlayKegiatanGUI(curOpPlaying); 
+                return; 
+            } 
             //if (!showHUDTop) return; //kalo showHUDTop false berarti Hide semua GUI (kecuali khusus play mode di atas)
 
             GUI.backgroundColor = Color.yellow;
@@ -666,25 +687,43 @@ public class MenuUnit : MonoBehaviour
     private void getPlayKegiatanGUI(OperationItem op)
     {
 
+        float clockW = 300;
+        float clockH = 80;
+        float clockX = (Screen.width-clockW) ;
+        float clockY = 0;
+        float boxW = 300;
         float boxH = 300;
-        float boxW = 400;
-        float boxX = Screen.width / 2 - boxW / 2;
-        float boxY = Screen.height / 2 - boxH / 2;
-        if (!op.hasUnitMovement)
-        {
-            boxH = 300;
-            boxW = 400;
-            boxX = Screen.width - boxW;
-            boxY = 0;
-        }
+        float boxX = (Screen.width - boxW);
+        float boxY = clockH+2;
+        //if (!op.hasUnitMovement)
+        //{
+        //    boxH = 300;
+        //    boxW = 400;
+        //    boxX = Screen.width - boxW;
+        //    boxY = 0;
+        //}
         //button, relative to box
         float btW = boxW / 3;
         float btH = 20;
         float btX = boxW / 2 - btW / 2;
         float btY = boxH - btH - 2;
 
+        GUILayout.BeginArea(new Rect(clockX, clockY, clockW, clockH),GUI.skin.box);
+        GUILayout.Label(HistoryManager.gameClockValue,styleClockPlay);
+        HistoryManager.timeSpeed = GUILayout.HorizontalSlider(HistoryManager.timeSpeed, 1, 300);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("1X",GUILayout.Width(25));
+        GUILayout.FlexibleSpace();
+        GUILayout.Label("skala waktu 1 : "+ HistoryManager.timeSpeed*10+"");
+        GUILayout.FlexibleSpace();
+        GUILayout.Label("3000X", GUILayout.Width(40));
+        GUILayout.EndHorizontal();
+        
+        GUILayout.EndArea();
+        
         GUILayout.BeginArea(new Rect(boxX, boxY, boxW, boxH), stylePlayDesc);
-        GUILayout.BeginVertical();
+        GUI.backgroundColor = Color.white;
+        GUILayout.BeginVertical(GUI.skin.button);
         //GUILayout.Label(curOpInfo, playLabelStyle);
 
         //string durasi="";
@@ -696,27 +735,33 @@ public class MenuUnit : MonoBehaviour
         //    durasi += curOpPlaying.duration.Minutes.ToString() + " menit,";
         //if(durasi!="")
         //    GUILayout.Label(durasi, stylePlayLabel);
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Nama Kegiatan :", stylePlayField);
-        GUILayout.Label(curOpPlaying.name, stylePlayLabel);
-        GUILayout.EndHorizontal();
+        GUILayout.BeginVertical();
+        for (int i = 0; i < HistoryManager.nowPlayingList.Count; i++)
+        {
+            OperationItem opintem = (OperationItem)HistoryManager.nowPlayingList[i];
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Nama Kegiatan :", stylePlayField);
+            GUILayout.Label(opintem.name, stylePlayLabel);
+            
+            GUILayout.EndHorizontal();
+        }
+        GUILayout.EndVertical();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Waktu :", stylePlayField);
+        //GUILayout.Label(curOpPlaying.posisiHari + " " + curOpPlaying.startTime + " sampai " + curOpPlaying.endTime, stylePlayLabel);
+        //GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Waktu :", stylePlayField);
-        GUILayout.Label(curOpPlaying.posisiHari + " " + curOpPlaying.startTime + " sampai " + curOpPlaying.endTime, stylePlayLabel);
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Lokasi :", stylePlayField);
+        //GUILayout.Label(curOpPlaying.location, stylePlayLabel);
+        //GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Lokasi :", stylePlayField);
-        GUILayout.Label(curOpPlaying.location, stylePlayLabel);
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Deskripsi :", stylePlayField);
-        playGUIkegScrollPos = GUILayout.BeginScrollView(playGUIkegScrollPos);//, GUILayout.Width(boxW-10), GUILayout.Height(50));
-        GUILayout.Label(curOpPlaying.description, stylePlayLabel);
-        GUILayout.EndScrollView();
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Deskripsi :", stylePlayField);
+        //playGUIkegScrollPos = GUILayout.BeginScrollView(playGUIkegScrollPos);//, GUILayout.Width(boxW-10), GUILayout.Height(50));
+        //GUILayout.Label(curOpPlaying.description, stylePlayLabel);
+        //GUILayout.EndScrollView();
+        //GUILayout.EndHorizontal();
 
         GUILayout.FlexibleSpace();
         GUILayout.BeginHorizontal();
@@ -762,6 +807,7 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.EndArea();
+        GUI.backgroundColor = Color.gray;
         //GUI.BeginGroup(new Rect(boxX, boxY, boxW, boxH));
         //GUI.Box(new Rect(0, 0, boxW, boxH), "");
         //GUI.Label(new Rect(0, 0, boxW, boxH), curOpInfo, playLabelStyle);
@@ -804,9 +850,10 @@ public class MenuUnit : MonoBehaviour
             float hisItemY = 0; //relative to scrollview
             float hisItemH = 70;
             float hisItemW = kegListW * 0.9f;
-            GUILayout.BeginArea(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 5, kegListH - 30), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(addKegX - 10, leftGroupY + addKegH + 1, kegListW + 35, kegListH - 30), GUI.skin.box);
             //scrollPosKegList = GUI.BeginScrollView(new Rect(addKegX, leftGroupY + addKegH, kegListW + 10, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
-            scrollPosKegList = GUI.BeginScrollView(new Rect(5, 0, kegListW, kegListH - 30), scrollPosKegList, new Rect(0, 0, kegListW * 0.9f, kegScrollvH + 60), false, true);
+            scrollPosKegList = GUILayout.BeginScrollView(scrollPosKegList);
+            GUILayout.BeginVertical();
             for (int i = 0; i < OperationManager.operationList.Count; i++)
             {
                 curOpItem = (OperationItem)OperationManager.operationList[i];
@@ -826,9 +873,13 @@ public class MenuUnit : MonoBehaviour
                 { GUI.backgroundColor = Color.green; }
                 else
                 { GUI.backgroundColor = Color.yellow; }
-                GUI.BeginGroup(new Rect(0, hisItemY, hisItemW, hisItemH));
-                //if (GUI.Button(new Rect(hisItemX+10, hisItemY, hisItemW, hisItemH), OperationManager.operationList[i].ToString()))
-                if (GUI.Button(new Rect(0, 0, hisItemW * 0.8f, hisItemH), curOpItem.ToString(), styleKegListItem))
+                GUILayout.BeginHorizontal(GUI.skin.box);
+
+                string curin = curOpItem.name +
+                    "\nlokasi: " + curOpItem.location +
+                    "\nwaktu mulai: " + curOpItem.getStartTimeString() +
+                    "\nwaktu selesai: " + curOpItem.getEndTimeString();
+                if (GUILayout.Button(curin,styleKegListItem))
                 {
                     nowEditingOpId = i; //set posisi ngedit
                     // tampilkan detail info di dalam form kegiatan
@@ -836,8 +887,8 @@ public class MenuUnit : MonoBehaviour
                     Lokasi = curOpItem.location;
                     Deskripsi = curOpItem.location;
                     //waktu mulai
-                    JamMulai = curOpItem.startTime.Split(':')[0];
-                    MenitMulai = curOpItem.startTime.Split(':')[1];
+                    JamMulai = curOpItem.startTime.Hour.ToString();
+                    MenitMulai = curOpItem.startTime.Minute.ToString();
                     //durasi
                     HariDurasi = curOpItem.duration.Days.ToString();
                     JamDurasi = curOpItem.duration.Hours.ToString();
@@ -848,34 +899,33 @@ public class MenuUnit : MonoBehaviour
 
                     showFormKegiatan = true; //tampilkan formnya
                 }
-                if (GUI.Button(new Rect(hisItemW * 0.8f, 0, hisItemW * 0.2f, hisItemH * 0.5f), "play"))
+                
+
+                GUILayout.BeginVertical(GUILayout.Width(40));
+                if (GUILayout.Button("play"))
                 {
-                    //OperationManager.playOperation((OperationItem)OperationManager.operationList[i]);
-                    //curOpItem = (OperationItem)OperationManager.operationList[i];
-                    //showHUDTop = false;
                     showPlayMode = true;
                     HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
                     curOpPlayIdx = i;
-                    Debug.LogError("CUR IDX PLAY:" + curOpPlayIdx);
-                    //curOpInfo = "KEGIATAN: \n" + curOpItem.name + "\nLOKASI: \n" + curOpItem.location + "\nDESKRIPSI: \n" + curOpItem.description;
-                    ///string startTime = "7:00 AM";
-                    //string endTime = "2:00 PM";
-
-                    ////TimeSpan duration = DateTime.Parse(endTime).Subtract(DateTime.Parse(startTime));
-                    ////Debug.Log("start: " + startTime + " end: " + endTime + " duration: " + duration);
+                    
                 }
-                if (GUI.Button(new Rect(hisItemW * 0.8f, hisItemH * 0.5f, hisItemW * 0.2f, hisItemH * 0.5f), "hapus"))
+                
+                if (GUILayout.Button("hapus"))
                 {
                     //anda yakin hapus?
                 }
-                GUI.EndGroup();
+                GUILayout.EndVertical();
+
+                GUILayout.EndHorizontal();
                 hisItemY += hisItemH + 3;
                 kegScrollvH = ((hisItemH + 3) * (i + 1) <= kegScrollvH ? kegScrollvH : (hisItemH + 3) * (i + 1));
 
                 GUI.backgroundColor = Color.blue;
-            }
-            GUI.EndScrollView();
+            }//endfor
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
             // penyesuaian posisi scroll bar
             if (lastOpCount != OperationManager.operationList.Count)
             {
@@ -1074,16 +1124,27 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).name = NamaKeg;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).location = Lokasi;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).description = Deskripsi;
-                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).startTime = waktuMulai;
+                        //((OperationItem)OperationManager.operationList[nowEditingOpId]).startTime = waktuMulai;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).duration = durasi;
-                        string format = "dd/MM/yyyy HH:mm";
-                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).endTime = DateTime.Parse(waktuMulai).Add(durasi).ToString(format);
+                        
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).prosesStartAndEndTime(waktuMulai,Hari[selectedItemIndex].text,durasi);
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasVideo = toggleFile;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
                         emptyTheField();
                         submitKegInfo = "berhasil diperbaharui";
                         nowEditingOpId = GA_NGEDIT;
                         list = true;
+                    }
+                    foreach (OperationItem oi in OperationManager.operationList)
+                    {
+                        Debug.Log("opList. opName = " + oi.name);
+                    }
+                    Debug.Log("SETELAH SORTING:");
+                    OperationItem_SortByHariStartTimeAscending comp = new OperationItem_SortByHariStartTimeAscending();
+                    OperationManager.operationList.Sort(comp);
+                    foreach (OperationItem oi in OperationManager.operationList)
+                    {
+                        Debug.Log("opList. opName = "+oi.name);
                     }
                 }
 

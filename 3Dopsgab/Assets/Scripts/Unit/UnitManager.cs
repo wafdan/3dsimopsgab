@@ -28,7 +28,7 @@ public class UnitManager : MonoBehaviour
     private GUIStyle historyStyle;
     private bool targettingMode = false; //jika true maka klik kanan jadi menentukan sasaran, bukan waypoint
 
-    private bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
+    public static bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
 
     void Start()
     {
@@ -268,46 +268,7 @@ public class UnitManager : MonoBehaviour
         return true;
     }
 
-    //history operation
-    public bool executeHistoryItem(HistoryItem h)
-    {
-        bool ret = false;
-        switch (h.command)
-        {
-            case "add":
-                GameObject g = (GameObject)Instantiate(Resources.Load("Prefabs/" + h.prefabName, typeof(GameObject)));
-
-                if (g != null)
-                {
-                    g.name = h.objectName;
-                    g.transform.position = h.initialPos;
-                    ret = true;
-                }
-                break;
-            case "edit":
-                if (h.objectName != null)
-                {
-
-                }
-                break;
-            default:
-                break;
-        }
-        return ret;
-    }
-
-    //testing
-    public void testAddUnit()
-    {
-        foreach (HistoryItem i in HistoryManager.testOperationArray)
-        {
-            if (executeHistoryItem(i))
-            {
-                testStatus += "\noperasi \"" + i.command + "\" objek \"" + i.objectName + "\" berhasil.";
-            }
-        }
-    }
-
+    
     // GUI operations
     void OnGUI()
     {
