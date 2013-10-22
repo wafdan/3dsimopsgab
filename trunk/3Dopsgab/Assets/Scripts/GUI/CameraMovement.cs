@@ -19,7 +19,8 @@ public class CameraMovement : MonoBehaviour
 		MoveCamera ();
 		RotateCamera ();
 	}
-	
+
+
 	private void MoveCamera ()
 	{
 		if (Camera.main != null) {
