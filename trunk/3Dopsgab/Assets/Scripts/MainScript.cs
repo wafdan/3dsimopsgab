@@ -39,6 +39,47 @@ public class MainScript : MonoBehaviour {
 		{"NAS-332", new UnitOrder("NAS-332", SAT3, new string[]{"Combat Air Patrol","Ferry","Red Plan","Landing"})}
 	};
 	
+    //Misc Functions
+    /* katanya sih lebih cepet dari implementasi aslinya Unity. copyright http://pastebin.com/7wnvR4se */
+    public static float myInverseLerp(float from, float to, float value)
+    {
+        if (from < to)
+        {
+            if (value < from)
+            {
+                return 0f;
+            }
+            else if (value > to)
+            {
+                return 1f;
+            }
+            else
+            {
+                return (value - from) / (to - from);
+            }
+        }
+        else
+        {
+            if (from <= to)
+            {
+                return 0f;
+            }
+            else if (value < to)
+            {
+                return 1f;
+            }
+            else if (value > from)
+            {
+                return 0f;
+            }
+            else
+            {
+                return 1f - (value - to) / (from - to);
+            }
+        }
+    }
+
+
 }
 
 public class UnitOrder {

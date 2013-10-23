@@ -372,54 +372,104 @@ public class UnitManager : MonoBehaviour
     private Vector2 scrollPosition = Vector2.zero;
     private float hScrollvH = 200;
     private int lastHistoryCount = 0;
-    
+
+    protected GUIStyle styleHisListItem
+    {
+        get
+        {
+            if (m_hisListItem == null)
+            {
+                m_hisListItem = new GUIStyle(GUI.skin.box);
+                m_hisListItem.alignment = TextAnchor.MiddleLeft;
+                //m_hisListItem.fixedHeight = GUI.skin.button.fixedHeight;
+            }
+            return m_hisListItem;
+        }
+    }
+    protected GUIStyle m_hisListItem;
+    protected GUIStyle styleFormTitle
+    {
+        get
+        {
+            if (m_formTitle == null)
+            {
+                m_formTitle = new GUIStyle(GUI.skin.label);
+                m_formTitle.alignment = TextAnchor.MiddleCenter;
+                m_formTitle.fontStyle = FontStyle.Bold;
+            }
+            return m_formTitle;
+        }
+    }
+    protected GUIStyle m_formTitle;
+    private bool hideHisList = false;
+
     void showHistoryGUI()
     {
         historyStyle = new GUIStyle(GUI.skin.button);
         historyStyle.fontSize = 11;
 
-        float hisPosW = 300;
-        float hisPosH = 250;
+        float hisPosW = 350;
+        float hisPosH = hideHisList?25:Screen.height;//250;
         float hisPosX = Screen.width - hisPosW;
-        float hisPosY = 200;
+        float hisPosY = 0;
         float hisItemH = 40;
-        float hisItemW = hisPosW * 0.9f;
-        GUI.Box(new Rect(hisPosX, hisPosY, hisPosW, hisPosH), "Histori Aksi");
+        float hisItemW = hisPosW;// *0.9f;
 
-        float hisItemX = 0; //relative to scroolview
-        float hisItemY = 0; //relative to scrollview
-        int len;
-        scrollPosition = GUI.BeginScrollView(
-                            new Rect(hisPosX, hisPosY + 20, hisPosW, hisPosH),
-                            scrollPosition,
-                            new Rect(-10, 0, hisPosW - 10, hScrollvH), false, false);
-        for (int i = 0; i < HistoryManager.historyList.Count; i++)
+        GUI.backgroundColor = Color.yellow;
+        GUILayout.BeginArea(new Rect(hisPosX, hisPosY, hisPosW, hisPosH), GUI.skin.box);
+        GUILayout.BeginVertical();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("HISTORI AKSI",styleFormTitle);
+        if (GUILayout.Button("V",GUILayout.Width(30)))
         {
-            len = HistoryManager.historyList.Count;
-            if (GUI.Button(new Rect(hisItemX, hisItemY, hisItemW, hisItemH), "[" + i + "] " + HistoryManager.historyList[i].ToString(), historyStyle))
-            {
-                //foreach history i sampe len-i
-                //unco action[i]
-                //for(int j=i, lenj=len-i; j<lenj; j++){
-                //undoAction(hitem);
-                //}
-                HistoryManager.undoHistory((HistoryItem)HistoryManager.historyList[i]);
-            }
-            hisItemY += hisItemH + 1;
-            hScrollvH = ((hisItemH + 1) * (i + 1) <= hScrollvH ? hScrollvH : (hisItemH + 1) * (i + 1));
-
+            hideHisList = !hideHisList;
         }
-        GUI.EndScrollView();
+        GUILayout.EndHorizontal();
+        //float hisItemX = 0; //relative to scroolview
+        //float hisItemY = 0; //relative to scrollview
+        //int len;
+        if (!hideHisList)
+        {
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(hisPosH - 50));
+            GUILayout.BeginVertical();
+            for (int i = 0; i < HistoryManager.historyList.Count; i++)
+            {
+                //len = HistoryManager.historyList.Count;
+                GUILayout.BeginHorizontal(styleHisListItem);
+                GUILayout.Label("[" + i + "] ");
+                //if (GUILayout.Button("[" + i + "] " + HistoryManager.historyList[i].ToString(), styleHisListItem, GUILayout.Height(hisItemH)))
+                if (GUILayout.Button(HistoryManager.historyList[i].ToString(), GUILayout.Height(hisItemH), GUILayout.MinWidth(hisItemW - 80)))
+                {
+                    //foreach history i sampe len-i
+                    //unco action[i]
+                    //for(int j=i, lenj=len-i; j<lenj; j++){
+                    //undoAction(hitem);
+                    //}
+                    HistoryManager.undoHistory((HistoryItem)HistoryManager.historyList[i]);
+                }
+                GUILayout.EndHorizontal();
+                //hisItemY += hisItemH + 1;
+                //hScrollvH = ((hisItemH + 1) * (i + 1) <= hScrollvH ? hScrollvH : (hisItemH + 1) * (i + 1));
+
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+        }
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+        GUI.backgroundColor = Color.white;
 
         /* cek jika terjadi penambahan item, set scroll position ke bawah.
          * kalo ga dicek gini scrollpositionY nya stuck di bawah terus walaupun perhitungannya betul.
          * */
         if (lastHistoryCount != HistoryManager.historyList.Count)
         {
-            float newScrollPosY = (HistoryManager.historyList.Count * (hisItemH + 1) - hisPosH);
+            float newScrollPosY = (HistoryManager.historyList.Count * (hisItemH + 20) - hisPosH);
             scrollPosition.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosition.y;
             lastHistoryCount = HistoryManager.historyList.Count;
         }
-
+        
     }
 }

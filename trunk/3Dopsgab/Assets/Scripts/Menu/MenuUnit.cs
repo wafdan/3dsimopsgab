@@ -727,6 +727,7 @@ public class MenuUnit : MonoBehaviour
         {
             HistoryManager.showHistory = false;
             editUnitMode = !editUnitMode;
+            testMovementMode = false;
         }
         GUI.backgroundColor = Color.grey;
         GUILayout.EndVertical();
@@ -791,11 +792,15 @@ public class MenuUnit : MonoBehaviour
         for (int i = 0; i < OperationManager.nowPlayingList.Count; i++)
         {
             OperationItem opintem = (OperationItem)OperationManager.nowPlayingList[i];
+            GUILayout.BeginVertical(GUI.skin.button);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Nama Kegiatan :", stylePlayField);
-            GUILayout.Label(opintem.name, stylePlayLabel);
-
             GUILayout.EndHorizontal();
+            GUILayout.Label(opintem.name, stylePlayLabel);
+            GUILayout.Label("mulai: "+opintem.getStartTimeString(), styleClockPlay);
+            GUILayout.Label("selesai: " + opintem.getEndTimeString(), styleClockPlay);
+            GUILayout.EndVertical();
+            
         }
         GUILayout.EndVertical();
         //GUILayout.BeginHorizontal();

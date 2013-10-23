@@ -6,78 +6,62 @@ using System.Linq;
 //[DoNotSerialize]
 public class BasicUnitMovement : MonoBehaviour
 {
-
-    public float moveSpeed = 2.0f;
-    //public float goalRadius = 0.1f;
+    public bool debug;
+    
     Transform myTransform;
+    
+    public float moveSpeed;// = 2.0f;
+    private float waterUnitLandDetectRange = 30f;
+    public static float UNIT_LAUT_Y = 1.7f;
+    public static float UNIT_UDARA_Y = 20f;
+    public float ATTACK_RANGE = 50f;
 
-    public bool action = false;
     public bool isSelected = false;
     public bool isUnitLaut; //diset di Editor prefabnya
     public bool isUnitUdara; //diset di Editor prefabnya
-    public Vector3 goal;
-
-    public GameObject moveEffectObject;
+    
+    // UNIT MANAGER
     private UnitManager unitManager;
-    Vector3 posisi;
-    private bool debug = true;
-    string seluns = "";
     private GameObject unitManagerObject;
 
-    //Action
-    private Vector3 screenPos = Vector3.zero;
-    string selectedFrom;
-    string selectedGoal;
-    string selectedAction;
-
-    //GUI menu
-    private GUIStyle mStatStyle;
-    private UnitOrder unit;
-    private string[] unitOrderList;
-    private string missionStatus;
-    private bool actionMenuVisible = false;
-    private bool missionStatusVisible = false;
-    private int statW;
-    private int statH;
-    private int statX;
-    private int statY;
-    private int menuH;
-    private int menuW;
-    private float menuX;
-    private float menuY;
-    private float menuItemX;
-    private float menuItemY;
-    private int menuItemW;
-    private int menuItemH;
-    private bool isCAPClicked;
-    private Vector3 m;
-    private Vector3 p;
+    // WAYPOINTING
+    LineRenderer lineRenderer;
     [SerializeThis]
-    public Vector3 lastPoint; // posisi terakhir unit, untuk kepentingan History
-    public int idx; // indeks history pergerakan unit
+    public Vector3 lastAddedWayPoint; // posisi terakhir unit, untuk kepentingan History
+    public int lastAddedWaypointIdx; // indeks history pergerakan unit
     [SerializeThis]
     public List<Vector3> waypoints;
     private int curWaypointIdx = 0;
-    private Vector3 velocity;
+    public Vector3 goal;
 
-    //targetting Related
+    // TARGETING
     public List<Vector3> tarpoints;
     [SerializeThis]
     public List<GameObject> tarPointObjects;
     [SerializeThis]
     public int curTarpointIdx = 0;
     private GameObject targetEffectObject; //diambil dari Resources
+    private float distMinToTar = float.MaxValue; // jarak minimum unit ke sasaran, diupdate terus
+
+    // BELOK VARS
+    private bool belokMode = false;
+    private Vector3[] belokPoints;
+    private int belokIdx;
+    private Vector3 startBelokPoint = Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
+    //smooth rotate belok
+    private Quaternion startRot;
+    private Quaternion rotation;
+    private float step;
+    private float lastStep;
+    private float LINE_WIDTH = 0.7f;
+
 
     void Start()
     {
-        //waypoints = new ArrayList(new Vector3[] { new Vector3(-114, 9, 383), new Vector3(-176, 9, 288) });
-
         unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
         unitManager = unitManagerObject.GetComponent<UnitManager>();
-        unit = (UnitOrder)MainScript.unitOrders["Sukhoi"];
-        unitOrderList = unit.orderList;
-        initGUIStyle();
-        myTransform = transform;
+        
+        myTransform = this.transform;
 
         //if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
         targetEffectObject = Resources.Load("TargetEffect") as GameObject;
@@ -85,7 +69,7 @@ public class BasicUnitMovement : MonoBehaviour
         goal = transform.position;
         initWaypoint();
         initTarpoint();
-        idx = 0;
+        lastAddedWaypointIdx = 0;
 
         StartCoroutine(attackMove());
 
@@ -95,7 +79,7 @@ public class BasicUnitMovement : MonoBehaviour
     {
         if (waypoints == null)
             waypoints = new List<Vector3>();
-        LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
+        lineRenderer = (this.lineRenderer != null) ? this.lineRenderer : gameObject.GetComponent<LineRenderer>();
         if (lineRenderer != null && waypoints.Count > 0)
         {
             waypoints = waypoints.Distinct<Vector3>().ToList<Vector3>();
@@ -131,47 +115,20 @@ public class BasicUnitMovement : MonoBehaviour
     {
         goal = newGoal;
     }
-
-    private float waterUnitLandDetectRange = 30f;
-    public static float UNIT_LAUT_Y = 1.7f;
-    public static float UNIT_UDARA_Y = 20f;
-    public float ATTACK_RANGE = 50f;
-    //smooth paths
-    List<Vector3> waypointsSmooth;
-    bool isSmooth = false;
-    private int curWaypointSmoothIdx;
-    private bool belokMode = false;
-    private Vector3[] belokPoints;
-    private int belokIdx;
-    private Vector3 startBelokPoint = Vector3.zero; //mulai belok di mana, catet sekali aja. kalo berkali2 ntar beloknya tetep di ujung juga, biarpun smooth.
-    //smooth rotate belok
-    private Quaternion startRot;
-    private Quaternion rotation;
-    private float step;
-    private float lastStep;
-
-    void Update()
+      
+    void FixedUpdate()
     {
         if (MenuUnit.testMovementMode)
         {
             followWaypoint();
         }
-        else
-        {
-            //Debug.Log("stop movement of: " + gameObject.name);
-        }
-        //foreach(Collider obj in Physics.OverlapSphere(goal, goalRadius)) {
-        //	if(obj.gameObject == gameObject) {
-        //		transform.position = goal;
-        //	}
-        //}
-
-        updateSeluns();
+        
+        lineRenderer.enabled = unitManager.IsSelected(this.gameObject);
     }
 
     void followWaypoint()
     {
-        Debug.Log("execute movement of: " + gameObject.name);
+        //Debug.Log("execute movement of: " + gameObject.name);
         if (waypoints.Count > 0)
         {
             if (curWaypointIdx < waypoints.Count)
@@ -181,10 +138,11 @@ public class BasicUnitMovement : MonoBehaviour
                 if (isUnitLaut)
                 {
 
-                    Debug.Log("unit laut bergerak");
-                    RaycastHit hit;
-                    Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
+                    //Debug.Log("unit laut bergerak");
+                    //RaycastHit hit;
+                    //Debug.DrawRay(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized * waterUnitLandDetectRange, Color.red);
 
+                    /*
                     if (Physics.Raycast(myTransform.position, ((Quaternion.Euler(0, 0, 7)) * myTransform.forward).normalized, out hit, waterUnitLandDetectRange))
                     {
                         if (hit.collider.gameObject.tag == "daratan")
@@ -193,6 +151,7 @@ public class BasicUnitMovement : MonoBehaviour
                             return;
                         }
                     }
+                     * */
                 }
 
                 Vector3 target = waypoints[curWaypointIdx];
@@ -227,7 +186,7 @@ public class BasicUnitMovement : MonoBehaviour
                 {
 
                     belokPoints = getBelokPoints(startBelokPoint, target, 7f);
-                    Debug.Log("Belook..");
+                    //Debug.Log("Belook..");
                     if (belokPoints.Length > 0)
                     {
                         if (belokIdx < belokPoints.Length)
@@ -282,7 +241,7 @@ public class BasicUnitMovement : MonoBehaviour
                 } //end belokMode
                 else
                 {
-                    Debug.Log("Lurus..");
+                    //Debug.Log("Lurus..");
 
                     myTransform.LookAt(target);
                     myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
@@ -318,10 +277,6 @@ public class BasicUnitMovement : MonoBehaviour
 
     }
 
-
-    float dMisToTar = 0.0f;
-    private bool doneFiring;
-    private float distMinToTar = float.MaxValue; // jarak minimum unit ke sasaran, diupdate terus
     private Vector3[] getBelokPoints(Vector3 start, Vector3 edge, float smoothness)
     {
         if (curWaypointIdx >= waypoints.Count - 1) return new Vector3[0];
@@ -365,45 +320,6 @@ public class BasicUnitMovement : MonoBehaviour
         return curvedPoints.ToArray();
     }
 
-    /* katanya sih lebih cepet dari implementasi aslinya Unity. copyright http://pastebin.com/7wnvR4se */
-    public float myInverseLerp(float from, float to, float value)
-    {
-        if (from < to)
-        {
-            if (value < from)
-            {
-                return 0f;
-            }
-            else if (value > to)
-            {
-                return 1f;
-            }
-            else
-            {
-                return (value - from) / (to - from);
-            }
-        }
-        else
-        {
-            if (from <= to)
-            {
-                return 0f;
-            }
-            else if (value < to)
-            {
-                return 1f;
-            }
-            else if (value > from)
-            {
-                return 0f;
-            }
-            else
-            {
-                return 1f - (value - to) / (from - to);
-            }
-        }
-    }
-
     public void addWaypoint(Vector3 wpItem)
     {
         if (waypoints == null) return;
@@ -412,52 +328,35 @@ public class BasicUnitMovement : MonoBehaviour
 
         goal = wpItem;
 
-        LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
-        lineRenderer.SetWidth(0.1f, 0.1f);
+        lineRenderer = (this.lineRenderer!=null)?this.lineRenderer:gameObject.GetComponent<LineRenderer>();
+        lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH);
         lineRenderer.SetVertexCount(waypoints.Count + 2);
-        if (lastPoint == Vector3.zero)
-            lastPoint = myTransform.position;
+        if (lastAddedWayPoint == Vector3.zero)
+            lastAddedWayPoint = myTransform.position;
         if (waypoints.Count > 0)
-            lastPoint = waypoints[waypoints.Count - 1];
-        lineRenderer.SetPosition(waypoints.Count, lastPoint);
+            lastAddedWayPoint = waypoints[waypoints.Count - 1];
+        lineRenderer.SetPosition(waypoints.Count, lastAddedWayPoint);
         lineRenderer.SetPosition(waypoints.Count + 1, goal);
-        lastPoint = goal;
-        idx++;
+        lastAddedWayPoint = goal;
+        lastAddedWaypointIdx++;
 
         waypoints.Add(wpItem);
 
         //add to history
-        //prepare to add to history
-        string name = myTransform.collider.gameObject.name;
-        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
-        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
-        int id = myTransform.collider.gameObject.GetInstanceID();
-        //string newName = prefabName + "" + id;
-        string newName = name;
-        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, newName, prefabName, wpItem));
-        //change name of the new added unit
-        //collider.gameObject.name = newName;
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, getCleanName("name"), getCleanName("prefab"), wpItem));
+        
     }
-
 
     public void addTargetpoint(Vector3 tp)
     {
-        //Debug.Log("ahooyaa");
+        if (tarpoints == null) return;
         GameObject go = Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation) as GameObject;
         tarPointObjects.Add(go);
-        if (tarpoints == null) return;
-        //Debug.Log("oho");
-        //Instantiate(targetEffectObject, tp, targetEffectObject.transform.rotation);
+        
         tarpoints.Add(tp);
 
         //add to history
-        //prepare to add to history
-        string name = myTransform.collider.gameObject.name;
-        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
-        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
-        int id = myTransform.collider.gameObject.GetInstanceID();
-        string newName = name;
-        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, newName, prefabName, tp));
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, getCleanName("name"), getCleanName("prefab"), tp));
 
     }
 
@@ -466,10 +365,25 @@ public class BasicUnitMovement : MonoBehaviour
         if (waypoints.Count > 0)
         {
             waypoints.RemoveAt(waypoints.Count - 1);
-            lastPoint = (Vector3)waypoints[waypoints.Count - 1];
-            idx--;
+            lastAddedWayPoint = (Vector3)waypoints[waypoints.Count - 1];
+            lastAddedWaypointIdx--;
         }
     }
+
+    private string getCleanName(string which)
+    {
+        //prepare to add to history
+        string name = myTransform.collider.gameObject.name;
+        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
+        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
+        int id = myTransform.collider.gameObject.GetInstanceID();
+        string newName = name;
+
+        if (which == "name") return newName;
+        else if (which == "prefab") return prefabName;
+        else return "";
+    }
+
 
     void Clicked()
     {
@@ -503,7 +417,7 @@ public class BasicUnitMovement : MonoBehaviour
          * */
     }
 
-    public IEnumerator attackMove()
+    IEnumerator attackMove()
     {
         while (true)
         {
@@ -531,56 +445,6 @@ public class BasicUnitMovement : MonoBehaviour
         }
     }
 
-    /*
-    IEnumerator fireMissile(Vector3 target)
-    {
-        while (true)
-        {
-            yield return null;
-
-            float distUnitToTar = Vector3.Distance(myTransform.position, target);
-            //Debug.Log("DistUnitToTar: " + distUnitToTar);
-            Debug.DrawRay(myTransform.position, (target - myTransform.position).normalized * ATTACK_RANGE, Color.yellow);
-
-            if (distUnitToTar <= ATTACK_RANGE)
-            {
-                //Vector3 target;
-                GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
-                Transform mt = missile.transform;
-                //bool isMoving = true;
-                //while (isMoving)
-                while (true)
-                {
-                    yield return new WaitForSeconds(0.1f);
-                    mt.LookAt(target);
-                    //Debug.DrawRay(mt.position, mt.forward * 30);
-                    mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 5f);
-
-
-                    float distToTar = Vector3.Distance(mt.position, target);
-
-
-                    //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
-                    if (distToTar <= 0.1f)
-                    {
-                        //isMoving = false;
-                        //break; // kalo break doang, nanti dia nembak berkali2
-                        //Destroy(targetObj);//hapus target object kalo udah kena
-
-                        Destroy(missile); // missilenya juga lah..
-                        //break;
-                        yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
-                    }
-                    //Debug.Log("firing to " + target.ToString());
-                }//endwhile
-            }//endif
-
-        }//endwhile
-
-    }
-
-    */
-
     IEnumerator fireMissile(GameObject targetObj)
     {
         //Debug.Log("TEMBAK! : " + targetObj.transform.position.ToString());
@@ -596,11 +460,6 @@ public class BasicUnitMovement : MonoBehaviour
 
             //Debug.LogError("DistUnitToTar: " + distUnitToTar);
             Debug.DrawRay(myTransform.position, (target - myTransform.position).normalized * ATTACK_RANGE, Color.yellow);
-
-
-
-
-
 
             if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
             {
@@ -642,116 +501,11 @@ public class BasicUnitMovement : MonoBehaviour
 
     }
 
-    void OnGUI()
+    private float myInverseLerp(int p, int curvedLength, int pitoc)
     {
-        //showSelectedUnits();
-        //showActionMenu();
-        //showMissionStatus();
+        return MainScript.myInverseLerp(p, curvedLength, pitoc);
     }
 
-    private void showMissionStatus()
-    {
-        if (missionStatusVisible)
-        {
-            statW = 400;
-            statH = 300;
-            statX = 0;
-            statY = Screen.height - statH;
 
-            missionStatus = "Status Misi unit: " + unit.name
-                            + "\nMisi\t\t: " + selectedAction
-                            + "\nDari\t\t: " + selectedFrom
-                            + "\nTarget\t: " + selectedGoal;
-            //status = "myTransform: "+(int)myTransform.position.x+", "+myTransform.position.y+", "+myTransform.position.z+"\ngoal: "+(int)goal.x+", "+goal.y+", "+goal.z+"";
-
-            GUI.Box(new Rect(statX, statY, statW, statH), missionStatus, mStatStyle);
-
-        }
-    }
-
-    private void showActionMenu()
-    {
-        if (actionMenuVisible && Camera.main.enabled)
-        {
-
-            screenPos = Camera.main.WorldToScreenPoint(transform.position);
-
-
-            menuH = 30 + 25 * (unitOrderList.Length);
-            menuW = 300;
-            menuX = screenPos.x;
-            menuY = Screen.height - screenPos.y - menuH;
-
-            //Debug.Log("target is " + screenPos.x +","+screenPos.y+","+screenPos.z+ " pixels from the left");
-            menuItemX = screenPos.x + 5;
-            menuItemY = menuY + 20;
-            menuItemW = menuW - 10;
-            menuItemH = 25;
-
-            GUI.Box(new Rect(menuX, menuY, menuW, menuH), "Perintah " + unit.name);
-
-            foreach (string order in unitOrderList)
-            {
-                if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), order))
-                {
-
-                    selectedAction = order;
-                    if (order.Contains("Patrol"))
-                    {
-                        isCAPClicked = true;
-                    }
-                    else
-                    {
-                        //theSpotlight.SetActive (false);
-                    }
-                }
-                menuItemY += menuItemH + 2;
-            }
-        }//endif menuVisible && mainCamera.enabled
-    }
-
-    void updateSeluns()
-    {
-        List<GameObject> units = unitManager.GetSelectedUnits();
-        seluns = "";
-        foreach (GameObject unit in units)
-        {
-            seluns += unit.name + "\n";
-        }
-        seluns += "\ngoal        : (" + goal.x + ", " + goal.y + ", " + goal.z + ")";
-        seluns += "\ntransformpos: (" + myTransform.position.x + ", " + myTransform.position.y + ", " + myTransform.position.z + ")";
-        seluns += "\nWAYPOINTS (" + waypoints.Count + "):\n";
-        foreach (Vector3 v in waypoints)
-        {
-            seluns += (v).ToString() + "\n";
-        }
-        seluns += "LASTPOINT: " + lastPoint + "\n";
-    }
-
-    private void showSelectedUnits()
-    {
-        if (debug)
-        {
-            GUI.Box(new Rect(700, 100, 300, 800), "Selected Unit:\n" + seluns);
-        }
-    }
-
-    private void initGUIStyle()
-    {
-        mStatStyle = new GUIStyle();
-        mStatStyle.alignment = TextAnchor.UpperLeft;
-        mStatStyle.margin = new RectOffset(40, 10, 10, 10);
-        mStatStyle.fontSize = 20;
-        mStatStyle.fontStyle = FontStyle.Bold;
-        mStatStyle.normal.textColor = Color.white;
-    }
-
-    public static bool checkIfGoalSame(Vector3 a, Vector3 b)
-    {
-        if ((int)a.x == (int)b.x && (int)a.y == (int)b.y)
-            return true;
-        else
-            return false;
-    }
-
+    /* end of class */
 }
