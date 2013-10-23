@@ -303,7 +303,7 @@ public class FileBrowser
             GUI.skin.window
         );
         GUILayout.BeginHorizontal();
-        Debug.Log("Dir:" + m_currentDirectoryParts.ToString()+" Dir[0]: "+m_currentDirectoryParts[0]);
+        //Debug.Log("Dir:" + m_currentDirectoryParts.ToString()+" Dir[0]: "+m_currentDirectoryParts[0]);
         for (int parentIndex = 0; parentIndex < m_currentDirectoryParts.Length; ++parentIndex)
         {
             if (parentIndex == m_currentDirectoryParts.Length - 1)
@@ -383,7 +383,7 @@ public class FileBrowser
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Cancel", GUILayout.Width(50)))
+        if (GUILayout.Button("Batal", GUILayout.Width(50)))
         {
             m_callback(null);
         }
@@ -407,7 +407,7 @@ public class FileBrowser
                                 );
             }
         }
-        if (GUILayout.Button("Select", GUILayout.Width(50)))
+        if (GUILayout.Button("Pilih", GUILayout.Width(50)))
         {
             if (BrowserType == FileBrowserType.File)
             {

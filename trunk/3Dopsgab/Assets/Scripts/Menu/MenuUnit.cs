@@ -164,6 +164,55 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_saveItemDel;
 
+    protected GUIStyle styleFormTitle
+    {
+        get
+        {
+            if (m_formTitle == null)
+            {
+                m_formTitle = new GUIStyle(GUI.skin.label);
+                m_formTitle.alignment = TextAnchor.MiddleCenter;
+                m_formTitle.fontStyle = FontStyle.Bold;
+            }
+            return m_formTitle;
+        }
+    }
+    protected GUIStyle m_formTitle;
+
+    protected GUIStyle styleFileItem
+    {
+        get
+        {
+            if (m_fileItem == null)
+            {
+                m_fileItem = new GUIStyle(GUI.skin.label);
+                m_fileItem.alignment = TextAnchor.MiddleCenter;
+                //m_fileItem.fontStyle = FontStyle.Bold;
+                m_fileItem.normal.textColor = Color.green;
+            }
+            return m_fileItem;
+        }
+    }
+    protected GUIStyle m_fileItem;
+
+    
+
+    protected GUIStyle styleFormWarning
+    {
+        get
+        {
+            if (m_formWarning == null)
+            {
+                m_formWarning = new GUIStyle(GUI.skin.label);
+                m_formWarning.alignment = TextAnchor.MiddleCenter;
+                m_formWarning.fontStyle = FontStyle.Bold;
+                m_formWarning.normal.textColor = Color.red;
+            }
+            return m_formWarning;
+        }
+    }
+    protected GUIStyle m_formWarning;
+
     public Font courierFont; //diambil dari editor
     protected GUIStyle stylePlayLabel
     {
@@ -355,6 +404,9 @@ public class MenuUnit : MonoBehaviour
     private UnitInfo[] unitPersonelList; // buat list menu personel
     private UnitInfo[] unitAlutList; // buat list menu alutsista
 
+    public static string EMPTY_FILE_STRING = "---- file kosong ----";
+    private bool toggleShowDialogDelFile = false;
+
     void Start()
     {
         comboBoxControl = new ComboBox();
@@ -466,9 +518,9 @@ public class MenuUnit : MonoBehaviour
         {
             if (showPlayMode)
             { // ini spesial, bisa mendahului showHUDTop
-                getPlayKegiatanGUI(curOpPlaying); 
-                return; 
-            } 
+                getPlayKegiatanGUI(curOpPlaying);
+                return;
+            }
             //if (!showHUDTop) return; //kalo showHUDTop false berarti Hide semua GUI (kecuali khusus play mode di atas)
 
             GUI.backgroundColor = Color.yellow;
@@ -647,7 +699,7 @@ public class MenuUnit : MonoBehaviour
         Color collam = GUI.backgroundColor;
         GUILayout.BeginArea(new Rect(groupX, 0, groupW, 40), GUI.skin.box);
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Kamera:",GUILayout.Width(50));
+        GUILayout.Label("Kamera:", GUILayout.Width(50));
         if (GUILayout.Button((Camera.main.orthographic == true) ? "Ortogonal" : "Perspektif"))
         {
             Camera.main.orthographic = !Camera.main.orthographic;
@@ -655,10 +707,10 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
 
-        GUILayout.BeginArea(new Rect(groupX, groupY, groupW, groupH),GUI.skin.box);
+        GUILayout.BeginArea(new Rect(groupX, groupY, groupW, groupH), GUI.skin.box);
         GUILayout.BeginVertical();
         GUI.backgroundColor = Color.red;
-        
+
         if (GUILayout.Button((!testMovementMode ? "Tes Eksekusi" : "Berhenti")))
         {
             testMovementMode = !testMovementMode;
@@ -689,12 +741,12 @@ public class MenuUnit : MonoBehaviour
 
         float clockW = 300;
         float clockH = 80;
-        float clockX = (Screen.width-clockW) ;
+        float clockX = (Screen.width - clockW);
         float clockY = 0;
         float boxW = 300;
         float boxH = 300;
         float boxX = (Screen.width - boxW);
-        float boxY = clockH+2;
+        float boxY = clockH + 2;
         //if (!op.hasUnitMovement)
         //{
         //    boxH = 300;
@@ -708,19 +760,19 @@ public class MenuUnit : MonoBehaviour
         float btX = boxW / 2 - btW / 2;
         float btY = boxH - btH - 2;
 
-        GUILayout.BeginArea(new Rect(clockX, clockY, clockW, clockH),GUI.skin.box);
-        GUILayout.Label(HistoryManager.gameClockValue,styleClockPlay);
-        HistoryManager.timeSpeed = GUILayout.HorizontalSlider(HistoryManager.timeSpeed, 1, 300);
+        GUILayout.BeginArea(new Rect(clockX, clockY, clockW, clockH), GUI.skin.box);
+        GUILayout.Label(OperationManager.gameClockValue, styleClockPlay);
+        OperationManager.gameClockSpeed = GUILayout.HorizontalSlider(OperationManager.gameClockSpeed, 1, 300);
         GUILayout.BeginHorizontal();
-        GUILayout.Label("1X",GUILayout.Width(25));
+        GUILayout.Label("1X", GUILayout.Width(25));
         GUILayout.FlexibleSpace();
-        GUILayout.Label("skala waktu 1 : "+ HistoryManager.timeSpeed*10+"");
+        GUILayout.Label("skala waktu 1 : " + OperationManager.gameClockSpeed * 10 + "");
         GUILayout.FlexibleSpace();
         GUILayout.Label("3000X", GUILayout.Width(40));
         GUILayout.EndHorizontal();
-        
+
         GUILayout.EndArea();
-        
+
         GUILayout.BeginArea(new Rect(boxX, boxY, boxW, boxH), stylePlayDesc);
         GUI.backgroundColor = Color.white;
         GUILayout.BeginVertical(GUI.skin.button);
@@ -736,13 +788,13 @@ public class MenuUnit : MonoBehaviour
         //if(durasi!="")
         //    GUILayout.Label(durasi, stylePlayLabel);
         GUILayout.BeginVertical();
-        for (int i = 0; i < HistoryManager.nowPlayingList.Count; i++)
+        for (int i = 0; i < OperationManager.nowPlayingList.Count; i++)
         {
-            OperationItem opintem = (OperationItem)HistoryManager.nowPlayingList[i];
+            OperationItem opintem = (OperationItem)OperationManager.nowPlayingList[i];
             GUILayout.BeginHorizontal();
             GUILayout.Label("Nama Kegiatan :", stylePlayField);
             GUILayout.Label(opintem.name, stylePlayLabel);
-            
+
             GUILayout.EndHorizontal();
         }
         GUILayout.EndVertical();
@@ -879,7 +931,7 @@ public class MenuUnit : MonoBehaviour
                     "\nlokasi: " + curOpItem.location +
                     "\nwaktu mulai: " + curOpItem.getStartTimeString() +
                     "\nwaktu selesai: " + curOpItem.getEndTimeString();
-                if (GUILayout.Button(curin,styleKegListItem))
+                if (GUILayout.Button(curin, styleKegListItem))
                 {
                     nowEditingOpId = i; //set posisi ngedit
                     // tampilkan detail info di dalam form kegiatan
@@ -899,7 +951,7 @@ public class MenuUnit : MonoBehaviour
 
                     showFormKegiatan = true; //tampilkan formnya
                 }
-                
+
 
                 GUILayout.BeginVertical(GUILayout.Width(40));
                 if (GUILayout.Button("play"))
@@ -908,9 +960,9 @@ public class MenuUnit : MonoBehaviour
                     HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
                     curOpPlayIdx = i;
-                    
+
                 }
-                
+
                 if (GUILayout.Button("hapus"))
                 {
                     //anda yakin hapus?
@@ -940,120 +992,101 @@ public class MenuUnit : MonoBehaviour
         if (showFormKegiatan)
         {
             //Form tambah kegiatan
-            float wBox = 250;
+            float wBox = 260;
             float hBox = Screen.height;
             float cornerBox_X = (Screen.width - wBox) - 10;
             float cornerBox_Y = (Screen.height - hBox) / 60;
 
-            float txtFieldHplusMargin = 30;
-            float txtAreaH = 125;
-            float posFieldY = cornerBox_Y;//posisi awal Y utk field, diinkremen selalu;
-            float timeW = 25;
-            float timeH = 25;
 
+            GUI.backgroundColor = Color.yellow;
+            //pake guilayout biar lebih indah
+            GUILayout.BeginArea(new Rect(cornerBox_X, cornerBox_Y, wBox, hBox), GUI.skin.box);
+            GUILayout.BeginVertical();
+            GUILayout.Label(":: Form Kegiatan ::", styleFormTitle);
+            GUILayout.Label("Nama Kegiatan : ");
+            NamaKeg = GUILayout.TextField(NamaKeg, 25);
+            GUILayout.Label("Lokasi : ");
+            Lokasi = GUILayout.TextField(Lokasi, 25);
+            GUILayout.Label("Deskripsi : ");
+            Deskripsi = GUILayout.TextArea(Deskripsi, 200, GUILayout.Height(100));
 
-            GUIStyle style = new GUIStyle();
-            style.normal.background = background;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Waktu Mulai : ");
+            JamMulai = GUILayout.TextField(JamMulai, 2, GUILayout.Width(25));
+            GUILayout.Label(":", GUILayout.Width(5));
+            MenitMulai = GUILayout.TextField(MenitMulai, 2, GUILayout.Width(25));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
 
-            GUI.Box(new Rect(0, 0, width, height), "", style);
-            GUI.skin.box.normal.textColor = Color.red;
-            GUI.skin.label.normal.textColor = Color.white;
-            //GUI.backgroundColor = Color.yellow;
-            //GUI.color = Color.red;
-            GUI.backgroundColor = Color.blue;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Durasi : ");
 
-            GUI.Box(new Rect(cornerBox_X, cornerBox_Y, wBox + txtFieldHplusMargin, hBox + 100), ":: Form Kegiatan ::");
-            posFieldY += txtFieldHplusMargin;
-
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Nama Kegiatan : ");
-            NamaKeg = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, wBox - 120, 25), NamaKeg, 25);
-            posFieldY += txtFieldHplusMargin;
-
-            GUI.Label(new Rect(cornerBox_X + 60, posFieldY, wBox - 120, 25), "Lokasi : ");
-            Lokasi = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, wBox - 120, 25), Lokasi, 25);
-            posFieldY += txtFieldHplusMargin;
-
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Deskripsi : ");
-            posFieldY += txtFieldHplusMargin;
-            Deskripsi = GUI.TextArea(new Rect(cornerBox_X + 10, posFieldY, wBox - 20, 120), Deskripsi, 200);
-            posFieldY += txtAreaH;
-
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Waktu Mulai : ");
-            JamMulai = GUI.TextField(new Rect(cornerBox_X + 110, posFieldY, timeW, timeH), JamMulai, 2);
-            GUI.Label(new Rect(cornerBox_X + 110 + timeW + 2, posFieldY, 5, 25), ":");
-            MenitMulai = GUI.TextField(new Rect(cornerBox_X + 110 + timeW + 5, posFieldY, timeW, timeH), MenitMulai, 2);
-            posFieldY += txtFieldHplusMargin;
-
-            //durasi
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Durasi : ");
-            HariDurasi = GUI.TextField(new Rect(cornerBox_X + 60, posFieldY, timeW + 5, timeH), HariDurasi, 2);
-            GUI.Label(new Rect(cornerBox_X + 60 + timeW + 5, posFieldY, 40, 25), " Hari");
-            //posFieldY += txtFieldHplusMargin;
-
-            JamDurasi = GUI.TextField(new Rect(cornerBox_X + 120, posFieldY, timeW + 5, timeH), JamDurasi, 2);
-            GUI.Label(new Rect(cornerBox_X + 120 + timeW + 5, posFieldY, 40, 25), " Jam");
-            //posFieldY += txtFieldHplusMargin;
-
-            MenitDurasi = GUI.TextField(new Rect(cornerBox_X + 185, posFieldY, timeW + 5, timeH), MenitDurasi, 2);
-            GUI.Label(new Rect(cornerBox_X + 185 + timeW + 5, posFieldY, 40, 25), " Menit");
-            posFieldY += txtFieldHplusMargin;
-
-            // file pendukung
-            GUI.Label(new Rect(cornerBox_X + 125, posFieldY, wBox - 120, 25), submitUpload);
-            toggleFile = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleFile, "File Pendukung : ");
+            HariDurasi = GUILayout.TextField(HariDurasi, 2, GUILayout.Width(22));
+            GUILayout.Label("Hari   ");
+            JamDurasi = GUILayout.TextField(JamDurasi, 2, GUILayout.Width(22));
+            GUILayout.Label("Jam   ");
+            MenitDurasi = GUILayout.TextField(MenitDurasi, 2, GUILayout.Width(22));
+            GUILayout.Label("Menit");
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            
+            GUILayout.BeginHorizontal();
+            toggleFile = GUILayout.Toggle(toggleFile, "File Pendukung : ");
             if (toggleFile)
             {
-                posFieldY += txtFieldHplusMargin;
-
-                GUI.BeginGroup(new Rect(cornerBox_X + 30, posFieldY, wBox * 0.5f, 25));
-                GUILayout.Label(m_textPath ?? "------ pilih file ------");
-
-                GUI.EndGroup();
-                if (GUI.Button(new Rect(cornerBox_X + 115 + 45, posFieldY, wBox - 220, 20), "..."))
+                //GUILayout.Label(m_textPath ?? "------ pilih file ------",GUI.skin.textField);
+                if (GUILayout.Button("Browse",GUILayout.Width(110)))
                 {
-                    m_fileBrowser = new FileBrowser(new Rect(500, 0, 600, 500), "Pilih File", FileSelectedCallback);
+                    m_fileBrowser = new FileBrowser(new Rect(450, 0, 600, 500), "Pilih File", FileSelectedCallback);
                     m_fileBrowser.SelectionPattern = "*.*";
                     m_fileBrowser.DirectoryImage = m_directoryImage;
                     m_fileBrowser.FileImage = m_fileImage;
                 }
-                if (GUI.Button(new Rect(cornerBox_X + 115 + 78, posFieldY, wBox - 195, 20), "Upload"))
+                GUILayout.FlexibleSpace();
+            }
+            
+            GUILayout.EndHorizontal();
+            if (toggleFile)
+            {
+                GUILayout.BeginHorizontal(GUI.skin.box);
+                GUILayout.Label(Path.GetFileName(m_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
+                GUI.backgroundColor = Color.red;
+                if (GUILayout.Button("X",GUILayout.Width(25)))
                 {
-                    string namaFile = Path.GetFileName(m_textPath);
-                    if (m_textPath == null)
+                    if (nowEditingOpId == GA_NGEDIT)
                     {
-                        submitUpload = "File belum dipilih";
-                        return;
+                        m_textPath = EMPTY_FILE_STRING;
                     }
                     else
                     {
-                        FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
-                        submitUpload = "File berhasil diupload";
+                        Debug.Log("yakin hapus file?");
+                        toggleShowDialogDelFile = true;
                     }
                 }
-            }
-            posFieldY += txtFieldHplusMargin;
+                GUI.backgroundColor = Color.yellow;
+                GUILayout.EndHorizontal();
 
-            GUI.backgroundColor = Color.blue;
-            //konfigurasi unit
-            //GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Konfigurasi Unit : ");
-            toggleUnitConfig = GUI.Toggle(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), toggleUnitConfig, "Konfigurasi Unit : ");
+            }
+            //GUILayout.BeginHorizontal();
+            //GUILayout.Label(submitUpload);
+            //GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            toggleUnitConfig = GUILayout.Toggle(toggleUnitConfig, "Konfigurasi Unit : ");
             if (toggleUnitConfig)
             {
-                if (GUI.Button(new Rect(cornerBox_X + 115 + 10, posFieldY, wBox - 130, 25), "Atur Pergerakan"))
+                if (GUILayout.Button("Atur Pergerakan", GUILayout.Width(110)))
                 {
                     editUnitMode = true;
                     HistoryManager.showHistory = true;
                 }
+                GUILayout.FlexibleSpace();
             }
-            posFieldY += txtFieldHplusMargin;
+            GUILayout.EndHorizontal();
 
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY, wBox - 120, 25), "Daftar Scene : ");
-
-            GUI.Box(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100), "");
-
-            GUILayout.BeginArea(new Rect(cornerBox_X + 10, posFieldY + 30, wBox - 20, 100));
-            scrollSceneList = GUI.BeginScrollView(new Rect(0, 0, wBox - 20, 100), scrollSceneList, new Rect(0, 0, wBox + 100, wBox + 100), false, true);
-            GUILayout.BeginVertical();
+            GUILayout.Label("Daftar Scene : ");
+            scrollSceneList = GUILayout.BeginScrollView(scrollSceneList, GUILayout.Height(100));
+            //GUILayout.BeginVertical();
             foreach (string sn in sceneNames)
             {
                 if (GUILayout.Button(sn))
@@ -1061,16 +1094,13 @@ public class MenuUnit : MonoBehaviour
                     //tinggal diimplementasi
                 }
             }
-            GUILayout.EndVertical();
-            GUI.EndScrollView();
-            GUILayout.EndArea();
+            //GUILayout.EndVertical();
+            GUILayout.EndScrollView();
 
-            posFieldY += txtAreaH;
+            GUILayout.Label(submitKegInfo, styleFormWarning);
 
-            GUI.Label(new Rect(cornerBox_X + 10, posFieldY + 10, wBox, 40), submitKegInfo);
-            posFieldY += txtFieldHplusMargin;
-
-            if (GUI.Button(new Rect(cornerBox_X + 60, posFieldY + 20, wBox - 180, 30), "Simpan"))
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Simpan"))
             {
                 if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
                 {
@@ -1092,6 +1122,9 @@ public class MenuUnit : MonoBehaviour
                         MenitDurasi = MenitDurasi == "" ? "0" : MenitDurasi;
                         TimeSpan durasi = TimeSpan.FromDays(Double.Parse(HariDurasi)).Add(TimeSpan.FromHours(Double.Parse(JamDurasi)).Add(TimeSpan.FromMinutes(Double.Parse(MenitDurasi))));
 
+                        string pathToUploadedFile = uploadSelectedFile();
+
+                        //tambah ke list
                         OperationManager.addToOperationList(
                             new OperationItem(
                                 PlayerPrefs.GetString("satuan", ""),
@@ -1099,7 +1132,7 @@ public class MenuUnit : MonoBehaviour
                                 NamaKeg,
                                 Lokasi,
                                 Deskripsi,
-                                null,
+                                pathToUploadedFile,
                                 null,
                                 waktuMulai,
                                 durasi, toggleFile, toggleUnitConfig));
@@ -1126,8 +1159,8 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).description = Deskripsi;
                         //((OperationItem)OperationManager.operationList[nowEditingOpId]).startTime = waktuMulai;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).duration = durasi;
-                        
-                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).prosesStartAndEndTime(waktuMulai,Hari[selectedItemIndex].text,durasi);
+
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).prosesStartAndEndTime(waktuMulai, Hari[selectedItemIndex].text, durasi);
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasVideo = toggleFile;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
                         emptyTheField();
@@ -1135,27 +1168,109 @@ public class MenuUnit : MonoBehaviour
                         nowEditingOpId = GA_NGEDIT;
                         list = true;
                     }
-                    foreach (OperationItem oi in OperationManager.operationList)
-                    {
-                        Debug.Log("opList. opName = " + oi.name);
-                    }
-                    Debug.Log("SETELAH SORTING:");
+
+                    //foreach (OperationItem oi in OperationManager.operationList)
+                    //{
+                    //    Debug.Log("opList. opName = " + oi.name);
+                    //}
+                    //Debug.Log("SETELAH SORTING:");
                     OperationItem_SortByHariStartTimeAscending comp = new OperationItem_SortByHariStartTimeAscending();
                     OperationManager.operationList.Sort(comp);
-                    foreach (OperationItem oi in OperationManager.operationList)
-                    {
-                        Debug.Log("opList. opName = "+oi.name);
-                    }
+                    //foreach (OperationItem oi in OperationManager.operationList)
+                    //{
+                    //    Debug.Log("opList. opName = " + oi.name);
+                    //}
                 }
 
             }
-            if (GUI.Button(new Rect(cornerBox_X + 140, posFieldY + 20, wBox - 180, 30), "Batal"))
+            if (GUILayout.Button("Batal"))
             {
                 showFormKegiatan = false;
                 nowEditingOpId = GA_NGEDIT;
             }
+            GUILayout.EndHorizontal();
+
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+
+            GUI.backgroundColor = Color.grey;
+
+            GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
+
+            //return;
         }
-        GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
+
+        // dialog box utk konfirmasi delete file pendukung
+        if (toggleShowDialogDelFile)
+        {
+
+            GUILayout.BeginArea(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), GUI.skin.box);
+            GUILayout.BeginVertical();
+            GUILayout.Label("Yakin hapus file ini?", styleSaveList);
+            GUILayout.Space(30);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Ya"))
+            {
+                Debug.Log("deleting: " + m_textPath);
+                //if (FileUtil.DeleteFileOrDirectory(@m_textPath))
+                try
+                {
+                    string filename = m_textPath;
+                    if (File.Exists(filename))
+                    {
+                        File.Delete(filename);
+                    }
+                    else
+                    {
+                        Debug.Log("File does not exist!");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                } 
+
+                m_textPath = EMPTY_FILE_STRING;
+                //if ()
+                //{
+                //    Debug.Log("deleting berhasil");
+                //    m_textPath = EMPTY_FILE_STRING;
+                //}
+                //else
+                //{
+                //    Debug.Log("deleting gagal");
+                //}
+                toggleShowDialogDelFile = false;
+            }
+            if (GUILayout.Button("Batal"))
+            {
+                toggleShowDialogDelFile = false;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
+
+        //GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
+    }
+
+    private string uploadSelectedFile()
+    {
+
+        //uploading the file
+        string namaFile = Path.GetFileName(m_textPath);
+        if (m_textPath == null)
+        {
+            //submitUpload = "File belum dipilih";
+            return "";
+        }
+        else
+        {
+            FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
+            //submitUpload = "File berhasil diupload";
+            Debug.Log("File berhasil diupload");
+            return lokasiUpload + namaFile;
+        }
     }
 
     private void emptyTheField()
@@ -1220,14 +1335,14 @@ public class MenuUnit : MonoBehaviour
 
         if (showUdara)
         {
-            
+
             GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            for (int i=0, len=unitUdaraList.Length; i<len; i++)
+            for (int i = 0, len = unitUdaraList.Length; i < len; i++)
             {
                 UnitInfo uin = unitUdaraList[i];
                 if (uin.building == null) { GUI.enabled = false; } else { GUI.enabled = true; }
-                GUILayout.BeginVertical(uin.texture, GUI.skin.box,GUILayout.Width(70));
+                GUILayout.BeginVertical(uin.texture, GUI.skin.box, GUILayout.Width(70));
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(uin.name, GUILayout.Height(kegiatanH)))
                 {
@@ -1261,7 +1376,7 @@ public class MenuUnit : MonoBehaviour
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
             return;
-            
+
         }
         else if (showDarat)
         {
@@ -1283,7 +1398,7 @@ public class MenuUnit : MonoBehaviour
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
             return;
-            
+
         }
         else if (showPersonel)
         {
@@ -1401,7 +1516,7 @@ public class MenuUnit : MonoBehaviour
                 new UnitInfo("TMR-385", KRIteukuumar,buildings[25]),
                 new UnitInfo("CND-375", KRIcutnyakdien,buildings[26])
             };
-        
+
         //darat
         leopard = (Texture2D)Resources.Load("Leopard");
         scorpion = (Texture2D)Resources.Load("Scorpion");
@@ -1479,7 +1594,9 @@ public class MenuUnit : MonoBehaviour
     protected void FileSelectedCallback(string path)
     {
         m_fileBrowser = null;
-        m_textPath = path;
+        // pengosongan field dilakukan oleh tombol "X", sehingga kalo path null (yg artinya Batal pilih file), dia ga merubah pathnya.
+        if (!string.IsNullOrEmpty(path))
+            m_textPath = path;
     }
 
     //end file browser
