@@ -31,7 +31,7 @@ public class charControllerPenerjun : MonoBehaviour {
 		{
 			animation.CrossFade("run",0.3f);
 			
-			myTransform.Translate(Vector3.forward * 5 * Time.deltaTime);
+			myTransform.Translate(Vector3.forward * 13 * Time.deltaTime);
 			
 			myTransform.LookAt(myTarget);
 		}
