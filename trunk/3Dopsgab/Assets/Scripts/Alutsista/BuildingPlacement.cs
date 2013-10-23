@@ -55,6 +55,11 @@ public class BuildingPlacement : MonoBehaviour {
                     currentBuilding.collider.gameObject.name = newName;
 				}
 			}
+            //klik kanan untuk cancel
+            if (Input.GetMouseButtonDown(1)) 
+            {
+                Destroy(currentBuilding.gameObject);
+            }
 		}
 		else {
 			if (Input.GetMouseButtonDown(0)) {
@@ -88,5 +93,11 @@ public class BuildingPlacement : MonoBehaviour {
 		hasPlaced = false;
 		currentBuilding = ((GameObject)Instantiate(b)).transform;
 		placeableBuilding = currentBuilding.GetComponent<PlaceableBuilding>();
+
+        GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
+        if (unitManagerObject != null)
+        {
+            currentBuilding.parent = unitManagerObject.transform;
+        }
 	}
 }
