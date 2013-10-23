@@ -862,6 +862,7 @@ ModelImporter:
     7400040: work_out1
     7400042: sallute_end
     7400044: sallute_start
+    7400046: walk0
     9500000: //RootNode
     11100000: //RootNode
     13700000: AK-74u
@@ -879,15 +880,15 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 1
     clipAnimations:
-    - name: crouch_to_stand
-      takeName: crouch_to_stand
+    - name: walk0
+      takeName: walk
       firstFrame: 0
-      lastFrame: 33
-      wrapMode: 1
+      lastFrame: 24
+      wrapMode: 2
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
-      loop: 0
+      loop: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -1134,8 +1135,8 @@ ModelImporter:
     - name: stand
       takeName: stand
       firstFrame: 1
-      lastFrame: 1.10000002
-      wrapMode: 0
+      lastFrame: 1.53999996
+      wrapMode: 1
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -1265,7 +1266,7 @@ ModelImporter:
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
-      loop: 0
+      loop: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
