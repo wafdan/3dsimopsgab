@@ -92,6 +92,20 @@ public class HistoryManager : MonoBehaviour
         }
     }
 
+
+    internal static string getCleanName(Transform myTransform, string which)
+    {
+        //prepare to add to history
+        string name = myTransform.collider.gameObject.name;
+        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
+        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
+        int id = myTransform.collider.gameObject.GetInstanceID();
+        string newName = (which == "name") ? prefabName+id : (which == "prefab") ? prefabName : "undefined";
+
+        if (which == "name") return newName;
+        else if (which == "prefab") return prefabName;
+        else return "";
+    }
 }
 
 public class HistoryItem

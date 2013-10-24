@@ -8,6 +8,7 @@ public class PlaceableBuilding : MonoBehaviour {
 	public List<Collider> colliders = new List<Collider>();
 	private bool isSelected;
 	public string bName;
+    private BasicUnitMovement bm;//caching
 
 	void OnGUI() {
 		if (isSelected) {
@@ -17,13 +18,14 @@ public class PlaceableBuilding : MonoBehaviour {
 	}
 	
 	void OnTriggerEnter(Collider c) {
-		if (c.tag == "Building") {
+		if (c.tag == "Building" || IsKenaDaratan(c)) {
 			colliders.Add(c);	
 		}
 	}
 	
 	void OnTriggerExit(Collider c) {
-		if (c.tag == "Building") {
+        if (c.tag == "Building" || IsKenaDaratan(c))
+        {
 			colliders.Remove(c);	
 		}
 	}
@@ -32,5 +34,16 @@ public class PlaceableBuilding : MonoBehaviour {
 		isSelected = s;	
 	}
 
-	
+    public bool IsKenaDaratan(Collider c)
+    {
+        bm = (bm==null)?gameObject.GetComponent<BasicUnitMovement>():bm;
+        if (bm.isUnitLaut)
+        {
+            if (c.tag == "daratan")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

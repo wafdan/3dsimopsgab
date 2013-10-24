@@ -7,13 +7,25 @@ public class BuildingPlacement : MonoBehaviour {
 	
 	private PlaceableBuilding placeableBuilding;
 	private Transform currentBuilding;
-	private bool hasPlaced;
+
+    private Transform daratan;
+
+    private Color normalColor =new Color(0.846f, 0.808f, 0.808f, 1.000f);
+
+	public static bool hasPlaced;
 	
 	public LayerMask buildingsMask;
 	
 	private PlaceableBuilding placeableBuildingOld;
     private float unitAltitude;
-	
+
+    void Start()
+    {
+        daratan = GameObject.FindGameObjectWithTag("daratan").transform;
+        if (daratan == null) daratan = GameObject.Find("Peta_Indonesia").transform;
+
+    }
+
 	// Update is called once per frame
 	void Update () {
 		Vector3 m = Input.mousePosition;
@@ -34,25 +46,22 @@ public class BuildingPlacement : MonoBehaviour {
 
 		if (!hasPlaced) {
 			currentBuilding.position = new Vector3(p.x,unitAltitude,p.z);
-			
+
+            checkLegalPos();
+
 			if (Input.GetMouseButtonDown(0)) {
 				if (IsLegalPosition()) {
 					hasPlaced = true;
 
-                    //prepare to add to history
-                    string name = currentBuilding.collider.gameObject.name;
-                    int idxclone = currentBuilding.collider.gameObject.name.IndexOf("(Clone)");
-                    string prefabName = (idxclone<0)?name:name.Remove(idxclone,"(Clone)".Length);
-                    int id = currentBuilding.collider.gameObject.GetInstanceID();
-                    string newName = prefabName+""+id;
                     //handling unit laut
                     if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitLaut)
                     {
                         currentBuilding.position = new Vector3(p.x, BasicUnitMovement.UNIT_LAUT_Y, p.z);
                     }
-                    HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,newName,prefabName,currentBuilding.position));
+                    //add to history
+                    HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,getCleanName(currentBuilding,"name"),getCleanName(currentBuilding,"prefab"),currentBuilding.position));
                     //change name of the new added unit
-                    currentBuilding.collider.gameObject.name = newName;
+                    currentBuilding.collider.gameObject.name = getCleanName(currentBuilding, "name");
 				}
 			}
             //klik kanan untuk cancel
@@ -81,6 +90,12 @@ public class BuildingPlacement : MonoBehaviour {
 		}
 	}
 
+    private void checkLegalPos()
+    {
+        if (!IsLegalPosition()) currentBuilding.gameObject.renderer.material.color = Color.red;
+        else currentBuilding.gameObject.renderer.material.color = normalColor;
+    }
+    
 
 	bool IsLegalPosition() {
 		if (placeableBuilding.colliders.Count > 0) {
@@ -88,7 +103,12 @@ public class BuildingPlacement : MonoBehaviour {
 		}
 		return true;
 	}
-	
+
+    public string getCleanName(Transform myTransform, string which)
+    {
+        return HistoryManager.getCleanName(myTransform, which);
+    }
+
 	public void SetItem(GameObject b) {
 		hasPlaced = false;
 		currentBuilding = ((GameObject)Instantiate(b)).transform;
