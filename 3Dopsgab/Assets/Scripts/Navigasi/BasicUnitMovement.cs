@@ -343,7 +343,7 @@ public class BasicUnitMovement : MonoBehaviour
         waypoints.Add(wpItem);
 
         //add to history
-        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, getCleanName("name"), getCleanName("prefab"), wpItem));
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, getCleanName(myTransform,"prefab"), getCleanName(myTransform,"prefab"), wpItem));
         
     }
 
@@ -356,7 +356,7 @@ public class BasicUnitMovement : MonoBehaviour
         tarpoints.Add(tp);
 
         //add to history
-        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, getCleanName("name"), getCleanName("prefab"), tp));
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, getCleanName(myTransform,"name"), getCleanName(myTransform,"prefab"), tp));
 
     }
 
@@ -370,18 +370,9 @@ public class BasicUnitMovement : MonoBehaviour
         }
     }
 
-    private string getCleanName(string which)
+    public string getCleanName(Transform myTransform, string which)
     {
-        //prepare to add to history
-        string name = myTransform.collider.gameObject.name;
-        int idxclone = myTransform.collider.gameObject.name.IndexOf("(Clone)");
-        string prefabName = (idxclone < 0) ? name : name.Remove(idxclone, "(Clone)".Length);
-        int id = myTransform.collider.gameObject.GetInstanceID();
-        string newName = name;
-
-        if (which == "name") return newName;
-        else if (which == "prefab") return prefabName;
-        else return "";
+        return HistoryManager.getCleanName(myTransform, which);
     }
 
 
