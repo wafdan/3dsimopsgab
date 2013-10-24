@@ -9,6 +9,7 @@ public class MenuUnit : MonoBehaviour
     //File Browser
     protected string lokasiUpload = "Assets\\Upload\\";
     protected string m_textPath;
+    protected string unitConf_textPath;
     protected FileBrowser m_fileBrowser;
     [SerializeField]
     protected Texture2D m_directoryImage,
@@ -16,6 +17,8 @@ public class MenuUnit : MonoBehaviour
     private bool showSaveBrowser = false;
     private bool showSaveUnitDialog = false;
     private bool showConfirmDeleteSave = false;
+    private bool showConfirmReplaceSave = false;
+    
     private bool showPauseMenu = true;
     public static int curOpPlayIdx;
 
@@ -141,8 +144,8 @@ public class MenuUnit : MonoBehaviour
         {
             if (m_kegListSave == null)
             {
-                m_kegListSave = new GUIStyle(GUI.skin.box);
-                m_kegListSave.alignment = TextAnchor.UpperCenter;
+                m_kegListSave = new GUIStyle(GUI.skin.label);
+                m_kegListSave.alignment = TextAnchor.MiddleCenter;
             }
             return m_kegListSave;
         }
@@ -393,7 +396,7 @@ public class MenuUnit : MonoBehaviour
 
     // save game window
     string NamaFileSave = "";
-    string filenameToDelete = "";
+    string filenameYangDimaksud = "";
 
     // position of description scroll
     Vector2 playGUIkegScrollPos = Vector2.zero;
@@ -403,9 +406,17 @@ public class MenuUnit : MonoBehaviour
     private UnitInfo[] unitDaratList; // buat list menu unit darat
     private UnitInfo[] unitPersonelList; // buat list menu personel
     private UnitInfo[] unitAlutList; // buat list menu alutsista
+    private Vector2 scrollPosUnitUdara = Vector2.zero;
+    private Vector2 scrollPosUnitLaut = Vector2.zero;
+    private Vector2 scrollPosUnitDarat = Vector2.zero;
+    private Vector2 scrollPosUnitPersonel = Vector2.zero;
+    private Vector2 scrollPosUnitAlutsista = Vector2.zero;
 
     public static string EMPTY_FILE_STRING = "---- file kosong ----";
     private bool toggleShowDialogDelFile = false;
+    private Vector2 scrollPositionSaveLoad = Vector2.zero;
+    private string saveLoadWarning = "";
+    
 
     void Start()
     {
@@ -537,9 +548,11 @@ public class MenuUnit : MonoBehaviour
             else
             //if (editUnitMode)
             {
-                getUnitControlButtonUI();
-
-                getMilitaryUnitGUI();
+                if (!showSaveBrowser)
+                {
+                    getUnitControlButtonUI();
+                    getMilitaryUnitGUI();
+                }
             }
         }
         if (gamePaused)
@@ -581,29 +594,74 @@ public class MenuUnit : MonoBehaviour
                 }
             }//endif gamePaused
         }
-        if (gamePaused && showSaveBrowser)
+        if (gamePaused && showSaveBrowser && !editUnitMode)
         {
             showPauseMenu = false;
-            showSaveWindow();
+            showSaveWindow(OperationManager.FILE_EXT);
         }
         else
         {
             showPauseMenu = true;
         }
+
+        if (editUnitMode && showSaveBrowser)
+        {
+            //gamePaused = true;
+            if ((Event.current.type == EventType.Repaint))
+            HistoryManager.showHistory = false;
+            showSaveWindow(OperationManager.FILE_EXT_UNITCONF);
+        }
     }
 
-    private void showSaveWindow()
+    private void showSaveWindow(string fileextension)
     {
-        if (!showConfirmDeleteSave)
+        GUI.backgroundColor = Color.white;
+        if (!showConfirmDeleteSave && !showConfirmReplaceSave)
         {
-            string[] array2 = Directory.GetFiles(Application.persistentDataPath + "/", "*" + OperationManager.FILE_EXT);
+            string[] array2 = Directory.GetFiles(Application.persistentDataPath + "/", "*" + fileextension);
             GUILayout.BeginArea(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 300, 400, 400), GUI.skin.box);
 
             GUILayout.BeginVertical(styleSaveList);
+            
+            if (array2.Length > 0)
+            {
+                GUILayout.Label("File-file hasil save.");
+                scrollPositionSaveLoad = GUILayout.BeginScrollView(scrollPositionSaveLoad);
+                foreach (string sg in array2)
+                {
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button(Path.GetFileNameWithoutExtension(sg)))
+                    {
+                        NamaFileSave = Path.GetFileNameWithoutExtension(sg);
+                        //LevelSerializer.LoadSavedLevelFromFile(Path.GetFileName(sg));
+                        //Time.timeScale = 1;
+                    }
+                    GUI.backgroundColor = Color.red;
+                    if (GUILayout.Button("X", styleSaveItemDel))
+                    {
+                        showConfirmDeleteSave = true;
+                        filenameYangDimaksud = sg;
+                    }
+                    GUI.backgroundColor = Color.gray;
+                    GUILayout.EndHorizontal();
+                    
+                }
+                GUILayout.EndScrollView();
+            }
+            
+            //for(var sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName]) { 
+            //   if(GUILayout.Button(sg.Caption)) { 
+            //     LevelSerializer.LoadNow(sg.Data);
+            //     Time.timeScale = 1;
+            //     } 
+            //} 
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(saveLoadWarning, styleFormWarning);
 
-            GUILayout.Label("Nama file save:");
+            GUILayout.Label("Nama file:");
 
             NamaFileSave = GUILayout.TextField(NamaFileSave);
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Save Game"))
             {
                 string formattedName = "";
@@ -615,49 +673,58 @@ public class MenuUnit : MonoBehaviour
                 }
                 else
                 {
-                    formattedName = NamaFileSave + OperationManager.FILE_EXT;
+                    formattedName = NamaFileSave + fileextension;
                 }
-                OperationManager.saveGameToFile(formattedName);
 
-            }
-            GUILayout.Space(60);
-
-            if (array2.Length > 0)
-            {
-                GUILayout.Label("File-file hasil save. Untuk Load, klik salah satu.");
-                foreach (string sg in array2)
+                if (File.Exists(Application.persistentDataPath + "/" + NamaFileSave + fileextension))
                 {
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button(Path.GetFileNameWithoutExtension(sg)))
-                    {
-                        LevelSerializer.LoadSavedLevelFromFile(Path.GetFileName(sg));
-                        //Time.timeScale = 1;
-                    }
-                    GUI.backgroundColor = Color.red;
-                    if (GUILayout.Button("X", styleSaveItemDel))
-                    {
-                        showConfirmDeleteSave = true;
-                        filenameToDelete = sg;
-                    }
-                    GUI.backgroundColor = Color.gray;
-                    GUILayout.EndHorizontal();
-
+                    showConfirmReplaceSave = true;
+                    filenameYangDimaksud = formattedName;
+                    //saveLoadWarning = "Nama file yang sama sudah ada. Timpa?";
+                    //LevelSerializer.LoadSavedLevelFromFile(Path.GetFileName(NamaFileSave + fileextension));
                 }
+                else
+                {
+                    if (fileextension == OperationManager.FILE_EXT)
+                        OperationManager.saveGameToFile(formattedName);
+                    else if (fileextension == OperationManager.FILE_EXT_UNITCONF)
+                    {
+                        LevelSerializer.SaveObjectTreeToFile(formattedName, unitManagerObject);
+                        unitConf_textPath = formattedName;
+                    }
+                }
+
             }
-            //for(var sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName]) { 
-            //   if(GUILayout.Button(sg.Caption)) { 
-            //     LevelSerializer.LoadNow(sg.Data);
-            //     Time.timeScale = 1;
-            //     } 
-            //} 
-            GUILayout.FlexibleSpace();
-            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Load Game"))
+            {
+                if (File.Exists(Application.persistentDataPath + "/" + NamaFileSave+fileextension))
+                {
+                    saveLoadWarning = "";
+                    if (fileextension == OperationManager.FILE_EXT)
+                        LevelSerializer.LoadSavedLevelFromFile(Path.GetFileName(NamaFileSave + fileextension));
+                    else if (fileextension == OperationManager.FILE_EXT_UNITCONF)
+                    {
+                        Debug.Log("FILE TO LOAD: "+Path.GetFileName(NamaFileSave + fileextension));
+                        LevelSerializer.LoadObjectTreeFromFile(Path.GetFileName(NamaFileSave + fileextension));
+                        unitConf_textPath = Path.GetFileName(NamaFileSave + fileextension);
+                        showSaveBrowser = false;
+                    }
+                    
+                }
+                else
+                {
+                    saveLoadWarning = "File yang Anda maksud tidak ditemukan.";
+                }
+                
+            }
             if (GUILayout.Button("<< Kembali"))
             {
                 showSaveBrowser = false;
             }
             GUILayout.EndHorizontal();
+            GUILayout.Space(30);
             GUILayout.EndVertical();
+
             GUILayout.EndArea();
 
         }
@@ -671,7 +738,7 @@ public class MenuUnit : MonoBehaviour
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Ya"))
             {
-                OperationManager.deleteSavedGame(filenameToDelete);
+                OperationManager.deleteSavedGame(filenameYangDimaksud);
                 showConfirmDeleteSave = false;
             }
             if (GUILayout.Button("Batal"))
@@ -682,6 +749,28 @@ public class MenuUnit : MonoBehaviour
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
+        if (showConfirmReplaceSave)
+        {
+            //delete
+            GUILayout.BeginArea(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), GUI.skin.box);
+            GUILayout.BeginVertical();
+            GUILayout.Label("Nama file yang sama sudah ada. Timpa?", styleSaveList,GUILayout.Width(200));
+            GUILayout.Space(30);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Ya"))
+            {
+                OperationManager.saveGameToFile(filenameYangDimaksud);
+                showConfirmReplaceSave = false;
+            }
+            if (GUILayout.Button("Batal"))
+            {
+                showConfirmReplaceSave = false;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
+        GUI.backgroundColor = Color.grey;
     }
 
     private void getUnitControlButtonUI()
@@ -716,11 +805,21 @@ public class MenuUnit : MonoBehaviour
             testMovementMode = !testMovementMode;
         }
         GUI.backgroundColor = Color.green;
-        if (GUILayout.Button("Simpan Pergerakan"))
+        if (GUILayout.Button("Save/Load Pergerakan"))
         {
             //nah di sini simpan pergerakan unit
-
+            showSaveBrowser = true;
+            HistoryManager.showHistory = false;
+            //LevelSerializer.SaveObjectTreeToFile("testObjectTree.tfguc", unitManagerObject);
+            //Debug.Log(Application.persistentDataPath);
         }
+        //GUI.backgroundColor = Color.grey;
+        //if (GUILayout.Button("Load File Pergerakan"))
+        //{
+            
+        //    LevelSerializer.LoadObjectTreeFromFile("testObjectTree.tfguc");
+        //    //Debug.Log(Application.persistentDataPath);
+        //}
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.white;
         if (GUILayout.RepeatButton("Kembali ke Form Kegiatan"))
@@ -954,6 +1053,26 @@ public class MenuUnit : MonoBehaviour
                     toggleFile = curOpItem.hasVideo;
                     toggleUnitConfig = curOpItem.hasUnitMovement;
 
+                    if (toggleUnitConfig)
+                    {
+                        //load unitconfig
+                        string theFile = Path.GetFileName(curOpItem.unitConfig);// + OperationManager.FILE_EXT_UNITCONF);
+                        Debug.Log("unit conf to load: " + theFile + " dari: " + curOpItem.unitConfig);
+                        if (File.Exists(Application.persistentDataPath + "/" + theFile))
+                        {
+                            LevelSerializer.LoadObjectTreeFromFile(theFile);
+                            unitConf_textPath = theFile;
+                            Debug.Log("loaded: " + theFile);
+                        }
+                    }
+                    else
+                    {
+                        for (int x = 0; x < unitManagerObject.transform.childCount; x++)
+                        {
+                            Destroy(unitManagerObject.transform.GetChild(x).gameObject);
+                        }
+                    }
+
                     showFormKegiatan = true; //tampilkan formnya
                 }
 
@@ -1049,24 +1168,29 @@ public class MenuUnit : MonoBehaviour
                 }
                 GUILayout.FlexibleSpace();
             }
-            
             GUILayout.EndHorizontal();
+
             if (toggleFile)
             {
                 GUILayout.BeginHorizontal(GUI.skin.box);
                 GUILayout.Label(Path.GetFileName(m_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
                 GUI.backgroundColor = Color.red;
-                if (GUILayout.Button("X",GUILayout.Width(25)))
+                if (m_textPath == EMPTY_FILE_STRING)
                 {
-                    if (nowEditingOpId == GA_NGEDIT)
+                    GUI.enabled = false;
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
                     {
-                        m_textPath = EMPTY_FILE_STRING;
+                        if (nowEditingOpId == GA_NGEDIT)
+                        {
+                            m_textPath = EMPTY_FILE_STRING;
+                        }
+                        else
+                        {
+                            Debug.Log("yakin hapus file?");
+                            //toggleShowDialogDelFile = true;
+                        }
                     }
-                    else
-                    {
-                        Debug.Log("yakin hapus file?");
-                        toggleShowDialogDelFile = true;
-                    }
+                    GUI.enabled = true;
                 }
                 GUI.backgroundColor = Color.yellow;
                 GUILayout.EndHorizontal();
@@ -1088,6 +1212,35 @@ public class MenuUnit : MonoBehaviour
                 GUILayout.FlexibleSpace();
             }
             GUILayout.EndHorizontal();
+
+            if (toggleUnitConfig)
+            {
+                GUILayout.BeginHorizontal(GUI.skin.box);
+                Debug.Log("di form: " + Path.GetFileName(unitConf_textPath)+" dari: "+unitConf_textPath);
+                GUILayout.Label(Path.GetFileName(unitConf_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
+                GUI.backgroundColor = Color.red;
+                if (unitConf_textPath == EMPTY_FILE_STRING)
+                {
+                    GUI.enabled = false;
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
+                    {
+                        if (nowEditingOpId == GA_NGEDIT)
+                        {
+                            unitConf_textPath = EMPTY_FILE_STRING;
+                        }
+                        else
+                        {
+
+                            Debug.Log("yakin hapus file?");
+                            toggleShowDialogDelFile = true;
+                        }
+                    }
+                    GUI.enabled = true;
+                }
+                GUI.backgroundColor = Color.yellow;
+                GUILayout.EndHorizontal();
+
+            }
 
             GUILayout.Label("Daftar Scene : ");
             scrollSceneList = GUILayout.BeginScrollView(scrollSceneList, GUILayout.Height(100));
@@ -1137,8 +1290,8 @@ public class MenuUnit : MonoBehaviour
                                 NamaKeg,
                                 Lokasi,
                                 Deskripsi,
-                                pathToUploadedFile,
-                                null,
+                                pathToUploadedFile, /* file */
+                                unitConf_textPath, /* unitconfig */
                                 waktuMulai,
                                 durasi, toggleFile, toggleUnitConfig));
                         emptyTheField();
@@ -1168,6 +1321,9 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).prosesStartAndEndTime(waktuMulai, Hari[selectedItemIndex].text, durasi);
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasVideo = toggleFile;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).files = uploadSelectedFile();
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).unitConfig = unitConf_textPath;
+                        Debug.Log("perbaharui unit config: " + unitConf_textPath);
                         emptyTheField();
                         submitKegInfo = "berhasil diperbaharui";
                         nowEditingOpId = GA_NGEDIT;
@@ -1294,54 +1450,62 @@ public class MenuUnit : MonoBehaviour
 
     private void getMilitaryUnitGUI()
     {
+        float unitMenuH = 120;
+        float unitMenuY = Screen.height - unitMenuH;
+        float unitTabY = unitMenuY - 25;
         GUI.backgroundColor = Color.yellow;
 
-        if (GUI.Button(new Rect(30, 490, 70, kegiatanH), "Udara"))
+        GUILayout.BeginArea(new Rect(10, unitTabY, 70*5, kegiatanH));
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Udara"))
         {
-            showUdara = !showUdara;
+            showUdara = true;// !showUdara;
             showLaut = false;
             showDarat = false;
             showPersonel = false;
             showAlutsista = false;
             //menuKegiatan = true;
         }
-        if (GUI.Button(new Rect(100, 490, 70, kegiatanH), "Laut"))
+        if (GUILayout.Button("Laut"))
         {
-            showLaut = !showLaut;
+            showLaut = true;//!showLaut;
             showUdara = false;
             showDarat = false;
             showPersonel = false;
             showAlutsista = false;
         }
-        if (GUI.Button(new Rect(170, 490, 70, kegiatanH), "Darat"))
+        if (GUILayout.Button("Darat"))
         {
-            showDarat = !showDarat;
+            showDarat = true;//!showDarat;
             showUdara = false;
             showLaut = false;
             showPersonel = false;
             showAlutsista = false;
         }
-        if (GUI.Button(new Rect(240, 490, 80, kegiatanH), "Personel"))
+        if (GUILayout.Button("Personel"))
         {
-            showPersonel = !showPersonel;
+            showPersonel = true;//!showPersonel;
             showUdara = false;
             showLaut = false;
             showDarat = false;
             showAlutsista = false;
         }
-        if (GUI.Button(new Rect(320, 490, 100, kegiatanH), "Alutsista lain"))
+        if (GUILayout.Button("Alutsista lain"))
         {
-            showAlutsista = !showAlutsista;
+            showAlutsista = true;//!showAlutsista;
             showUdara = false;
             showLaut = false;
             showDarat = false;
             showPersonel = false;
         }
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
 
         if (showUdara)
         {
 
-            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(10, unitMenuY, width, unitMenuH), GUI.skin.box);
+            scrollPosUnitUdara = GUILayout.BeginScrollView(scrollPosUnitUdara);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             for (int i = 0, len = unitUdaraList.Length; i < len; i++)
             {
@@ -1357,13 +1521,15 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
             return;
 
         }
         else if (showLaut)
         {
-            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(0, unitMenuY, width, unitMenuH), GUI.skin.box);
+            scrollPosUnitLaut = GUILayout.BeginScrollView(scrollPosUnitLaut);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             for (int i = 0, len = unitLautList.Length; i < len; i++)
             {
@@ -1379,13 +1545,15 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
             return;
 
         }
         else if (showDarat)
         {
-            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(0, unitMenuY, width, unitMenuH), GUI.skin.box);
+            scrollPosUnitDarat = GUILayout.BeginScrollView(scrollPosUnitDarat);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             for (int i = 0, len = unitDaratList.Length; i < len; i++)
             {
@@ -1401,13 +1569,15 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
             return;
 
         }
         else if (showPersonel)
         {
-            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(0, unitMenuY, width, unitMenuH), GUI.skin.box);
+            scrollPosUnitPersonel = GUILayout.BeginScrollView(scrollPosUnitPersonel);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             for (int i = 0, len = unitPersonelList.Length; i < len; i++)
             {
@@ -1423,6 +1593,7 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
             return;
 
@@ -1430,7 +1601,8 @@ public class MenuUnit : MonoBehaviour
 
         else if (showAlutsista)
         {
-            GUILayout.BeginArea(new Rect(0, 520, width, 100), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(0, unitMenuY, width, unitMenuH), GUI.skin.box);
+            scrollPosUnitAlutsista = GUILayout.BeginScrollView(scrollPosUnitAlutsista);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             for (int i = 0, len = unitAlutList.Length; i < len; i++)
             {
@@ -1446,13 +1618,14 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
             return;
 
         }
         else
         {
-            GUI.Box(new Rect(0, 520, width, 100), "");
+            GUI.Box(new Rect(0, unitMenuY, width, 100), "");
         }
     }
 

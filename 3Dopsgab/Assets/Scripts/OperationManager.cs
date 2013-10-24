@@ -30,6 +30,7 @@ public class OperationManager : MonoBehaviour
     public static ArrayList operationList = new ArrayList();
     public static int InstanceIdx = 0;
     public static string FILE_EXT=".tfgsg";
+    public static string FILE_EXT_UNITCONF = ".tfguc";
 
     public static DateTime HARI_HA = new DateTime(2007, 10, 1, 00, 00, 00);
 
@@ -319,7 +320,8 @@ public class OperationItem: IComparable
     public Vector3 locationPoint;
     public string description;
     public string files;
-    public UnityEngine.Object unitConfig;
+    //public UnityEngine.Object unitConfig;
+    public string unitConfig;
     //public string startTime;
     public DateTime startTime;
     public TimeSpan duration;
@@ -356,7 +358,7 @@ public class OperationItem: IComparable
         endTime = OperationManager.HARI_HA;
     }
 
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, UnityEngine.Object newUnitConfig)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string newUnitConfig)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -370,7 +372,7 @@ public class OperationItem: IComparable
         endTime = OperationManager.HARI_HA;
     }
 
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, string newUnitConfig)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -385,7 +387,7 @@ public class OperationItem: IComparable
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, UnityEngine.Object newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, string newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
