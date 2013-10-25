@@ -10,11 +10,25 @@ public class modelMajuPesawat : MonoBehaviour {
 	void Start () {
 		myTransform = transform;
 		StartCoroutine(destroyModel());
+		
+		if( myTransform.name == "CN-235_animate")
+		{
+			animation["Propeler_roll"].wrapMode = WrapMode.Loop;
+			animation.Play("Propeler_roll");	
+		}
+		
+		if( myTransform.name == "c-130_hercules_axis")
+		{
+			animation["Propeler_Rolling"].wrapMode = WrapMode.Loop;
+			animation.Play("Propeler_Rolling");
+		}
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		myTransform.Translate(Vector3.forward * kecepatan * Time.deltaTime);
+		
 	}
 	
 	IEnumerator destroyModel()
@@ -22,4 +36,5 @@ public class modelMajuPesawat : MonoBehaviour {
 		yield return new WaitForSeconds(16f);
 		Destroy(myTransform.gameObject);
 	}
+	
 }

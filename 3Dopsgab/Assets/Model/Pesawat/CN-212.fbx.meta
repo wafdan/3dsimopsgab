@@ -1,0 +1,82 @@
+fileFormatVersion: 2
+guid: 5b6df45c2e39f664e8f76153147bce57
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: cassa_c212
+    100002: //RootNode
+    100004: CN235_001
+    100006: CN235_Prop_L
+    100008: CN235_Prop_R
+    100010: Main_body
+    100012: Propeler_L
+    100014: Propeler_R
+    400000: cassa_c212
+    400002: //RootNode
+    400004: CN235_001
+    400006: CN235_Prop_L
+    400008: CN235_Prop_R
+    400010: Main_body
+    400012: Propeler_L
+    400014: Propeler_R
+    4300000: CN235_001
+    4300002: CN235_Prop_R
+    4300004: CN235_Prop_L
+    7400000: idle
+    7400002: Prop_roll
+    9500000: //RootNode
+    13700000: CN235_001
+    13700002: CN235_Prop_L
+    13700004: CN235_Prop_R
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    handles: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  additionalBone: 1
+  animationType: 2
+  userData: 
