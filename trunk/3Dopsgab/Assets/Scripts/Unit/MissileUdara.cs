@@ -4,8 +4,8 @@ using System.Collections;
 public class MissileUdara : MonoBehaviour {
 	private Transform myTransform;
 	
-	private float kecepatanMissile = 80;
-	public Transform asapLedakan;
+	private float kecepatanMissile = 50;
+	//public Transform asapLedakan;
 	public Transform ledakan;
 	
 	private RaycastHit hit;
@@ -24,7 +24,7 @@ public class MissileUdara : MonoBehaviour {
 		if( Physics.Raycast(myTransform.position, Vector3.up, out hit, range))
 		{
 			Debug.Log("darataaaaaann");
-			Instantiate(asapLedakan, myTransform.position, Quaternion.identity);
+			//Instantiate(asapLedakan, myTransform.position, Quaternion.identity);
 			Instantiate(ledakan, myTransform.position, Quaternion.identity);
 		}
 		

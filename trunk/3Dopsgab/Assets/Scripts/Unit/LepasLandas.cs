@@ -9,6 +9,18 @@ public class LepasLandas : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		myTransform = transform;
+		
+		if( myTransform.name == "CN-235_animate")
+		{
+			animation["Propeler_roll"].wrapMode = WrapMode.Loop;
+			animation.Play("Propeler_roll");	
+		}
+		
+		if( myTransform.name == "c-130_hercules_axis")
+		{
+			animation["Propeler_Rolling"].wrapMode = WrapMode.Loop;
+			animation.Play("Propeler_Rolling");
+		}
 	}
 	
 	// Update is called once per frame
