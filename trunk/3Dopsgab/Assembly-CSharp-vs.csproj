@@ -98,6 +98,9 @@
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
      <Compile Include="Assets\Scripts\Unit\CameraEmbarkasiLaut.cs" />
      <Compile Include="Assets\Scripts\Unit\CameraLedakanCampTank.cs" />
+     <Compile Include="Assets\Scripts\Unit\Debarkasi\AmpibiDebarkasi.cs" />
+     <Compile Include="Assets\Scripts\Unit\Debarkasi\CameraDebarkasi.cs" />
+     <Compile Include="Assets\Scripts\Unit\Debarkasi\KRIAngkutDebarkasi.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiLaut.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiTank.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIAngkutEmbarkasi.cs" />
@@ -125,6 +128,7 @@
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
      <Compile Include="Assets\Scripts\Unit\amphibi.cs" />
+     <Compile Include="Assets\Scripts\Unit\bellScript.cs" />
      <Compile Include="Assets\Scripts\Unit\cameraPenerbanganLepasLandas.cs" />
      <Compile Include="Assets\Scripts\Unit\cameraPenerjunanUnit.cs" />
      <Compile Include="Assets\Scripts\Unit\cameraToTarget.cs" />
