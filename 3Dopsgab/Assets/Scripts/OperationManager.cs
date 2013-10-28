@@ -320,8 +320,8 @@ public class OperationItem: IComparable
     public Vector3 locationPoint;
     public string description;
     public string files;
-    //public UnityEngine.Object unitConfig;
-    public string unitConfig;
+    public byte[] unitConfig;
+    //public string unitConfig;
     //public string startTime;
     public DateTime startTime;
     public TimeSpan duration;
@@ -339,7 +339,7 @@ public class OperationItem: IComparable
         locationPoint = Vector3.zero;
         description = "";
         files = "";
-        unitConfig = null;
+        unitConfig = new byte[]{};
         startTime = OperationManager.HARI_HA;
         endTime = OperationManager.HARI_HA;
     }
@@ -367,7 +367,7 @@ public class OperationItem: IComparable
         this.description = deskripsi;
         this.locationPoint = Vector3.zero;
         this.files = "";
-        this.unitConfig = newUnitConfig;
+        this.unitConfig = new byte[] { };
         startTime = OperationManager.HARI_HA;
         endTime = OperationManager.HARI_HA;
     }
@@ -381,13 +381,13 @@ public class OperationItem: IComparable
         this.description = deskripsi;
         this.locationPoint = Vector3.zero;
         this.files = file;
-        this.unitConfig = newUnitConfig;
+        this.unitConfig = new byte[] { };
         startTime = OperationManager.HARI_HA;
         endTime = OperationManager.HARI_HA;
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, string newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;

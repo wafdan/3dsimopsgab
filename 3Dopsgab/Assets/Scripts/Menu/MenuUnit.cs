@@ -18,7 +18,7 @@ public class MenuUnit : MonoBehaviour
     private bool showSaveUnitDialog = false;
     private bool showConfirmDeleteSave = false;
     private bool showConfirmReplaceSave = false;
-    
+
     private bool showPauseMenu = true;
     public static int curOpPlayIdx;
 
@@ -198,7 +198,7 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_fileItem;
 
-    
+
 
     protected GUIStyle styleFormWarning
     {
@@ -416,7 +416,8 @@ public class MenuUnit : MonoBehaviour
     private bool toggleShowDialogDelFile = false;
     private Vector2 scrollPositionSaveLoad = Vector2.zero;
     private string saveLoadWarning = "";
-    
+    private byte[] unitConfTemp;
+
 
     void Start()
     {
@@ -505,6 +506,8 @@ public class MenuUnit : MonoBehaviour
         else
             Time.timeScale = 1.0f;
 
+        if (editUnitMode && !showSaveBrowser) HistoryManager.showHistory = true;
+        else HistoryManager.showHistory = false;
 
 
         showHUDTop = !showPlayMode; //kalo lagi play kegiatan, GUI lain Hide semua.
@@ -540,9 +543,6 @@ public class MenuUnit : MonoBehaviour
             if (!editUnitMode)
             {
                 getManajemenKegiatanGUI();
-                //GUI.Box(new Rect(100, 0, 50, 20), Hari[selectedItemIndex].text);
-
-                //getMilitaryUnitGUI(); Ditampilin pas Edit Unit mode aja
 
             }// endif hudtop
             else
@@ -606,9 +606,6 @@ public class MenuUnit : MonoBehaviour
 
         if (editUnitMode && showSaveBrowser)
         {
-            //gamePaused = true;
-            if ((Event.current.type == EventType.Repaint))
-            HistoryManager.showHistory = false;
             showSaveWindow(OperationManager.FILE_EXT_UNITCONF);
         }
     }
@@ -622,7 +619,7 @@ public class MenuUnit : MonoBehaviour
             GUILayout.BeginArea(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 300, 400, 400), GUI.skin.box);
 
             GUILayout.BeginVertical(styleSaveList);
-            
+
             if (array2.Length > 0)
             {
                 GUILayout.Label("File-file hasil save.");
@@ -644,11 +641,11 @@ public class MenuUnit : MonoBehaviour
                     }
                     GUI.backgroundColor = Color.gray;
                     GUILayout.EndHorizontal();
-                    
+
                 }
                 GUILayout.EndScrollView();
             }
-            
+
             //for(var sg in LevelSerializer.SavedGames[LevelSerializer.PlayerName]) { 
             //   if(GUILayout.Button(sg.Caption)) { 
             //     LevelSerializer.LoadNow(sg.Data);
@@ -689,33 +686,43 @@ public class MenuUnit : MonoBehaviour
                         OperationManager.saveGameToFile(formattedName);
                     else if (fileextension == OperationManager.FILE_EXT_UNITCONF)
                     {
-                        LevelSerializer.SaveObjectTreeToFile(formattedName, unitManagerObject);
-                        unitConf_textPath = formattedName;
+                        unitManager.resetUnitPos();
+                        GameObject unitConObject = GameObject.Find("UnitContainer");
+                        if (unitConObject != null)
+                        {
+                            LevelSerializer.SaveObjectTreeToFile(formattedName, unitConObject);
+                            unitConf_textPath = formattedName;
+                        }
                     }
                 }
 
             }
             if (GUILayout.Button("Load Game"))
             {
-                if (File.Exists(Application.persistentDataPath + "/" + NamaFileSave+fileextension))
+                if (File.Exists(Application.persistentDataPath + "/" + NamaFileSave + fileextension))
                 {
                     saveLoadWarning = "";
                     if (fileextension == OperationManager.FILE_EXT)
+                    {
+                        unitManager.removeAllUnit();
                         LevelSerializer.LoadSavedLevelFromFile(Path.GetFileName(NamaFileSave + fileextension));
+                    }
                     else if (fileextension == OperationManager.FILE_EXT_UNITCONF)
                     {
-                        Debug.Log("FILE TO LOAD: "+Path.GetFileName(NamaFileSave + fileextension));
+                        unitManager.removeAllUnit();
+                        Debug.Log("FILE TO LOAD: " + Path.GetFileName(NamaFileSave + fileextension));
                         LevelSerializer.LoadObjectTreeFromFile(Path.GetFileName(NamaFileSave + fileextension));
                         unitConf_textPath = Path.GetFileName(NamaFileSave + fileextension);
+                        //unitManager.resetUnitPos();
                         showSaveBrowser = false;
                     }
-                    
+
                 }
                 else
                 {
                     saveLoadWarning = "File yang Anda maksud tidak ditemukan.";
                 }
-                
+
             }
             if (GUILayout.Button("<< Kembali"))
             {
@@ -754,7 +761,7 @@ public class MenuUnit : MonoBehaviour
             //delete
             GUILayout.BeginArea(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), GUI.skin.box);
             GUILayout.BeginVertical();
-            GUILayout.Label("Nama file yang sama sudah ada. Timpa?", styleSaveList,GUILayout.Width(200));
+            GUILayout.Label("Nama file yang sama sudah ada. Timpa?", styleSaveList, GUILayout.Width(200));
             GUILayout.Space(30);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Ya"))
@@ -804,35 +811,42 @@ public class MenuUnit : MonoBehaviour
         {
             testMovementMode = !testMovementMode;
         }
-        GUI.backgroundColor = Color.green;
-        if (GUILayout.Button("Save/Load Pergerakan"))
+        if (GUILayout.Button("Reset Posisi Unit"))
         {
-            //nah di sini simpan pergerakan unit
-            showSaveBrowser = true;
-            HistoryManager.showHistory = false;
-            //LevelSerializer.SaveObjectTreeToFile("testObjectTree.tfguc", unitManagerObject);
-            //Debug.Log(Application.persistentDataPath);
+            //testMovementMode = !testMovementMode;
+            unitManager.resetUnitPos();
         }
-        //GUI.backgroundColor = Color.grey;
-        //if (GUILayout.Button("Load File Pergerakan"))
+        //GUI.backgroundColor = Color.green;
+        //if (GUILayout.Button("Save/Load Pergerakan"))
         //{
-            
-        //    LevelSerializer.LoadObjectTreeFromFile("testObjectTree.tfguc");
-        //    //Debug.Log(Application.persistentDataPath);
+        //    showSaveBrowser = true;
         //}
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.white;
         if (GUILayout.RepeatButton("Kembali ke Form Kegiatan"))
         {
-            HistoryManager.showHistory = false;
-            editUnitMode = !editUnitMode;
+            editUnitMode = false;
             testMovementMode = false;
+            if (nowEditingOpId == GA_NGEDIT)
+                unitConfTemp =  LevelSerializer.SaveObjectTree(GameObject.Find("UnitContainer") as GameObject);
+            //else
+
         }
         GUI.backgroundColor = Color.grey;
         GUILayout.EndVertical();
         GUILayout.EndArea();
         return;
 
+    }
+
+    private void autoSaveUnitConfig()
+    {
+        DateTime When = DateTime.Now;
+        string Name = PlayerPrefs.GetString("satuan");//"Kegiatan";
+        string saveName = string.Format("UNIT {0} - {1:yyyy.MM.dd.HH.MM.ss}", Name, When) + OperationManager.FILE_EXT_UNITCONF;
+        GameObject go = GameObject.Find("UnitContainer");
+        LevelSerializer.SaveObjectTreeToFile(saveName, go);
+        unitConf_textPath = saveName;
     }
     //end onGUI
 
@@ -896,10 +910,10 @@ public class MenuUnit : MonoBehaviour
             GUILayout.Label("Nama Kegiatan :", stylePlayField);
             GUILayout.EndHorizontal();
             GUILayout.Label(opintem.name, stylePlayLabel);
-            GUILayout.Label("mulai: "+opintem.getStartTimeString(), styleClockPlay);
+            GUILayout.Label("mulai: " + opintem.getStartTimeString(), styleClockPlay);
             GUILayout.Label("selesai: " + opintem.getEndTimeString(), styleClockPlay);
             GUILayout.EndVertical();
-            
+
         }
         GUILayout.EndVertical();
         //GUILayout.BeginHorizontal();
@@ -979,6 +993,7 @@ public class MenuUnit : MonoBehaviour
     {
 
         float leftGroupY = 0;
+        
         //combobox hari
         int selectedItemIndex = comboBoxControl.GetSelectedItemIndex();
         selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 142, 25), Hari[selectedItemIndex], Hari, listStyle);
@@ -1055,22 +1070,18 @@ public class MenuUnit : MonoBehaviour
 
                     if (toggleUnitConfig)
                     {
-                        //load unitconfig
-                        string theFile = Path.GetFileName(curOpItem.unitConfig);// + OperationManager.FILE_EXT_UNITCONF);
-                        Debug.Log("unit conf to load: " + theFile + " dari: " + curOpItem.unitConfig);
-                        if (File.Exists(Application.persistentDataPath + "/" + theFile))
-                        {
-                            LevelSerializer.LoadObjectTreeFromFile(theFile);
-                            unitConf_textPath = theFile;
-                            Debug.Log("loaded: " + theFile);
-                        }
+                        //unitConf_textPath = loadUnitConfigFile(curOpItem.unitConfig);
+                        unitManager.removeAllUnit();
+                        LevelSerializer.LoadObjectTree(curOpItem.unitConfig);
+                        
                     }
+                    //DELETE UNIT KALO GA ADA KONFIGURASI, MESTI DITAMBAH MENU "GET FROM PREVIOUS OPERATION" DAN/ATAU "RESET UNIT CONFIG"
                     else
                     {
-                        for (int x = 0; x < unitManagerObject.transform.childCount; x++)
-                        {
-                            Destroy(unitManagerObject.transform.GetChild(x).gameObject);
-                        }
+                        unitConf_textPath = EMPTY_FILE_STRING;
+                        unitManager.removeAllUnit();
+                        
+                        //Destroy(GameObject.Find("UnitContainer") as GameObject);
                     }
 
                     showFormKegiatan = true; //tampilkan formnya
@@ -1081,7 +1092,7 @@ public class MenuUnit : MonoBehaviour
                 if (GUILayout.Button("play"))
                 {
                     showPlayMode = true;
-                    HistoryManager.showHistory = false;
+                    //HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
                     curOpPlayIdx = i;
 
@@ -1153,13 +1164,13 @@ public class MenuUnit : MonoBehaviour
             GUILayout.Label("Menit");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            
+
             GUILayout.BeginHorizontal();
             toggleFile = GUILayout.Toggle(toggleFile, "File Pendukung : ");
             if (toggleFile)
             {
                 //GUILayout.Label(m_textPath ?? "------ pilih file ------",GUI.skin.textField);
-                if (GUILayout.Button("Browse",GUILayout.Width(110)))
+                if (GUILayout.Button("Browse", GUILayout.Width(110)))
                 {
                     m_fileBrowser = new FileBrowser(new Rect(450, 0, 600, 500), "Pilih File", FileSelectedCallback);
                     m_fileBrowser.SelectionPattern = "*.*";
@@ -1207,7 +1218,7 @@ public class MenuUnit : MonoBehaviour
                 if (GUILayout.Button("Atur Pergerakan", GUILayout.Width(110)))
                 {
                     editUnitMode = true;
-                    HistoryManager.showHistory = true;
+                    //HistoryManager.showHistory = true;
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -1216,7 +1227,7 @@ public class MenuUnit : MonoBehaviour
             if (toggleUnitConfig)
             {
                 GUILayout.BeginHorizontal(GUI.skin.box);
-                Debug.Log("di form: " + Path.GetFileName(unitConf_textPath)+" dari: "+unitConf_textPath);
+                //Debug.Log("di form: " + Path.GetFileName(unitConf_textPath) + " dari: " + unitConf_textPath);
                 GUILayout.Label(Path.GetFileName(unitConf_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
                 GUI.backgroundColor = Color.red;
                 if (unitConf_textPath == EMPTY_FILE_STRING)
@@ -1291,7 +1302,8 @@ public class MenuUnit : MonoBehaviour
                                 Lokasi,
                                 Deskripsi,
                                 pathToUploadedFile, /* file */
-                                unitConf_textPath, /* unitconfig */
+                                //unitConf_textPath, /* unitconfig */
+                                unitConfTemp,
                                 waktuMulai,
                                 durasi, toggleFile, toggleUnitConfig));
                         emptyTheField();
@@ -1322,7 +1334,7 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasVideo = toggleFile;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).files = uploadSelectedFile();
-                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).unitConfig = unitConf_textPath;
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).unitConfig = LevelSerializer.SaveObjectTree(GameObject.Find("UnitContainer") as GameObject);
                         Debug.Log("perbaharui unit config: " + unitConf_textPath);
                         emptyTheField();
                         submitKegInfo = "berhasil diperbaharui";
@@ -1389,7 +1401,7 @@ public class MenuUnit : MonoBehaviour
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                } 
+                }
 
                 m_textPath = EMPTY_FILE_STRING;
                 //if ()
@@ -1415,12 +1427,35 @@ public class MenuUnit : MonoBehaviour
         //GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
     }
 
+    private string loadUnitConfigFile(string p)
+    {
+        string configFileName = Path.GetFileName(p);// + OperationManager.FILE_EXT_UNITCONF);
+        Debug.Log("unit conf to load: " + configFileName + " dari: " + p);
+        if (File.Exists(Application.persistentDataPath + "/" + configFileName))
+        {
+            //try
+           // {
+                //unitManager.removeAllUnit();
+                LevelSerializer.LoadObjectTreeFromFile(configFileName);
+            //}
+            //catch (Exception e)
+            //{
+               // Debug.Log("Unit config log Exception: " + e.ToString());
+           // }
+            //unitManager.resetUnitPos();
+            //unitConf_textPath = configFileName;
+            Debug.Log("loaded: " + configFileName);
+            return configFileName;
+        }
+        return EMPTY_FILE_STRING;
+    }
+
     private string uploadSelectedFile()
     {
 
         //uploading the file
         string namaFile = Path.GetFileName(m_textPath);
-        if (m_textPath == null)
+        if (m_textPath == null || m_textPath==EMPTY_FILE_STRING)
         {
             //submitUpload = "File belum dipilih";
             return "";
@@ -1446,6 +1481,8 @@ public class MenuUnit : MonoBehaviour
         MenitDurasi = "";
         toggleFile = false;
         toggleUnitConfig = false;
+        m_textPath = EMPTY_FILE_STRING;
+        unitConf_textPath = EMPTY_FILE_STRING;
     }
 
     private void getMilitaryUnitGUI()
@@ -1455,7 +1492,7 @@ public class MenuUnit : MonoBehaviour
         float unitTabY = unitMenuY - 25;
         GUI.backgroundColor = Color.yellow;
 
-        GUILayout.BeginArea(new Rect(10, unitTabY, 70*5, kegiatanH));
+        GUILayout.BeginArea(new Rect(10, unitTabY, 70 * 5, kegiatanH));
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Udara"))
         {

@@ -114,10 +114,16 @@ public class BuildingPlacement : MonoBehaviour {
 		currentBuilding = ((GameObject)Instantiate(b)).transform;
 		placeableBuilding = currentBuilding.GetComponent<PlaceableBuilding>();
 
-        GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
-        if (unitManagerObject != null)
+        //GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
+        //if (unitManagerObject != null)
+        //{
+        //    currentBuilding.parent = unitManagerObject.transform;
+        //}
+        GameObject unitConObject = GameObject.Find("UnitContainer");
+        if (unitConObject == null)
         {
-            currentBuilding.parent = unitManagerObject.transform;
+            unitConObject = new GameObject("UnitContainer");
         }
+        currentBuilding.parent = unitConObject.transform;
 	}
 }
