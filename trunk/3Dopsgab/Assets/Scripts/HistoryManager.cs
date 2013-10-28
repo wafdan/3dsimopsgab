@@ -145,7 +145,7 @@ public class HistoryItem
 
     public override string ToString()
     {
-        return command + " unit " + objectName + "\n pada " + initialPos.ToString() + (finalPos == Vector3.zero ? "" : " menuju " + finalPos.ToString());
+        return command + " unit \n" + objectName + "\npada " + initialPos.ToString() + (finalPos == Vector3.zero ? "" : " menuju " + finalPos.ToString());
     }
 
 }

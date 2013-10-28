@@ -32,7 +32,7 @@ public class UnitManager : MonoBehaviour
 
     void Start()
     {
-        if (LevelSerializer.IsDeserializing) return;
+        //if (LevelSerializer.IsDeserializing) return;
         LevelSerializer.AddPrefabPath("Prefabs/");
 
         selectedUnits.Clear();
@@ -169,6 +169,8 @@ public class UnitManager : MonoBehaviour
 
                                         if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
                                             return;
+                                        if(bum.waypoints.Count==0)
+                                            bum.addWaypoint(bum.transform.position);
                                         bum.addWaypoint(hit.point);
                                     }
                                 }
@@ -256,9 +258,15 @@ public class UnitManager : MonoBehaviour
     public bool destroySelectedUnits()
     {
         Debug.Log("BEGIN DESTROY: " + unitsToBeProcessed.Count + " units");
+        BasicUnitMovement bum;
         foreach (GameObject gob in unitsToBeProcessed)
         {
             //GameObject g = (GameObject)Instantiate(gob);
+            bum = gob.GetComponent<BasicUnitMovement>();
+            if (bum != null)
+            {
+                bum.tarPointObjects.Clear();
+            }
             selectedUnits.Remove(gob);
             Destroy(gob);
 
@@ -278,8 +286,10 @@ public class UnitManager : MonoBehaviour
             mouseOverGUI = false;
 
         if (HistoryManager.showHistory)
+        {
             showHistoryGUI();
-
+            showExistingUnitDetail();
+        }
         //GUI.Box(new Rect(400, 500, 300, 100), testStatus);
 
     }
@@ -403,17 +413,25 @@ public class UnitManager : MonoBehaviour
     protected GUIStyle m_formTitle;
     private bool hideHisList = false;
 
+    static float hisPosW = 250;
+    static float hisPosH = 0;//hideHisList ? 25 : (Screen.height / 2 - 120);//250;
+    static float hisPosX = Screen.width - hisPosW;
+    static float hisPosY = 0;
+    static float hisItemH = 50;
+    static float hisItemW = hisPosW;// *0.9f;
+    private Vector2 scrollPosUnitDetail = Vector2.zero;
+
     void showHistoryGUI()
     {
         historyStyle = new GUIStyle(GUI.skin.button);
         historyStyle.fontSize = 11;
 
-        float hisPosW = 350;
-        float hisPosH = hideHisList?25:Screen.height;//250;
-        float hisPosX = Screen.width - hisPosW;
-        float hisPosY = 0;
-        float hisItemH = 40;
-        float hisItemW = hisPosW;// *0.9f;
+        //hisPosW = 350;
+        hisPosH = hideHisList?25:(Screen.height/2-120);//250;
+        hisPosX = Screen.width - hisPosW;
+        //hisPosY = 0;
+        //hisItemH = 40;
+        hisItemW = hisPosW;// *0.9f;
 
         GUI.backgroundColor = Color.yellow;
         GUILayout.BeginArea(new Rect(hisPosX, hisPosY, hisPosW, hisPosH), GUI.skin.box);
@@ -438,7 +456,7 @@ public class UnitManager : MonoBehaviour
                 GUILayout.BeginHorizontal(styleHisListItem);
                 GUILayout.Label("[" + i + "] ");
                 //if (GUILayout.Button("[" + i + "] " + HistoryManager.historyList[i].ToString(), styleHisListItem, GUILayout.Height(hisItemH)))
-                if (GUILayout.Button(HistoryManager.historyList[i].ToString(), GUILayout.Height(hisItemH), GUILayout.MinWidth(hisItemW - 80)))
+                if (GUILayout.Button(HistoryManager.historyList[i].ToString(), GUILayout.MinHeight(hisItemH), GUILayout.MaxWidth(hisItemW - 70)))
                 {
                     //foreach history i sampe len-i
                     //unco action[i]
@@ -471,5 +489,91 @@ public class UnitManager : MonoBehaviour
             lastHistoryCount = HistoryManager.historyList.Count;
         }
         
+    }
+
+    //GameObject curUnitObj;
+    void showExistingUnitDetail()
+    {
+        GUILayout.BeginArea(new Rect(hisPosX, hisPosY+hisPosH+2, hisPosW, 200), GUI.skin.box);
+        GUILayout.BeginVertical();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("UNIT PADA PETA", styleFormTitle);
+        if (GUILayout.Button("V", GUILayout.Width(30)))
+        {
+            //hideUnitList = !hideUnitList;
+        }
+        GUILayout.EndHorizontal();
+        scrollPosUnitDetail = GUILayout.BeginScrollView(scrollPosUnitDetail, GUILayout.Height(hisPosH - 50));
+        for (int x = 0; x < transform.childCount; x++)
+        {
+            GameObject curUnitObj = transform.GetChild(x).gameObject;
+            BasicUnitMovement bum = curUnitObj.GetComponent<BasicUnitMovement>();
+
+            GUI.backgroundColor = Color.red;
+            if (GUILayout.Button(curUnitObj.name+
+                "\n"+curUnitObj.transform.position.ToString()+
+                "\nwaypoint ("+bum.waypoints.Count+")"+
+                "\nlastAddPoint("+bum.lastAddedWaypointIdx+")="+bum.lastAddedWayPoint+
+                "\ncurIdx="+bum.curWaypointIdx
+                
+                ,GUI.skin.button))
+            {
+                SelectSingleUnit(curUnitObj);
+            }
+            GUI.backgroundColor = Color.white;
+
+            
+            if (bum != null)
+            {
+                for (int y = 0; y < bum.waypoints.Count; y++)
+                {
+                    GUILayout.Button(bum.waypoints[y].ToString());
+                }
+            }
+        }
+        GUILayout.EndScrollView();
+
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+    }
+
+    internal void resetUnitPos()
+    {
+        BasicUnitMovement bUnitMovt;
+        GameObject unitConObject = GameObject.Find("UnitContainer");
+        if (unitConObject != null)
+        {
+            Transform t = unitConObject.transform;
+            for (int i = 0; i < t.childCount; i++)
+            {
+                if (t.GetChild(i).tag == UNIT_TAG)
+                {
+                    bUnitMovt = t.GetChild(i).GetComponent<BasicUnitMovement>();
+                    if (bUnitMovt != null)
+                    {
+                        bUnitMovt.GetComponent<LineRenderer>().enabled = true;
+                        if (bUnitMovt.waypoints.Count > 0)
+                        {
+                            bUnitMovt.gameObject.transform.position = bUnitMovt.waypoints[0];
+                            bUnitMovt.curWaypointIdx = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    internal void removeAllUnit()
+    {
+        GameObject unitConObject = GameObject.Find("UnitContainer");
+        if (unitConObject != null)
+        {
+            Transform t = unitConObject.transform;
+            for (int x = 0; x < t.childCount; x++)
+            {
+                if (t.GetChild(x) != null)
+                    Destroy(t.GetChild(x).gameObject);
+            }
+        }
     }
 }

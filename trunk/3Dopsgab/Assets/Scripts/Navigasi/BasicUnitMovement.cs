@@ -31,7 +31,8 @@ public class BasicUnitMovement : MonoBehaviour
     public int lastAddedWaypointIdx; // indeks history pergerakan unit
     [SerializeThis]
     public List<Vector3> waypoints;
-    private int curWaypointIdx = 0;
+    [SerializeThis]
+    public int curWaypointIdx = 0;
     public Vector3 goal;
 
     // TARGETING
@@ -83,6 +84,7 @@ public class BasicUnitMovement : MonoBehaviour
         if (lineRenderer != null && waypoints.Count > 0)
         {
             waypoints = waypoints.Distinct<Vector3>().ToList<Vector3>();
+            /*
             lineRenderer.SetVertexCount(waypoints.Count + 1);
             //if (lastPoint == Vector3.zero)
             //    { lastPoint = gameObject.transform.position; }
@@ -91,6 +93,15 @@ public class BasicUnitMovement : MonoBehaviour
             for (int i = 0, len = waypoints.Count; i < len; i++)
             {
                 lineRenderer.SetPosition(i + 1, (Vector3)waypoints[i]);
+            }
+             * */
+            lineRenderer.SetVertexCount(waypoints.Count);
+            //if (lastPoint == Vector3.zero)
+            //    { lastPoint = gameObject.transform.position; }
+
+            for (int i = 0, len = waypoints.Count; i < len; i++)
+            {
+                lineRenderer.SetPosition(i, (Vector3)waypoints[i]);
             }
         }
     }
@@ -123,6 +134,7 @@ public class BasicUnitMovement : MonoBehaviour
             followWaypoint();
         }
         
+        if(lineRenderer!=null)
         lineRenderer.enabled = unitManager.IsSelected(this.gameObject);
     }
 
@@ -131,6 +143,12 @@ public class BasicUnitMovement : MonoBehaviour
         //Debug.Log("execute movement of: " + gameObject.name);
         if (waypoints.Count > 0)
         {
+            //cek if posisi awal sama dengan posisi waypoint terakhir
+            if (myTransform.position == waypoints[waypoints.Count - 1])
+            {
+                Debug.Log("Udah ada di GOAL!");
+                return;
+            }
             if (curWaypointIdx < waypoints.Count)
             {
 
