@@ -12,7 +12,7 @@ public class FlashIfSelected : MonoBehaviour {
 		GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
 		unitManager = unitManagerObject.GetComponent<UnitManager>();
 		originalColor = renderer.material.color;
-        flashColor = Color.white;
+        flashColor = Color.green;
 		//StartCoroutine("Flash");
 	}
 	
