@@ -803,6 +803,12 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
 
+        GUILayout.BeginArea(new Rect(groupX+groupW+10, 0, groupW, 60));
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("PERGERAKAN UNIT \nKEGIATAN "+((nowEditingOpId==GA_NGEDIT)?"BARU":((OperationItem)OperationManager.operationList[nowEditingOpId]).name).ToUpper());
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
+
         GUILayout.BeginArea(new Rect(groupX, groupY, groupW, groupH), GUI.skin.box);
         GUILayout.BeginVertical();
         GUI.backgroundColor = Color.red;
@@ -815,6 +821,11 @@ public class MenuUnit : MonoBehaviour
         {
             //testMovementMode = !testMovementMode;
             unitManager.resetUnitPos();
+        }
+        if (GUILayout.Button("Hapus Semua Unit"))
+        {
+            //testMovementMode = !testMovementMode;
+            unitManager.removeAllUnit();
         }
         //GUI.backgroundColor = Color.green;
         //if (GUILayout.Button("Save/Load Pergerakan"))
@@ -876,11 +887,11 @@ public class MenuUnit : MonoBehaviour
 
         GUILayout.BeginArea(new Rect(clockX, clockY, clockW, clockH), GUI.skin.box);
         GUILayout.Label(OperationManager.gameClockValue, styleClockPlay);
-        OperationManager.gameClockSpeed = GUILayout.HorizontalSlider(OperationManager.gameClockSpeed, 1, 300);
+        OperationManager.gameClockSpeed = (int)GUILayout.HorizontalSlider(OperationManager.gameClockSpeed, 1, 3000);
         GUILayout.BeginHorizontal();
         GUILayout.Label("1X", GUILayout.Width(25));
         GUILayout.FlexibleSpace();
-        GUILayout.Label("skala waktu 1 : " + OperationManager.gameClockSpeed * 10 + "");
+        GUILayout.Label("skala waktu 1 : " + OperationManager.gameClockSpeed + "");
         GUILayout.FlexibleSpace();
         GUILayout.Label("3000X", GUILayout.Width(40));
         GUILayout.EndHorizontal();
@@ -938,8 +949,12 @@ public class MenuUnit : MonoBehaviour
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Kembali", stylePlayBtBack))
         {
-            showPlayMode = !showPlayMode;
+            showPlayMode = false;
             curOpPlayIdx = 0;
+            testMovementMode = false;
+            unitManager.resetUnitPos();
+            unitManager.removeAllUnit();
+            OperationManager.stopRunningAll();
             //showHUDTop = !showHUDTop;
         }
         GUILayout.FlexibleSpace();
@@ -1092,6 +1107,7 @@ public class MenuUnit : MonoBehaviour
                 if (GUILayout.Button("play"))
                 {
                     showPlayMode = true;
+                    OperationManager.gameClockSpeed = 1;
                     //HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
                     curOpPlayIdx = i;
@@ -1224,34 +1240,6 @@ public class MenuUnit : MonoBehaviour
             }
             GUILayout.EndHorizontal();
 
-            if (toggleUnitConfig)
-            {
-                GUILayout.BeginHorizontal(GUI.skin.box);
-                //Debug.Log("di form: " + Path.GetFileName(unitConf_textPath) + " dari: " + unitConf_textPath);
-                GUILayout.Label(Path.GetFileName(unitConf_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
-                GUI.backgroundColor = Color.red;
-                if (unitConf_textPath == EMPTY_FILE_STRING)
-                {
-                    GUI.enabled = false;
-                    if (GUILayout.Button("X", GUILayout.Width(25)))
-                    {
-                        if (nowEditingOpId == GA_NGEDIT)
-                        {
-                            unitConf_textPath = EMPTY_FILE_STRING;
-                        }
-                        else
-                        {
-
-                            Debug.Log("yakin hapus file?");
-                            toggleShowDialogDelFile = true;
-                        }
-                    }
-                    GUI.enabled = true;
-                }
-                GUI.backgroundColor = Color.yellow;
-                GUILayout.EndHorizontal();
-
-            }
 
             GUILayout.Label("Daftar Scene : ");
             scrollSceneList = GUILayout.BeginScrollView(scrollSceneList, GUILayout.Height(100));

@@ -138,7 +138,7 @@ public class BasicUnitMovement : MonoBehaviour
         lineRenderer.enabled = unitManager.IsSelected(this.gameObject);
     }
 
-    void followWaypoint()
+    public void followWaypoint()
     {
         //Debug.Log("execute movement of: " + gameObject.name);
         if (waypoints.Count > 0)

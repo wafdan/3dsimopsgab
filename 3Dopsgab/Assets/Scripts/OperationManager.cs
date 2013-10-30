@@ -40,10 +40,11 @@ public class OperationManager : MonoBehaviour
     
     DateTime gameClockTime; // clock virtual
     public static string gameClockValue; // nilai clock, dipake di GUI
-    public static float gameClockSpeed = 0.1f; // kecepatan default clock
+    public static int gameClockSpeed = 1; // kecepatan default clock
     private string posHariInGameClock = ""; //posisi hari berdasarkan clock
 
     public static ArrayList nowPlayingList = new ArrayList(); // list kegiatan yg sedang aktif saat clock berjalan
+    private OperationItem curRunOp;
 
     void Start()
     {
@@ -80,6 +81,12 @@ public class OperationManager : MonoBehaviour
                                 if (!nowPlayingList.Contains(opItIn))
                                 {
                                     nowPlayingList.Add(opItIn);
+                                    curRunOp = opItIn;
+                                    if (opItIn.hasUnitMovement)
+                                    {
+                                        if(!opItIn.isRunning)
+                                            playIndividualOperation(opItIn);
+                                    }
                                 }
                             }
                         }
@@ -122,8 +129,9 @@ public class OperationManager : MonoBehaviour
                 gameClockValue = opFirstPlay.posisiHari + " " + string.Format("{0}:{1}:{2}", gameClockTime.Hour, gameClockTime.Minute, gameClockTime.Second);
                 while (true)
                 {
-                    yield return null;
-                    gameClockTime = gameClockTime.AddSeconds(1 * gameClockSpeed);
+                    
+                    gameClockTime = gameClockTime.AddSeconds(1*gameClockSpeed);
+                    yield return new WaitForSeconds(1/gameClockSpeed);
                     //proses posHar
                     posHariInGameClock = getEndPosHar(curPosHar);
 
@@ -131,7 +139,7 @@ public class OperationManager : MonoBehaviour
                     //+ "\nmulai: " + sTim.ToString("dd/MM/yyyy HH:mm") + "\ntamat: " + eTim.ToString("dd/MM/yyyy HH:mm");
 
                     if (!MenuUnit.showPlayMode) { break; }
-
+                    
                 }//endwhile
             }//endif
         }//endwhile
@@ -167,41 +175,17 @@ public class OperationManager : MonoBehaviour
         return hEndStr;
     }
 
-    private IEnumerator playIndividualOperation(OperationItem opItIndv)
+    //private IEnumerator playIndividualOperation(OperationItem opItIndv)
+    //{
+        
+    //}
+
+    private void playIndividualOperation(OperationItem opItIndv)
     {
-        DateTime sT = opItIndv.startTime; //timeToIncrement
-        DateTime sTim = opItIndv.startTime;//startTime
-        DateTime eTim = opItIndv.startTime.Add(opItIndv.duration); //endTime
-        string kegClockValue = "";// opIt.posisiHari + " " + string.Format("{0}:{1}:{2}", sT.Hour, sT.Minute, sT.Second);
-        Debug.Log("start keg: " + opItIndv.name);
-        bool isStart = false;
-
-        while (true)
-        {
-            if (sT >= gameClockTime)
-            {
-                isStart = true;
-                eTim = opItIndv.startTime.Add(opItIndv.duration);
-            }
-            if (isStart)
-            {
-
-                sT = sT.AddSeconds(1 * gameClockSpeed);
-                kegClockValue = opItIndv.posisiHari + " " + sT.ToString("dd/MM/yyyy HH:mm")
-                    + "\nmulai: " + sTim.ToString("dd/MM/yyyy HH:mm") + "\ntamat: " + eTim.ToString("dd/MM/yyyy HH:mm");
-
-                //Debug.Log(kegClockValue);
-                if (sT >= eTim)
-                {
-                    Debug.Log("keg: " + opItIndv.name + " finished at " + sT.ToString());
-                    break;
-                }
-            }
-            yield return null;//new WaitForSeconds(0);
-        }
-        //Debug.Log("keg: " + opIt.name+" finished.");
+        opItIndv.isRunning = true;
+        LevelSerializer.LoadObjectTree(opItIndv.unitConfig);
+        MenuUnit.testMovementMode = true;
     }
-
 
     //END PLAY MODE RELATED
 
@@ -244,10 +228,6 @@ public class OperationManager : MonoBehaviour
         return false;
     }
 
-    public static void playOperations()
-    {
-
-    }
 
     public void OnApplicationQuit()
     {
@@ -309,6 +289,14 @@ public class OperationManager : MonoBehaviour
             return false;
         }
     }
+
+    internal static void stopRunningAll()
+    {
+        for (int i = 0; i < operationList.Count; i++)
+        {
+            ((OperationItem)operationList[i]).isRunning = false;
+        }
+    }
 }
 
 public class OperationItem: IComparable
@@ -329,6 +317,7 @@ public class OperationItem: IComparable
     public DateTime endTime;
     public bool hasUnitMovement;
     public bool hasVideo;
+    public bool isRunning = false;
 
     public OperationItem()
     {
