@@ -1,23 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\Debarkasi\AmpibiDebarkasi.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\Heli Terbang\HeliMenembak.cs">
     <Files>
-      <File FileName="Assets\Scripts\Unit\Debarkasi\CameraDebarkasi.cs" Line="26" Column="37" />
-      <File FileName="Assets\Scripts\Unit\bellScript.cs" Line="16" Column="71" />
-      <File FileName="Assets\Scripts\GUI\TitleScreen.cs" Line="67" Column="3" />
-      <File FileName="Assets\Scripts\Unit\EmbarkasiTank.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\Trigger.cs" Line="24" Column="4" />
-      <File FileName="Assets\Scripts\Unit\modelMajuPesawat.cs" Line="21" Column="4" />
-      <File FileName="Assets\Detonator Explosion Framework\System\DetonatorSparks.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Unit\MissileUdara.cs" Line="19" Column="2" />
-      <File FileName="Assets\Scripts\Unit\LepasLandas.cs" Line="23" Column="4" />
-      <File FileName="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\CNMendarat.cs" Line="38" Column="4" />
-      <File FileName="Assets\Scripts\Unit\PersiapanSiagaTempurLaut\MovementLaut.cs" Line="25" Column="39" />
-      <File FileName="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\komandanBarisUnitUdara.cs" Line="37" Column="36" />
-      <File FileName="Assets\Scripts\Unit\KRIAngkutEmbarkasi.cs" Line="25" Column="3" />
-      <File FileName="Assets\Scripts\Menu\MenuUnit.cs" Line="1217" Column="1" />
-      <File FileName="Assets\Scripts\Unit\PasukanBerbarisJalanMaju.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Unit\Debarkasi\AmpibiDebarkasi.cs" Line="15" Column="34" />
+      <File FileName="Assets\Scripts\Unit\Heli Terbang\GerakHeliLurus.cs" Line="12" Column="33" />
+      <File FileName="Assets\Scripts\Unit\Debarkasi\AmpibiDebarkasi.cs" Line="26" Column="37" />
+      <File FileName="Assets\Scripts\Menu\MenuUnit.cs" Line="986" Column="32" />
+      <File FileName="Assets\Scripts\Unit\Heli Terbang\CameraToHeli.cs" Line="16" Column="32" />
+      <File FileName="Assets\Scripts\Unit\Heli Terbang\HeliMenembak.cs" Line="38" Column="47" />
+      <File FileName="Assets\Scripts\Unit\MissileUdara.cs" Line="43" Column="3" />
+      <File FileName="Assets\Scripts\Unit\Heli Terbang\MissileHeli.cs" Line="22" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

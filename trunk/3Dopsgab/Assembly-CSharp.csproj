@@ -103,6 +103,10 @@
      <Compile Include="Assets\Scripts\Unit\Debarkasi\KRIAngkutDebarkasi.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiLaut.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiTank.cs" />
+     <Compile Include="Assets\Scripts\Unit\Heli Terbang\CameraToHeli.cs" />
+     <Compile Include="Assets\Scripts\Unit\Heli Terbang\GerakHeliLurus.cs" />
+     <Compile Include="Assets\Scripts\Unit\Heli Terbang\HeliMenembak.cs" />
+     <Compile Include="Assets\Scripts\Unit\Heli Terbang\MissileHeli.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIAngkutEmbarkasi.cs" />
      <Compile Include="Assets\Scripts\Unit\KRIRanjau.cs" />
      <Compile Include="Assets\Scripts\Unit\LatihanMenembak\MenembakBerdiri.cs" />
