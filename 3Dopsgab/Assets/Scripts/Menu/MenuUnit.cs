@@ -1375,13 +1375,15 @@ public class MenuUnit : MonoBehaviour
                     {
                         //nambah
                         //mulai
-                        JamMulai = JamMulai == "" ? "00" : JamMulai;
-                        MenitMulai = MenitMulai == "" ? "00" : MenitMulai;
+                        int jamInt = 0, menitInt = 0;
+                        JamMulai = JamMulai == "" ? "00" : Int32.TryParse(JamMulai, out jamInt)?JamMulai:"00";
+                        MenitMulai = MenitMulai == "" ? "00" : Int32.TryParse(MenitMulai, out menitInt) ? MenitMulai : "00";
                         string waktuMulai = JamMulai + ":" + MenitMulai;
                         //durasi
-                        HariDurasi = HariDurasi == "" ? "0" : HariDurasi;
-                        JamDurasi = JamDurasi == "" ? "0" : JamDurasi;
-                        MenitDurasi = MenitDurasi == "" ? "0" : MenitDurasi;
+                        int hariDurInt = 0, jamDurInt = 0, menitDurInt = 0;
+                        HariDurasi = HariDurasi == "" ? "0" : Int32.TryParse(HariDurasi, out hariDurInt) ? HariDurasi : "0";
+                        JamDurasi = JamDurasi == "" ? "0" : Int32.TryParse(JamDurasi, out jamDurInt) ? JamDurasi : "0";
+                        MenitDurasi = MenitDurasi == "" ? "0" : Int32.TryParse(MenitDurasi, out menitDurInt) ? MenitDurasi : "0";
                         TimeSpan durasi = TimeSpan.FromDays(Double.Parse(HariDurasi)).Add(TimeSpan.FromHours(Double.Parse(JamDurasi)).Add(TimeSpan.FromMinutes(Double.Parse(MenitDurasi))));
 
                         string pathToUploadedFile = uploadSelectedFile();

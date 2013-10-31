@@ -4,6 +4,7 @@ using System.Collections;
 public class FlashIfSelected : MonoBehaviour {
 
 	public float flashRate = 1.0f;
+    private Transform myTransform;
 	private Color originalColor;
     private Color flashColor;
 	private UnitManager unitManager;
@@ -13,6 +14,7 @@ public class FlashIfSelected : MonoBehaviour {
 		unitManager = unitManagerObject.GetComponent<UnitManager>();
 		originalColor = renderer.material.color;
         flashColor = Color.green;
+        myTransform = transform;
 		//StartCoroutine("Flash");
 	}
 	
@@ -21,10 +23,24 @@ public class FlashIfSelected : MonoBehaviour {
 		if(unitManager.IsSelected(gameObject)) {
 			//StartCoroutine("Flash");
             renderer.material.color = flashColor;
+            if (myTransform.childCount > 0)
+            {
+                for (int i = 0; i < myTransform.childCount; i++)
+                {
+                    myTransform.GetChild(i).gameObject.renderer.material.color = flashColor;
+                }
+            }
 		}
 		else {
 			//StopAllCoroutines();
 			renderer.material.color = originalColor;
+            if (myTransform.childCount > 0)
+            {
+                for (int i = 0; i < myTransform.childCount; i++)
+                {
+                    myTransform.GetChild(i).gameObject.renderer.material.color = originalColor;
+                }
+            }
 		}
 	}
 	

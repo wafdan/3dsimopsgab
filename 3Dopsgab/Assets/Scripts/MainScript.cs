@@ -79,7 +79,37 @@ public class MainScript : MonoBehaviour {
         }
     }
 
+    public static string[] Find_Common_String(string[] p1, string[] p2)
+    {
+        int count = 0;
+        for (int i = 0; i < p1.Length; i++)
+        {
+            for (int j = 0; j < p2.Length; j++)
+            {
+                if (p1[i] == p2[j])
+                {
+                    count++;
+                    break;
+                }
+            }
+        }
 
+        string[] result = new string[count];
+        count = 0;
+        for (int i = 0; i < p1.Length; i++)
+        {
+            for (int j = 0; j < p2.Length; j++)
+            {
+                if (p1[i] == p2[j])
+                {
+                    result[count++] = p1[i];
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
 }
 
 public class UnitOrder {
@@ -107,12 +137,14 @@ public class UnitInfo
     public string name;
     public Texture2D texture;
     public GameObject building;
+    //public string[] actions;
 
     public UnitInfo()
     {
         name = "";
         texture = null;
         building = null;
+        //actions = new string[]{};
     }
     public UnitInfo(string n, Texture2D t, GameObject g)
     {
@@ -120,4 +152,11 @@ public class UnitInfo
         texture = t;
         building = g;
     }
+    //public UnitInfo(string n, Texture2D t, GameObject g,string[] acts)
+    //{
+    //    name = n;
+    //    texture = t;
+    //    building = g;
+    //    actions = acts;
+    //}
 }

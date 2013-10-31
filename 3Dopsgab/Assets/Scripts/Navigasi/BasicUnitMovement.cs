@@ -43,6 +43,7 @@ public class BasicUnitMovement : MonoBehaviour
     [SerializeThis]
     public int curTarpointIdx = 0;
     private GameObject targetEffectObject; //diambil dari Resources
+    private GameObject missileObject;
     private float distMinToTar = float.MaxValue; // jarak minimum unit ke sasaran, diupdate terus
 
     // BELOK VARS
@@ -56,6 +57,7 @@ public class BasicUnitMovement : MonoBehaviour
     private float step;
     private float lastStep;
     private float LINE_WIDTH = 0.7f;
+    
 
 
     void Start()
@@ -67,6 +69,7 @@ public class BasicUnitMovement : MonoBehaviour
 
         //if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
         targetEffectObject = Resources.Load("TargetEffect") as GameObject;
+        missileObject = Resources.Load("Missile Udara") as GameObject;
 
         goal = transform.position;
         initWaypoint();
@@ -474,7 +477,7 @@ public class BasicUnitMovement : MonoBehaviour
             if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
             {
                 //Vector3 target;
-                GameObject missile = Instantiate(targetEffectObject, myTransform.position, myTransform.rotation) as GameObject;
+                GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
                 Transform mt = missile.transform;
 
                 while (true)
