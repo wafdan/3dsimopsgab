@@ -45,6 +45,8 @@ public class OperationManager : MonoBehaviour
 
     public static ArrayList nowPlayingList = new ArrayList(); // list kegiatan yg sedang aktif saat clock berjalan
     private OperationItem curRunOp;
+    private bool movReady;
+    public static MovieTexture movTexture;
 
     void Start()
     {
@@ -180,11 +182,73 @@ public class OperationManager : MonoBehaviour
         
     //}
 
+    private IEnumerator loadKegMovie(string p)
+    {
+        movReady = false;
+        //GameObject go = GameObject.Find("movieTestObject");
+        //GUITexture gtex = go.GetComponent<GUITexture>();
+        //AudioSource auds = gameObject.AddComponent<AudioSource>();
+        p = @"file://"+"C:\\Users\\Asus\\Documents\\UnityProject\\seskoadrev18\\3Dopsgab\\Assets\\Movie\\Test.ogg";
+        //p = "http://www.unity3d.com/webplayers/Movie/sample.ogg";
+        //if (File.Exists(p))
+        {
+            
+            WWW www = new WWW(p);
+            Debug.Log("loading movie from " + p+" "+www.size);
+            movTexture = www.movie;
+
+            while (!movTexture.isReadyToPlay)
+            {
+                Debug.Log("loading process.."+www.progress);
+                yield return null;
+            }
+            movReady = true;
+            Debug.Log("loading done " + movReady);
+            movTexture.Play();
+            //transform.localScale = new Vector3(0, 0, 0);
+            //transform.position = new Vector3(0.5f, 0.5f, 0);
+            //gtex.pixelInset = new Rect(0, 0, movTexture.width, movTexture.height);
+            //.xMin = -movTexture.width / 2;
+            //gtex.pixelInset.xMax = movTexture.width / 2;
+            //gtex.pixelInset.yMin = -movTexture.height / 2;
+            //gtex.pixelInset.yMax = movTexture.height / 2;
+
+            //audio.clip = movTexture.audioClip;
+            //movTexture.Play();
+        }
+    }
+
     private void playIndividualOperation(OperationItem opItIndv)
     {
-        opItIndv.isRunning = true;
-        LevelSerializer.LoadObjectTree(opItIndv.unitConfig);
-        MenuUnit.testMovementMode = true;
+        //mainkan pergerakan
+        if (opItIndv.hasUnitMovement)
+        {
+            opItIndv.isRunning = true;
+            LevelSerializer.LoadObjectTree(opItIndv.unitConfig);
+            MenuUnit.testMovementMode = true;
+        }
+
+        if (opItIndv.hasVideo)
+        {
+            if (File.Exists(opItIndv.files))
+            {
+                Debug.Log("File loading dari " + opItIndv.files);
+                if (!movReady)
+                {
+                    StartCoroutine(loadKegMovie(opItIndv.files));
+                }
+                else
+                {
+                    movTexture.Play();
+                    //Debug.Log("loading keneh euy..");
+                }
+            }
+            else
+            {
+                Debug.LogError("File tidak ditemukan di " + opItIndv.files);
+            }
+        }
+
     }
 
     //END PLAY MODE RELATED

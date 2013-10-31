@@ -2,7 +2,8 @@
 using System.Collections;
 using System;
 using System.IO;
-using UnityEditor;
+using System.Text;
+///using UnityEditor;
 
 public class MenuUnit : MonoBehaviour
 {
@@ -411,6 +412,7 @@ public class MenuUnit : MonoBehaviour
     private Vector2 scrollPosUnitDarat = Vector2.zero;
     private Vector2 scrollPosUnitPersonel = Vector2.zero;
     private Vector2 scrollPosUnitAlutsista = Vector2.zero;
+    private Vector2 scrollPosPlayList = Vector2.zero;
 
     public static string EMPTY_FILE_STRING = "---- file kosong ----";
     private bool toggleShowDialogDelFile = false;
@@ -418,9 +420,14 @@ public class MenuUnit : MonoBehaviour
     private string saveLoadWarning = "";
     private byte[] unitConfTemp;
 
+    public MovieTexture movTexture;
+    private bool movReady;
+    private string CONVERTER_LOCATION = "Assets\\ffmpeg2theora-0.29.exe";
+    private bool isConvertingVideo = false;
 
     void Start()
     {
+        //movTexture = Resources.Load("test.mp4") as MovieTexture;
         comboBoxControl = new ComboBox();
         unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
         unitManager = unitManagerObject.GetComponent<UnitManager>();
@@ -465,11 +472,44 @@ public class MenuUnit : MonoBehaviour
 
         initTextures();
         initSceneNames();
+        StartCoroutine(convertVideoManager());
+    }
+
+    IEnumerator loadMovie()
+    {
+        movReady = false;
+        GameObject go = GameObject.Find("movieTestObject");
+        GUITexture gtex = go.GetComponent<GUITexture>();
+        //AudioSource auds = gameObject.AddComponent<AudioSource>();
+
+        //WWW www = new WWW("http://www.unity3d.com/webplayers/Movie/sample.ogg");
+        //movTexture = www.movie;
+        gtex.texture = movTexture;
+        while (!movTexture.isReadyToPlay)
+        {
+            Debug.Log("loading process..");
+            yield return null;
+        }
+        movReady = true;
+        Debug.Log("loading done " + movReady);
+
+        transform.localScale = new Vector3(0, 0, 0);
+        transform.position = new Vector3(0.5f, 0.5f, 0);
+        gtex.pixelInset = new Rect(0, 0, movTexture.width, movTexture.height);
+        //.xMin = -movTexture.width / 2;
+        //gtex.pixelInset.xMax = movTexture.width / 2;
+        //gtex.pixelInset.yMin = -movTexture.height / 2;
+        //gtex.pixelInset.yMax = movTexture.height / 2;
+
+        //audio.clip = movTexture.audioClip;
+        movTexture.Play();
+
     }
 
     private void initSceneNames()
     {
         //ArrayList temp = new ArrayList();
+        /*
         foreach (UnityEditor.EditorBuildSettingsScene S in UnityEditor.EditorBuildSettings.scenes)
         {
             if (S.enabled)
@@ -480,7 +520,57 @@ public class MenuUnit : MonoBehaviour
                 sceneNames.Add(name);
             }
         }
+         */
         //return temp.ToArray();
+    }
+
+    IEnumerator convertVideoManager()
+    {
+        while (true)
+        {
+            //yield return null;
+            if (isConvertingVideo)
+            {
+                yield return StartCoroutine(convertTheVideo());
+                //if (proc.HasExited)
+                //{
+                //    Debug.Log("exit.. ");
+                //    isConvertingVideo = false;
+                //}
+
+                //File.Copy(m_textPath, lokasiUpload + namaFile,true);
+                //Debug.Log("File berhasil diupload, dari "+m_textPath+" ke "+lokasiUpload+namaFile);
+                //return lokasiUpload + namaFile;
+
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator convertTheVideo()
+    {
+        Debug.Log("begin converting..");
+        var proc = new System.Diagnostics.Process
+        {
+            StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = CONVERTER_LOCATION,
+                Arguments = m_textPath,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            }
+        };
+
+        proc.Start();
+        Debug.Log("convert start? " + proc.HasExited);
+        StringBuilder q = new StringBuilder();
+        while (!proc.StandardOutput.EndOfStream)
+        {
+            string line = proc.StandardOutput.ReadLine();
+            Debug.Log("convert progeress... " + line);
+            yield return null;
+        }
     }
 
     /*    void Awake()
@@ -493,10 +583,6 @@ public class MenuUnit : MonoBehaviour
     */
     void Update()
     {
-        if (!showPlayMode)
-        {
-            //iTween.MoveTo(Camera.main.gameObject, iTween.Hash("path", iTweenPath.GetPath("playPath"), "time", 20, "easetype", iTween.EaseType.linear));
-        }
         if (Input.GetButtonDown("Jump"))
             showHUDTop = showHUDTop ? false : true;
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -803,9 +889,9 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
 
-        GUILayout.BeginArea(new Rect(groupX+groupW+10, 0, groupW, 60));
+        GUILayout.BeginArea(new Rect(groupX + groupW + 10, 0, groupW, 60));
         GUILayout.BeginHorizontal();
-        GUILayout.Label("PERGERAKAN UNIT \nKEGIATAN "+((nowEditingOpId==GA_NGEDIT)?"BARU":((OperationItem)OperationManager.operationList[nowEditingOpId]).name).ToUpper());
+        GUILayout.Label("PERGERAKAN UNIT \nKEGIATAN " + ((nowEditingOpId == GA_NGEDIT) ? "BARU" : ((OperationItem)OperationManager.operationList[nowEditingOpId]).name).ToUpper());
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
 
@@ -839,7 +925,7 @@ public class MenuUnit : MonoBehaviour
             editUnitMode = false;
             testMovementMode = false;
             if (nowEditingOpId == GA_NGEDIT)
-                unitConfTemp =  LevelSerializer.SaveObjectTree(GameObject.Find("UnitContainer") as GameObject);
+                unitConfTemp = LevelSerializer.SaveObjectTree(GameObject.Find("UnitContainer") as GameObject);
             //else
 
         }
@@ -869,7 +955,7 @@ public class MenuUnit : MonoBehaviour
         float clockX = (Screen.width - clockW);
         float clockY = 0;
         float boxW = 300;
-        float boxH = 300;
+        float boxH = 260;
         float boxX = (Screen.width - boxW);
         float boxY = clockH + 2;
         //if (!op.hasUnitMovement)
@@ -912,6 +998,7 @@ public class MenuUnit : MonoBehaviour
         //    durasi += curOpPlaying.duration.Minutes.ToString() + " menit,";
         //if(durasi!="")
         //    GUILayout.Label(durasi, stylePlayLabel);
+        scrollPosPlayList = GUILayout.BeginScrollView(scrollPosPlayList);
         GUILayout.BeginVertical();
         for (int i = 0; i < OperationManager.nowPlayingList.Count; i++)
         {
@@ -927,6 +1014,7 @@ public class MenuUnit : MonoBehaviour
 
         }
         GUILayout.EndVertical();
+        GUILayout.EndScrollView();
         //GUILayout.BeginHorizontal();
         //GUILayout.Label("Waktu :", stylePlayField);
         //GUILayout.Label(curOpPlaying.posisiHari + " " + curOpPlaying.startTime + " sampai " + curOpPlaying.endTime, stylePlayLabel);
@@ -992,6 +1080,15 @@ public class MenuUnit : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.EndArea();
+        //if (movReady)
+        //{
+        GUILayout.BeginArea(new Rect(Screen.width - 325, Screen.height - 245, 320, 240), OperationManager.movTexture);
+
+        //GUI.DrawTexture(new Rect(Screen.width - 325, Screen.height - 245, 320, 240), movTexture, ScaleMode.StretchToFill, false, 0.0f);
+
+        GUILayout.EndArea();
+        //}
+
         GUI.backgroundColor = Color.gray;
         //GUI.BeginGroup(new Rect(boxX, boxY, boxW, boxH));
         //GUI.Box(new Rect(0, 0, boxW, boxH), "");
@@ -1008,7 +1105,7 @@ public class MenuUnit : MonoBehaviour
     {
 
         float leftGroupY = 0;
-        
+
         //combobox hari
         int selectedItemIndex = comboBoxControl.GetSelectedItemIndex();
         selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 142, 25), Hari[selectedItemIndex], Hari, listStyle);
@@ -1083,19 +1180,28 @@ public class MenuUnit : MonoBehaviour
                     toggleFile = curOpItem.hasVideo;
                     toggleUnitConfig = curOpItem.hasUnitMovement;
 
+                    if (toggleFile)
+                    {
+                        m_textPath = curOpItem.files;
+                    }
+                    else
+                    {
+                        m_textPath = EMPTY_FILE_STRING;
+                    }
+
                     if (toggleUnitConfig)
                     {
                         //unitConf_textPath = loadUnitConfigFile(curOpItem.unitConfig);
                         unitManager.removeAllUnit();
                         LevelSerializer.LoadObjectTree(curOpItem.unitConfig);
-                        
+
                     }
                     //DELETE UNIT KALO GA ADA KONFIGURASI, MESTI DITAMBAH MENU "GET FROM PREVIOUS OPERATION" DAN/ATAU "RESET UNIT CONFIG"
                     else
                     {
                         unitConf_textPath = EMPTY_FILE_STRING;
                         unitManager.removeAllUnit();
-                        
+
                         //Destroy(GameObject.Find("UnitContainer") as GameObject);
                     }
 
@@ -1111,7 +1217,6 @@ public class MenuUnit : MonoBehaviour
                     //HistoryManager.showHistory = false;
                     curOpPlaying = curOpItem;
                     curOpPlayIdx = i;
-
                 }
 
                 if (GUILayout.Button("hapus"))
@@ -1189,7 +1294,7 @@ public class MenuUnit : MonoBehaviour
                 if (GUILayout.Button("Browse", GUILayout.Width(110)))
                 {
                     m_fileBrowser = new FileBrowser(new Rect(450, 0, 600, 500), "Pilih File", FileSelectedCallback);
-                    m_fileBrowser.SelectionPattern = "*.*";
+                    m_fileBrowser.SelectionPattern = "*.ogg";
                     m_fileBrowser.DirectoryImage = m_directoryImage;
                     m_fileBrowser.FileImage = m_fileImage;
                 }
@@ -1290,7 +1395,7 @@ public class MenuUnit : MonoBehaviour
                                 Lokasi,
                                 Deskripsi,
                                 pathToUploadedFile, /* file */
-                                //unitConf_textPath, /* unitconfig */
+                            //unitConf_textPath, /* unitconfig */
                                 unitConfTemp,
                                 waktuMulai,
                                 durasi, toggleFile, toggleUnitConfig));
@@ -1415,6 +1520,8 @@ public class MenuUnit : MonoBehaviour
         //GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
     }
 
+
+
     private string loadUnitConfigFile(string p)
     {
         string configFileName = Path.GetFileName(p);// + OperationManager.FILE_EXT_UNITCONF);
@@ -1422,14 +1529,14 @@ public class MenuUnit : MonoBehaviour
         if (File.Exists(Application.persistentDataPath + "/" + configFileName))
         {
             //try
-           // {
-                //unitManager.removeAllUnit();
-                LevelSerializer.LoadObjectTreeFromFile(configFileName);
+            // {
+            //unitManager.removeAllUnit();
+            LevelSerializer.LoadObjectTreeFromFile(configFileName);
             //}
             //catch (Exception e)
             //{
-               // Debug.Log("Unit config log Exception: " + e.ToString());
-           // }
+            // Debug.Log("Unit config log Exception: " + e.ToString());
+            // }
             //unitManager.resetUnitPos();
             //unitConf_textPath = configFileName;
             Debug.Log("loaded: " + configFileName);
@@ -1443,16 +1550,20 @@ public class MenuUnit : MonoBehaviour
 
         //uploading the file
         string namaFile = Path.GetFileName(m_textPath);
-        if (m_textPath == null || m_textPath==EMPTY_FILE_STRING)
+        if (m_textPath == null || m_textPath == EMPTY_FILE_STRING)
         {
             //submitUpload = "File belum dipilih";
             return "";
         }
         else
         {
-            FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
+            /////FileUtil.CopyFileOrDirectory(m_textPath, lokasiUpload + namaFile);
             //submitUpload = "File berhasil diupload";
-            Debug.Log("File berhasil diupload");
+
+            /////return lokasiUpload + namaFile;
+            File.Copy(m_textPath, lokasiUpload + namaFile,true);
+            ///isConvertingVideo = true;
+
             return lokasiUpload + namaFile;
         }
     }

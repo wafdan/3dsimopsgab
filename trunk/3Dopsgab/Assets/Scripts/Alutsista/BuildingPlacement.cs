@@ -18,11 +18,13 @@ public class BuildingPlacement : MonoBehaviour {
 	
 	private PlaceableBuilding placeableBuildingOld;
     private float unitAltitude;
+    private BasicUnitMovement curBum;
 
     void Start()
     {
-        daratan = GameObject.FindGameObjectWithTag("daratan").transform;
-        if (daratan == null) daratan = GameObject.Find("Peta_Indonesia").transform;
+        GameObject darat = GameObject.FindGameObjectWithTag("daratan");
+        if (darat == null) darat = GameObject.Find("Peta_Indonesia");
+        if (darat != null) daratan = darat.transform;
 
     }
 
@@ -38,6 +40,11 @@ public class BuildingPlacement : MonoBehaviour {
                 unitAltitude = BasicUnitMovement.UNIT_UDARA_Y;
             if (bm.isUnitLaut)
                 unitAltitude = BasicUnitMovement.UNIT_LAUT_Y;
+            if (bm.isUnitDarat == true)
+            {
+                unitAltitude = BasicUnitMovement.UNIT_UDARA_Y;
+                //currentBuilding.gameObject.collider.isTrigger = true;
+            }
         }
         else
         {
@@ -57,6 +64,12 @@ public class BuildingPlacement : MonoBehaviour {
                     if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitLaut)
                     {
                         currentBuilding.position = new Vector3(p.x, BasicUnitMovement.UNIT_LAUT_Y, p.z);
+                    }
+                    //handling unit darat
+                    if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitDarat)
+                    {
+                        currentBuilding.gameObject.collider.isTrigger = false;
+                        Debug.Log("IS TRIGGER??? " + currentBuilding.gameObject.collider.isTrigger);
                     }
                     //add to history
                     HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,getCleanName(currentBuilding,"name"),getCleanName(currentBuilding,"prefab"),currentBuilding.position));
@@ -92,8 +105,39 @@ public class BuildingPlacement : MonoBehaviour {
 
     private void checkLegalPos()
     {
-        if (!IsLegalPosition()) currentBuilding.gameObject.renderer.material.color = Color.red;
-        else currentBuilding.gameObject.renderer.material.color = normalColor;
+        if (!IsLegalPosition())
+        {
+            currentBuilding.gameObject.renderer.material.color = Color.red;
+            if (currentBuilding.childCount > 0)
+            {
+                colorTheChilds(currentBuilding,Color.red);
+            }
+        }
+        else
+        {
+            currentBuilding.gameObject.renderer.material.color = normalColor;
+            if (currentBuilding.childCount > 0)
+            {
+                Renderer[] co = currentBuilding.GetComponentsInChildren<Renderer>();
+                for (int i = 0; i < co.Length; i++)
+                {
+                    co[i].material.color = normalColor;
+                }
+            }
+        }
+    }
+
+    private void colorTheChilds(Transform curTransform, Color color)
+    {
+        if (curTransform.childCount > 0)
+        {
+            Renderer[] co = curTransform.GetComponentsInChildren<Renderer>();
+            for (int i = 0; i < co.Length; i++)
+            {
+                co[i].material.color = color;
+                //colorTheChilds(co[i].transform, color);
+            }
+        }
     }
     
 
@@ -113,7 +157,7 @@ public class BuildingPlacement : MonoBehaviour {
 		hasPlaced = false;
 		currentBuilding = ((GameObject)Instantiate(b)).transform;
 		placeableBuilding = currentBuilding.GetComponent<PlaceableBuilding>();
-
+        
         //GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
         //if (unitManagerObject != null)
         //{
