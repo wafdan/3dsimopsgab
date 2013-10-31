@@ -101,6 +101,7 @@
      <Compile Include="Assets\Scripts\Unit\Debarkasi\AmpibiDebarkasi.cs" />
      <Compile Include="Assets\Scripts\Unit\Debarkasi\CameraDebarkasi.cs" />
      <Compile Include="Assets\Scripts\Unit\Debarkasi\KRIAngkutDebarkasi.cs" />
+     <Compile Include="Assets\Scripts\Unit\DetonatorTank.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiLaut.cs" />
      <Compile Include="Assets\Scripts\Unit\EmbarkasiTank.cs" />
      <Compile Include="Assets\Scripts\Unit\Heli Terbang\CameraToHeli.cs" />
