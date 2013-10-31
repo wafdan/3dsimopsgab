@@ -19,7 +19,8 @@ public class BasicUnitMovement : MonoBehaviour
     public bool isSelected = false;
     public bool isUnitLaut; //diset di Editor prefabnya
     public bool isUnitUdara; //diset di Editor prefabnya
-    
+    public bool isUnitDarat;
+
     // UNIT MANAGER
     private UnitManager unitManager;
     private GameObject unitManagerObject;
@@ -146,7 +147,7 @@ public class BasicUnitMovement : MonoBehaviour
             //cek if posisi awal sama dengan posisi waypoint terakhir
             if (myTransform.position == waypoints[waypoints.Count - 1])
             {
-                Debug.Log("Udah ada di GOAL!");
+                //Debug.Log("Udah ada di GOAL!");
                 return;
             }
             if (curWaypointIdx < waypoints.Count)
