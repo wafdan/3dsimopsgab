@@ -31,8 +31,9 @@ public class BuildingPlacement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		Vector3 m = Input.mousePosition;
-		m = new Vector3(m.x,m.y,transform.position.y);
+        m = new Vector3(m.x,m.y,transform.position.y);
 		Vector3 p = camera.ScreenToWorldPoint(m);
+        
         if (currentBuilding != null)
         {
             BasicUnitMovement bm = currentBuilding.GetComponent<BasicUnitMovement>();
