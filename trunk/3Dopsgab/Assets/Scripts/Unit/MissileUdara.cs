@@ -4,7 +4,7 @@ using System.Collections;
 public class MissileUdara : MonoBehaviour {
 	private Transform myTransform;
 	
-	private float kecepatanMissile = 100;
+	public float kecepatanMissile = 100;
 	//public Transform asapLedakan;
 	public Transform ledakan;
 	
