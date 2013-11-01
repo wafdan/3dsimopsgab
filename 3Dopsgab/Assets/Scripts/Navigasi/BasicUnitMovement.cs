@@ -156,7 +156,7 @@ public class BasicUnitMovement : MonoBehaviour
             if (curWaypointIdx < waypoints.Count)
             {
 
-                //water unit handling
+                // unit laut, cek daratan
                 if (isUnitLaut)
                 {
 
@@ -180,6 +180,7 @@ public class BasicUnitMovement : MonoBehaviour
                 Vector3 moveDir = target - myTransform.position;
 
 
+                //mulai hitung2an belok mode, kalo jaraknya udah sepersepuluh dari target point, belok mode ON!
                 float distToNextPoint = Vector3.Distance(myTransform.position, target);
                 //float distToTuj;
 
@@ -204,6 +205,7 @@ public class BasicUnitMovement : MonoBehaviour
                     belokIdx = 0;
                 }
 
+                // BELOK MODE ON!
                 if (belokMode)
                 {
 
@@ -217,6 +219,7 @@ public class BasicUnitMovement : MonoBehaviour
                             myTransform.LookAt(targetBelok);
                             myTransform.position = Vector3.MoveTowards(myTransform.position, targetBelok, Time.deltaTime * moveSpeed);
 
+                            // Unit udara kalo belok harus nyudut
                             if (isUnitUdara)
                             {
                                 //rotate banking
@@ -242,6 +245,7 @@ public class BasicUnitMovement : MonoBehaviour
                                 //rotation,Mathf.SmoothStep(0.0f, 1.0f, step));
                                 //end rotate
                             }
+
                             float dist = Vector3.Distance(myTransform.position, targetBelok);
                             if (dist <= 0.5f)
                                 belokIdx++;
@@ -260,13 +264,22 @@ public class BasicUnitMovement : MonoBehaviour
 
                     }
 
-                } //end belokMode
+                } //BELOK MODE OFF, LURUS2 saja
                 else
                 {
                     //Debug.Log("Lurus..");
 
-                    myTransform.LookAt(target);
-                    myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
+                    //gerakan normal
+                    if (!isUnitDarat)
+                    {
+                        myTransform.LookAt(target);
+                        myTransform.position = Vector3.MoveTowards(myTransform.position, target, Time.deltaTime * moveSpeed);
+                    }
+                    else
+                    {
+                        myTransform.Translate(Vector3.forward * Time.deltaTime * moveSpeed);
+                    }
+
 
                     if (distToNextPoint <= 0.1f)
                     {
@@ -392,12 +405,13 @@ public class BasicUnitMovement : MonoBehaviour
         }
     }
 
-    public string getCleanName(Transform myTransform, string which)
-    {
-        return HistoryManager.getCleanName(myTransform, which);
-    }
+    //begin pergerakan darat
 
 
+
+    //end pergerakan darat
+
+    
     void Clicked()
     {
         //Debug.Log("CLICKED..");
@@ -517,6 +531,11 @@ public class BasicUnitMovement : MonoBehaviour
     private float myInverseLerp(int p, int curvedLength, int pitoc)
     {
         return MainScript.myInverseLerp(p, curvedLength, pitoc);
+    }
+
+    public string getCleanName(Transform myTransform, string which)
+    {
+        return HistoryManager.getCleanName(myTransform, which);
     }
 
 
