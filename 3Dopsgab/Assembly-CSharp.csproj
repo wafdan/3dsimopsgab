@@ -93,6 +93,7 @@
      <Compile Include="Assets\Scripts\OperationManager.cs" />
      <Compile Include="Assets\Scripts\Unit\Actor.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanKapal.cs" />
+     <Compile Include="Assets\Scripts\Unit\BantuanTembakanRMGrad.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourBase.cs" />
      <Compile Include="Assets\Scripts\Unit\BehaviourForward.cs" />
@@ -131,6 +132,7 @@
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\komandanBarisUnitUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\RanjauHancur.cs" />
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
+     <Compile Include="Assets\Scripts\Unit\Tankmenembak.cs" />
      <Compile Include="Assets\Scripts\Unit\UnitManager.cs" />
      <Compile Include="Assets\Scripts\Unit\amphibi.cs" />
      <Compile Include="Assets\Scripts\Unit\bellScript.cs" />
