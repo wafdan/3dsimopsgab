@@ -7,7 +7,7 @@ public class PeluruLatihanMenembak : MonoBehaviour {
 	public Transform myBulletExplosion;
 	
 	private RaycastHit hit;
-	private float range	= 0.5f;
+	private float range	= 1f;
 	
 	// Use this for initialization
 	void Start () {
@@ -32,7 +32,7 @@ public class PeluruLatihanMenembak : MonoBehaviour {
 	
 	IEnumerator DestroyBullet()
 	{
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(1);
 		Destroy(myTransform.gameObject);
 	}
 	
