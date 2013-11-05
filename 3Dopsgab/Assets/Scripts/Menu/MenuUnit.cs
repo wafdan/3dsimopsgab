@@ -1251,8 +1251,11 @@ public class MenuUnit : MonoBehaviour
                     {
                         Application.LoadLevel(operationItem.sceneName);
                     }
-                    //load another detail
-                    loadOperationDetail(operationItem);
+                    else
+                    {
+                        //load another detail
+                        loadOperationDetail(operationItem);
+                    }
                 }
 
 
