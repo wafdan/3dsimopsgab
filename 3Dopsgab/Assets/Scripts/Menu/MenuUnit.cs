@@ -371,7 +371,7 @@ public class MenuUnit : MonoBehaviour
     ///
     private int lastOpCount = 0;
 
-    private OperationItem curOpItem;
+    //private OperationItem curOpItem;
     public static OperationItem curOpPlaying;
     private string curOpInfo;
     private string submitKegInfo;
@@ -414,7 +414,7 @@ public class MenuUnit : MonoBehaviour
     private Vector2 scrollPosUnitAlutsista = Vector2.zero;
     private Vector2 scrollPosPlayList = Vector2.zero;
 
-    public static string EMPTY_FILE_STRING = "---- file kosong ----";
+    
     private bool toggleShowDialogDelFile = false;
     private Vector2 scrollPositionSaveLoad = Vector2.zero;
     private string saveLoadWarning = "";
@@ -473,6 +473,75 @@ public class MenuUnit : MonoBehaviour
         initTextures();
         initSceneNames();
         StartCoroutine(convertVideoManager());
+        initSelectedOperation();
+    }
+
+    private void initSelectedOperation()
+    {
+        unitManager.removeAllUnit();
+        if (OperationManager.curOpItem != null)
+        {
+            
+            loadOperationDetail(OperationManager.curOpItem);
+            list = true;
+            showFormKegiatan = true;
+
+        }
+    }
+
+    private void loadOperationDetail(OperationItem operationItem)
+    {
+        nowEditingOpId = OperationManager.operationList.IndexOf(operationItem); //set posisi ngedit
+        // tampilkan detail info di dalam form kegiatan
+        NamaKeg = operationItem.name;
+        Lokasi = operationItem.location;
+        Deskripsi = operationItem.location;
+        //waktu mulai
+        JamMulai = operationItem.startTime.Hour.ToString();
+        MenitMulai = operationItem.startTime.Minute.ToString();
+        //durasi
+        HariDurasi = operationItem.duration.Days.ToString();
+        JamDurasi = operationItem.duration.Hours.ToString();
+        MenitDurasi = operationItem.duration.Minutes.ToString();
+
+        toggleFile = operationItem.hasVideo;
+        toggleUnitConfig = operationItem.hasUnitMovement;
+
+
+
+        //handle file
+        if (toggleFile)
+        {
+            m_textPath = operationItem.files;
+        }
+        else
+        {
+            m_textPath = Const.EMPTY_FILE_STRING;
+        }
+
+        //handle unit config
+        if (toggleUnitConfig)
+        {
+            //unitConf_textPath = loadUnitConfigFile(curOpItem.unitConfig);
+            unitManager.removeAllUnit();
+            //GameObject uconobj =  GameObject.Find("UnitContainer");
+            //if (uconobj != null)
+            //{
+            //    Destroy(uconobj);
+            //}
+            LevelSerializer.LoadObjectTree(operationItem.unitConfig);
+
+        }
+        //DELETE UNIT KALO GA ADA KONFIGURASI, MESTI DITAMBAH MENU "GET FROM PREVIOUS OPERATION" DAN/ATAU "RESET UNIT CONFIG"
+        else
+        {
+            unitConf_textPath = Const.EMPTY_FILE_STRING;
+            unitManager.removeAllUnit();
+
+            //Destroy(GameObject.Find("UnitContainer") as GameObject);
+        }
+
+        showFormKegiatan = true; //tampilkan formnya
     }
 
     IEnumerator loadMovie()
@@ -1106,6 +1175,17 @@ public class MenuUnit : MonoBehaviour
 
         float leftGroupY = 0;
 
+        //tombol kembali ke peta indonesia (untuk scene detail)
+        if (Application.loadedLevelName != Const.PETA_INDONESIA)
+        {
+            if (GUI.Button(new Rect((Screen.width - 200) / 2, 5, 200, 25), "Kembali ke Peta Indonesia"))
+            {
+                Application.LoadLevel("Game Play");
+            }
+        }
+        //keterangan satuan
+        GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
+
         //combobox hari
         int selectedItemIndex = comboBoxControl.GetSelectedItemIndex();
         selectedItemIndex = comboBoxControl.List(new Rect(5, leftGroupY, kegiatanW - 142, 25), Hari[selectedItemIndex], Hari, listStyle);
@@ -1139,73 +1219,40 @@ public class MenuUnit : MonoBehaviour
             GUILayout.BeginVertical();
             for (int i = 0; i < OperationManager.operationList.Count; i++)
             {
-                curOpItem = (OperationItem)OperationManager.operationList[i];
+                
+                OperationItem operationItem = (OperationItem)OperationManager.operationList[i];
                 //kalo satuannya bukan satuan yg lagi dimainkan, lewat.
-                if (curOpItem.satuan != PlayerPrefs.GetString("satuan"))
+                if (operationItem.satuan != PlayerPrefs.GetString("satuan"))
                 {
                     continue;
                 }
                 //kalo harinya bukan hari yg lagi dipilih, lewat.
-                if (curOpItem.posisiHari != Hari[comboBoxControl.GetSelectedItemIndex()].text)
+                if (operationItem.posisiHari != Hari[comboBoxControl.GetSelectedItemIndex()].text)
                 {
                     continue;
                 }
-                if (curOpItem.hasUnitMovement)
+                if (operationItem.hasUnitMovement)
                 { GUI.backgroundColor = Color.red; }
-                else if (curOpItem.hasVideo)
+                else if (operationItem.hasVideo)
                 { GUI.backgroundColor = Color.green; }
                 else
                 { GUI.backgroundColor = Color.yellow; }
                 GUILayout.BeginHorizontal(GUI.skin.box);
 
-                string curin = curOpItem.name +
-                    "\nlokasi: " + curOpItem.location +
-                    "\nwaktu mulai: " + curOpItem.getStartTimeString() +
-                    "\nwaktu selesai: " + curOpItem.getEndTimeString();
+                string curin = operationItem.name +
+                    "\nlokasi: " + operationItem.location +
+                    "\nwaktu mulai: " + operationItem.getStartTimeString() +
+                    "\nwaktu selesai: " + operationItem.getEndTimeString();
                 if (GUILayout.Button(curin, styleKegListItem))
                 {
-                    nowEditingOpId = i; //set posisi ngedit
-                    // tampilkan detail info di dalam form kegiatan
-                    NamaKeg = curOpItem.name;
-                    Lokasi = curOpItem.location;
-                    Deskripsi = curOpItem.location;
-                    //waktu mulai
-                    JamMulai = curOpItem.startTime.Hour.ToString();
-                    MenitMulai = curOpItem.startTime.Minute.ToString();
-                    //durasi
-                    HariDurasi = curOpItem.duration.Days.ToString();
-                    JamDurasi = curOpItem.duration.Hours.ToString();
-                    MenitDurasi = curOpItem.duration.Minutes.ToString();
-
-                    toggleFile = curOpItem.hasVideo;
-                    toggleUnitConfig = curOpItem.hasUnitMovement;
-
-                    if (toggleFile)
+                    OperationManager.curOpItem = operationItem;
+                    //handle scene name
+                    if (Application.loadedLevelName != operationItem.sceneName)
                     {
-                        m_textPath = curOpItem.files;
+                        Application.LoadLevel(operationItem.sceneName);
                     }
-                    else
-                    {
-                        m_textPath = EMPTY_FILE_STRING;
-                    }
-
-                    if (toggleUnitConfig)
-                    {
-                        //unitConf_textPath = loadUnitConfigFile(curOpItem.unitConfig);
-                        unitManager.removeAllUnit();
-                        LevelSerializer.LoadObjectTree(curOpItem.unitConfig);
-
-                    }
-                    //DELETE UNIT KALO GA ADA KONFIGURASI, MESTI DITAMBAH MENU "GET FROM PREVIOUS OPERATION" DAN/ATAU "RESET UNIT CONFIG"
-                    else
-                    {
-                        unitConf_textPath = EMPTY_FILE_STRING;
-                        unitManager.removeAllUnit();
-
-                        //Destroy(GameObject.Find("UnitContainer") as GameObject);
-                    }
-
-                    showFormKegiatan = true; //tampilkan formnya
+                    //load another detail
+                    loadOperationDetail(operationItem);
                 }
 
 
@@ -1215,7 +1262,7 @@ public class MenuUnit : MonoBehaviour
                     showPlayMode = true;
                     OperationManager.gameClockSpeed = 1;
                     //HistoryManager.showHistory = false;
-                    curOpPlaying = curOpItem;
+                    curOpPlaying = operationItem;
                     curOpPlayIdx = i;
                 }
 
@@ -1305,16 +1352,16 @@ public class MenuUnit : MonoBehaviour
             if (toggleFile)
             {
                 GUILayout.BeginHorizontal(GUI.skin.box);
-                GUILayout.Label(Path.GetFileName(m_textPath) ?? EMPTY_FILE_STRING, styleFileItem);
+                GUILayout.Label(Path.GetFileName(m_textPath) ?? Const.EMPTY_FILE_STRING, styleFileItem);
                 GUI.backgroundColor = Color.red;
-                if (m_textPath == EMPTY_FILE_STRING)
+                if (m_textPath == Const.EMPTY_FILE_STRING)
                 {
                     GUI.enabled = false;
                     if (GUILayout.Button("X", GUILayout.Width(25)))
                     {
                         if (nowEditingOpId == GA_NGEDIT)
                         {
-                            m_textPath = EMPTY_FILE_STRING;
+                            m_textPath = Const.EMPTY_FILE_STRING;
                         }
                         else
                         {
@@ -1396,11 +1443,15 @@ public class MenuUnit : MonoBehaviour
                                 NamaKeg,
                                 Lokasi,
                                 Deskripsi,
-                                pathToUploadedFile, /* file */
-                            //unitConf_textPath, /* unitconfig */
-                                unitConfTemp,
+                                pathToUploadedFile, /*file*/
+                                unitConfTemp, /*unit config*/
                                 waktuMulai,
-                                durasi, toggleFile, toggleUnitConfig));
+                                durasi, 
+                                toggleFile, 
+                                toggleUnitConfig,
+                                Application.loadedLevelName
+                                ));
+
                         emptyTheField();
                         //item lainnya menyusul
                         submitKegInfo = "berhasil disimpan";
@@ -1430,6 +1481,7 @@ public class MenuUnit : MonoBehaviour
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).hasUnitMovement = toggleUnitConfig;
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).files = uploadSelectedFile();
                         ((OperationItem)OperationManager.operationList[nowEditingOpId]).unitConfig = LevelSerializer.SaveObjectTree(GameObject.Find("UnitContainer") as GameObject);
+                        ((OperationItem)OperationManager.operationList[nowEditingOpId]).sceneName = Application.loadedLevelName;
                         Debug.Log("perbaharui unit config: " + unitConf_textPath);
                         emptyTheField();
                         submitKegInfo = "berhasil diperbaharui";
@@ -1462,8 +1514,6 @@ public class MenuUnit : MonoBehaviour
             GUILayout.EndArea();
 
             GUI.backgroundColor = Color.grey;
-
-            GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
 
             //return;
         }
@@ -1498,7 +1548,7 @@ public class MenuUnit : MonoBehaviour
                     Console.WriteLine(e);
                 }
 
-                m_textPath = EMPTY_FILE_STRING;
+                m_textPath = Const.EMPTY_FILE_STRING;
                 //if ()
                 //{
                 //    Debug.Log("deleting berhasil");
@@ -1544,7 +1594,7 @@ public class MenuUnit : MonoBehaviour
             Debug.Log("loaded: " + configFileName);
             return configFileName;
         }
-        return EMPTY_FILE_STRING;
+        return Const.EMPTY_FILE_STRING;
     }
 
     private string uploadSelectedFile()
@@ -1552,7 +1602,7 @@ public class MenuUnit : MonoBehaviour
 
         //uploading the file
         string namaFile = Path.GetFileName(m_textPath);
-        if (m_textPath == null || m_textPath == EMPTY_FILE_STRING)
+        if (m_textPath == null || m_textPath == Const.EMPTY_FILE_STRING)
         {
             //submitUpload = "File belum dipilih";
             return "";
@@ -1582,8 +1632,8 @@ public class MenuUnit : MonoBehaviour
         MenitDurasi = "";
         toggleFile = false;
         toggleUnitConfig = false;
-        m_textPath = EMPTY_FILE_STRING;
-        unitConf_textPath = EMPTY_FILE_STRING;
+        m_textPath = Const.EMPTY_FILE_STRING;
+        unitConf_textPath = Const.EMPTY_FILE_STRING;
     }
 
     private void getMilitaryUnitGUI()

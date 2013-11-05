@@ -48,6 +48,9 @@ public class OperationManager : MonoBehaviour
     private bool movReady;
     public static MovieTexture movTexture;
 
+    // SIMPAN ANTAR SCENE
+    public static OperationItem curOpItem;
+
     void Start()
     {
         StartCoroutine(startTheGameClock());
@@ -382,6 +385,7 @@ public class OperationItem: IComparable
     public bool hasUnitMovement;
     public bool hasVideo;
     public bool isRunning = false;
+    public string sceneName;
 
     public OperationItem()
     {
@@ -395,6 +399,7 @@ public class OperationItem: IComparable
         unitConfig = new byte[]{};
         startTime = OperationManager.HARI_HA;
         endTime = OperationManager.HARI_HA;
+        sceneName = Const.PETA_INDONESIA;
     }
 
     public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi)
@@ -440,7 +445,7 @@ public class OperationItem: IComparable
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit,string sceneName)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -456,6 +461,7 @@ public class OperationItem: IComparable
 
         this.hasVideo = hasFile;
         this.hasUnitMovement = hasUnit;
+        this.sceneName = sceneName;
     }
 
     public void prosesStartAndEndTime(string startTime, string posisiHari,TimeSpan durasi)
