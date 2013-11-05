@@ -7,7 +7,7 @@ public class CameraMovement : MonoBehaviour
 	private const int ScrollSpeed = 200;
 	private const int ScrollWidth = 10;
 	private const int MaxCameraHeight = 200;
-	private const int MinCameraHeight = 100;
+	private const int MinCameraHeight = 50;
 	private const int RotateAmount = 10;
 	private const int RotateSpeed = 100;
 	

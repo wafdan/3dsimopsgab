@@ -407,7 +407,7 @@ public class BasicUnitMovement : MonoBehaviour
     }
 
 
-    //sampleHeight, ada di BuildingPlacement juga
+    //sampleHeight, ada di BuildingPlacement dan MenuUnit juga
     float heightAboveGround = 0;
     private float sampleHeight(Vector3 vector3)
     {
