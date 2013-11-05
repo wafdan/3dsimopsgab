@@ -38,13 +38,19 @@ public class BuildingPlacement : MonoBehaviour {
         {
             BasicUnitMovement bm = currentBuilding.GetComponent<BasicUnitMovement>();
             if (bm.isUnitUdara)
-                unitAltitude = BasicUnitMovement.UNIT_UDARA_Y;
-            if (bm.isUnitLaut)
-                unitAltitude = BasicUnitMovement.UNIT_LAUT_Y;
-            if (bm.isUnitDarat == true)
             {
-                unitAltitude = BasicUnitMovement.UNIT_UDARA_Y;
-                //currentBuilding.gameObject.collider.isTrigger = true;
+                unitAltitude = BasicUnitMovement.UNIT_UDARA_Y + sampleHeight(currentBuilding.position);
+                //Debug.DrawRay(currentBuilding.position, Vector3.down);
+            }
+            if (bm.isUnitLaut)
+            {
+                unitAltitude = BasicUnitMovement.UNIT_LAUT_Y;// +sampleHeight(currentBuilding.position);
+                //Debug.DrawRay(currentBuilding.position, Vector3.down * Terrain.activeTerrain.SampleHeight(currentBuilding.position));
+            }
+            if (bm.isUnitDarat)
+            {
+                unitAltitude = sampleHeight(currentBuilding.position); //BasicUnitMovement.UNIT_UDARA_Y;
+                
             }
         }
         else
@@ -69,7 +75,7 @@ public class BuildingPlacement : MonoBehaviour {
                     //handling unit darat
                     if (currentBuilding.gameObject.GetComponent<BasicUnitMovement>().isUnitDarat)
                     {
-                        currentBuilding.gameObject.collider.isTrigger = false;
+                        //currentBuilding.gameObject.collider.isTrigger = false; GA JADI RIGID DULU
                         Debug.Log("IS TRIGGER??? " + currentBuilding.gameObject.collider.isTrigger);
                     }
                     //add to history
@@ -103,6 +109,29 @@ public class BuildingPlacement : MonoBehaviour {
 			}
 		}
 	}
+    float heightAboveGround = 0;
+    private float sampleHeight(Vector3 vector3)
+    {
+
+        if (Terrain.activeTerrain != null)
+        {
+            return Terrain.activeTerrain.SampleHeight(vector3);
+        }
+        else
+        {
+            // harusnya ini return ketinggian berdasarkan mesh peta indonesia
+            //return 0;
+            RaycastHit hit;
+            //float heightAboveGround = currentBuilding.position.y;// = 0;
+            if (Physics.Raycast(currentBuilding.position,Vector3.down,out hit,20)) //currentBuilding.TransformDirection(Vector3.down),out hit))
+            {
+                heightAboveGround = 19.995f - hit.distance;
+            }
+            //Debug.DrawRay(currentBuilding.position, currentBuilding.TransformDirection(Vector3.down)*Mathf.Infinity);
+            Debug.Log("height: " + heightAboveGround);
+            return heightAboveGround;
+        }
+    }
 
     private void checkLegalPos()
     {

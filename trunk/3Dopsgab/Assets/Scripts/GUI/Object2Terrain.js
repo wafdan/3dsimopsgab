@@ -1,4 +1,4 @@
-/*
+
 @MenuItem ("Terrain/Object to Terrain")
 
 static function Object2Terrain () {
@@ -81,4 +81,3 @@ static function Object2Terrain () {
         DestroyImmediate(objCollider);
     }
 }
-*/
