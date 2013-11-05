@@ -221,24 +221,25 @@ public class OperationManager : MonoBehaviour
         }
     }
 
-    private void playIndividualOperation(OperationItem opItIndv)
+    private void playIndividualOperation(OperationItem operationToPlay)
     {
         //mainkan pergerakan
-        if (opItIndv.hasUnitMovement)
+        if (operationToPlay.hasUnitMovement)
         {
-            opItIndv.isRunning = true;
-            LevelSerializer.LoadObjectTree(opItIndv.unitConfig);
+            operationToPlay.isRunning = true;
+            if(Application.loadedLevelName == operationToPlay.sceneName)
+                LevelSerializer.LoadObjectTree(operationToPlay.unitConfig);
             MenuUnit.testMovementMode = true;
         }
 
-        if (opItIndv.hasVideo)
+        if (operationToPlay.hasVideo)
         {
-            if (File.Exists(opItIndv.files))
+            if (File.Exists(operationToPlay.files))
             {
-                Debug.Log("File loading dari " + opItIndv.files);
+                Debug.Log("File loading dari " + operationToPlay.files);
                 if (!movReady)
                 {
-                    StartCoroutine(loadKegMovie(opItIndv.files));
+                    StartCoroutine(loadKegMovie(operationToPlay.files));
                 }
                 else
                 {
@@ -248,7 +249,7 @@ public class OperationManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("File tidak ditemukan di " + opItIndv.files);
+                Debug.LogError("File tidak ditemukan di " + operationToPlay.files);
             }
         }
 
