@@ -425,6 +425,12 @@ public class MenuUnit : MonoBehaviour
     private string CONVERTER_LOCATION = "Assets\\ffmpeg2theora-0.29.exe";
     private bool isConvertingVideo = false;
 
+    private bool tagLocationMode = false;
+    private bool doneTagging = false;
+    GameObject taggerPrefab;
+    GameObject taggerObject;
+
+
     void Start()
     {
         //movTexture = Resources.Load("test.mp4") as MovieTexture;
@@ -434,6 +440,10 @@ public class MenuUnit : MonoBehaviour
 
         buildingPlacement = GetComponent<BuildingPlacement>();
 
+        //tagger
+        taggerPrefab = Resources.Load("Models/Miscellaneous/Pin_ready") as GameObject;
+
+        //satuan
         ketSatuan = PlayerPrefs.GetString("satuan");
         //satuan
         Hari = new GUIContent[32];
@@ -667,7 +677,63 @@ public class MenuUnit : MonoBehaviour
 
         showHUDTop = !showPlayMode; //kalo lagi play kegiatan, GUI lain Hide semua.
 
+        if (tagLocationMode)
+        {
+            showTagLocationPlacement();
+        }
 
+    }
+
+    private void showTagLocationPlacement()
+    {
+        Vector3 m = Input.mousePosition;
+        m = new Vector3(m.x,m.y,transform.position.y);
+		Vector3 p = camera.ScreenToWorldPoint(m);
+        
+		if (!doneTagging) {
+			taggerObject.transform.position = new Vector3(p.x,sampleHeight(taggerObject.transform.position),p.z);
+
+            
+			if (Input.GetMouseButtonDown(0)) {
+                doneTagging = true;
+			}
+            //klik kanan untuk cancel
+            if (Input.GetMouseButtonDown(1)) 
+            {
+                Destroy(taggerObject);
+            }
+		}
+		else {
+			if (Input.GetMouseButtonDown(0)) {
+                tagLocationMode = false;
+			}
+		}
+        
+    }
+
+    //sampleHeight, ada di BuildingPlacement juga
+    float heightAboveGround = 0;
+    private float sampleHeight(Vector3 vector3)
+    {
+
+        if (Terrain.activeTerrain != null)
+        {
+            return Terrain.activeTerrain.SampleHeight(vector3);
+        }
+        else
+        {
+            // harusnya ini return ketinggian berdasarkan mesh peta indonesia
+            //return 0;
+            RaycastHit hit;
+            //float heightAboveGround = currentBuilding.position.y;// = 0;
+            if (Physics.Raycast(vector3, Vector3.down, out hit, 4)) //currentBuilding.TransformDirection(Vector3.down),out hit))
+            {
+                heightAboveGround = 5-hit.distance;
+            }
+            //Debug.DrawRay(currentBuilding.position, currentBuilding.TransformDirection(Vector3.down)*Mathf.Infinity);
+            Debug.Log("height: " + heightAboveGround);
+            return heightAboveGround;
+        }
     }
 
     private IEnumerator moveCamera(string p)
@@ -1311,8 +1377,18 @@ public class MenuUnit : MonoBehaviour
             GUILayout.Label(":: Form Kegiatan ::", styleFormTitle);
             GUILayout.Label("Nama Kegiatan : ");
             NamaKeg = GUILayout.TextField(NamaKeg, 25);
+            
             GUILayout.Label("Lokasi : ");
+            GUILayout.BeginHorizontal();
             Lokasi = GUILayout.TextField(Lokasi, 25);
+            if (GUILayout.Button("Tandai",GUILayout.Width(50)))
+            {
+                taggerObject = (GameObject)Instantiate(taggerPrefab);
+                tagLocationMode = true;
+                doneTagging = false;
+            }
+            GUILayout.EndHorizontal();
+
             GUILayout.Label("Deskripsi : ");
             Deskripsi = GUILayout.TextArea(Deskripsi, 200, GUILayout.Height(100));
 
