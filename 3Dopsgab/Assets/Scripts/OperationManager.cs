@@ -50,11 +50,62 @@ public class OperationManager : MonoBehaviour
 
     // SIMPAN ANTAR SCENE
     public static OperationItem curOpItem;
+    private GameObject taggerPrefab;
 
     void Start()
     {
+        
         StartCoroutine(startTheGameClock());
         StartCoroutine(playTheKegs());
+    }
+
+    private Transform getTagContainer()
+    {
+        GameObject go = GameObject.Find("TagContainer");
+        if (go == null)
+        {
+            go = new GameObject("TagContainer");
+        }
+        return go.transform;
+    }
+
+    private void removeAllTagLocation()
+    {
+        Transform tagContainer = getTagContainer();
+        //tagContainer.DestroyChildren();
+        for (int i = 0; i < tagContainer.childCount; i++)
+        {
+            Destroy(tagContainer.GetChild(i).gameObject);
+        }
+    }
+
+    private void loadOperationLocationTags(OperationItem opItem)
+    {
+        removeAllTagLocation();
+        if (opItem.locationPoints.Length > 0)
+        {
+            //ListLokasiTemp.Clear();
+            //listLokasiTagObj.Clear();
+            for (int i = 0; i < opItem.locationPoints.Length; i++)
+            {
+                GameObject pin = GameObject.Instantiate(getTaggerPrefab(), opItem.locationPoints[i].locationPoint, Quaternion.identity) as GameObject;
+                pin.name = "Pin_" + opItem.locationPoints[i].objInstanceID;
+                pin.transform.parent = getTagContainer();
+
+                //ListLokasiTemp.Add(opItem.locationPoints[i]);
+                //listLokasiTagObj.Add(pin);
+            }
+        }
+    }
+
+    private GameObject getTaggerPrefab()
+    {
+        if (taggerPrefab == null)
+        {
+            taggerPrefab = Resources.Load("Models/Miscellaneous/Pin_ready") as GameObject;
+        }
+        return taggerPrefab;
+
     }
 
     private IEnumerator playTheKegs()
@@ -92,6 +143,11 @@ public class OperationManager : MonoBehaviour
                                         if(!opItIn.isRunning)
                                             playIndividualOperation(opItIn);
                                     }
+                                    //if (opItIn.locationPoints.Length > 0)
+                                    //{
+                                        loadOperationLocationTags(opItIn);
+                                    //}
+
                                 }
                             }
                         }
@@ -373,7 +429,7 @@ public class OperationItem: IComparable
     public string posisiHari;
     public string name;
     public string location;
-    public Vector3 locationPoint;
+    public OperationLocation[] locationPoints;
     public string description;
     public string files;
     public byte[] unitConfig;
@@ -394,7 +450,7 @@ public class OperationItem: IComparable
         posisiHari = "";
         name = "";
         location = "";
-        locationPoint = Vector3.zero;
+        locationPoints = new OperationLocation[] { };
         description = "";
         files = "";
         unitConfig = new byte[]{};
@@ -410,7 +466,7 @@ public class OperationItem: IComparable
         this.name = nama;
         this.location = lokasi;
         this.description = deskripsi;
-        this.locationPoint = Vector3.zero;
+        this.locationPoints = new OperationLocation[] { };
         this.files = "";
         this.unitConfig = null;
         startTime = OperationManager.HARI_HA;
@@ -424,7 +480,7 @@ public class OperationItem: IComparable
         this.name = nama;
         this.location = lokasi;
         this.description = deskripsi;
-        this.locationPoint = Vector3.zero;
+        this.locationPoints = new OperationLocation[] { };
         this.files = "";
         this.unitConfig = new byte[] { };
         startTime = OperationManager.HARI_HA;
@@ -438,7 +494,7 @@ public class OperationItem: IComparable
         this.name = nama;
         this.location = lokasi;
         this.description = deskripsi;
-        this.locationPoint = Vector3.zero;
+        this.locationPoints = new OperationLocation[] { };
         this.files = file;
         this.unitConfig = new byte[] { };
         startTime = OperationManager.HARI_HA;
@@ -446,14 +502,14 @@ public class OperationItem: IComparable
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit,string sceneName)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, OperationLocation[] newLocPoints, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit,string sceneName)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
         this.name = nama;
         this.location = lokasi;
         this.description = deskripsi;
-        this.locationPoint = Vector3.zero;
+        this.locationPoints = newLocPoints;
         this.files = file;
         this.unitConfig = newUnitConfig;
         this.duration = duration;
@@ -576,5 +632,32 @@ class OperationItem_SortByHariStartTimeAscending : IComparer
             else
                 return 0;
         }
+    }
+}
+
+public class OperationLocation
+{
+    public Vector3 locationPoint;
+    public string locationName;
+    public int objInstanceID;
+
+    public OperationLocation()
+    {
+        locationPoint = Vector3.zero;
+        locationName = "";
+        objInstanceID = 0;
+    }
+
+    public OperationLocation(Vector3 v3, string nm, int instID)
+    {
+        locationPoint = v3;
+        locationName = nm;
+        objInstanceID = instID;
+    }
+    public OperationLocation(Vector3 v3, int instID)
+    {
+        locationPoint = v3;
+        locationName = "";
+        objInstanceID = instID;
     }
 }

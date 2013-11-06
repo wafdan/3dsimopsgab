@@ -23,7 +23,7 @@ public class AmpibiDebarkasi : MonoBehaviour {
 	
 	IEnumerator DestroyThis()
 	{
-		yield return new WaitForSeconds(50);
+		yield return new WaitForSeconds(30);
 		Destroy(myTransform.gameObject);
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 ///using UnityEditor;
 
 public class MenuUnit : MonoBehaviour
@@ -26,6 +27,7 @@ public class MenuUnit : MonoBehaviour
     //tambah kegiatan
     public Texture2D background;
     public string Lokasi;
+    private List<OperationLocation> ListLokasiTemp = new List<OperationLocation>();
     public string NamaKeg;
     public string FilePendukung;
     public string Deskripsi;
@@ -199,8 +201,6 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_fileItem;
 
-
-
     protected GUIStyle styleFormWarning
     {
         get
@@ -234,7 +234,6 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_playLabel;
 
-
     protected GUIStyle stylePlayField
     {
         get
@@ -266,7 +265,6 @@ public class MenuUnit : MonoBehaviour
     }
     protected GUIStyle m_playBtBack;
 
-
     protected GUIStyle stylePlayDesc
     {
         get
@@ -280,7 +278,6 @@ public class MenuUnit : MonoBehaviour
         }
     }
     protected GUIStyle m_stylePlayDesc;
-
 
     protected GUIStyle styleClockPlay
     {
@@ -414,7 +411,7 @@ public class MenuUnit : MonoBehaviour
     private Vector2 scrollPosUnitAlutsista = Vector2.zero;
     private Vector2 scrollPosPlayList = Vector2.zero;
 
-    
+
     private bool toggleShowDialogDelFile = false;
     private Vector2 scrollPositionSaveLoad = Vector2.zero;
     private string saveLoadWarning = "";
@@ -425,11 +422,12 @@ public class MenuUnit : MonoBehaviour
     private string CONVERTER_LOCATION = "Assets\\ffmpeg2theora-0.29.exe";
     private bool isConvertingVideo = false;
 
+    //tagging Lokasi
     private bool tagLocationMode = false;
     private bool doneTagging = false;
     GameObject taggerPrefab;
     GameObject taggerObject;
-
+    List<GameObject> listLokasiTagObj = new List<GameObject>();
 
     void Start()
     {
@@ -491,7 +489,7 @@ public class MenuUnit : MonoBehaviour
         unitManager.removeAllUnit();
         if (OperationManager.curOpItem != null)
         {
-            
+
             loadOperationDetail(OperationManager.curOpItem);
             list = true;
             showFormKegiatan = true;
@@ -517,7 +515,8 @@ public class MenuUnit : MonoBehaviour
         toggleFile = operationItem.hasVideo;
         toggleUnitConfig = operationItem.hasUnitMovement;
 
-
+        //hadle tag lokasi
+        loadOperationLocationTags(operationItem);
 
         //handle file
         if (toggleFile)
@@ -552,6 +551,45 @@ public class MenuUnit : MonoBehaviour
         }
 
         showFormKegiatan = true; //tampilkan formnya
+    }
+
+    private void loadOperationLocationTags(OperationItem opItem)
+    {
+        removeAllTagLocation();
+        if (opItem.locationPoints.Length > 0)
+        {
+            ListLokasiTemp.Clear();
+            listLokasiTagObj.Clear();
+            for (int i = 0; i < opItem.locationPoints.Length; i++)
+            {
+                GameObject pin = GameObject.Instantiate(taggerPrefab, opItem.locationPoints[i].locationPoint, Quaternion.identity) as GameObject;
+                pin.name = "Pin_" + opItem.locationPoints[i].objInstanceID;
+                pin.transform.parent = getTagContainer();
+
+                ListLokasiTemp.Add(opItem.locationPoints[i]);
+                listLokasiTagObj.Add(pin);
+            }
+        }
+    }
+
+    private void removeAllTagLocation()
+    {
+        Transform tagContainer = getTagContainer();
+        //tagContainer.DestroyChildren();
+        for (int i = 0; i < tagContainer.childCount; i++)
+        {
+            Destroy(tagContainer.GetChild(i).gameObject);
+        }
+    }
+
+    private Transform getTagContainer()
+    {
+        GameObject go = GameObject.Find("TagContainer");
+        if (go == null)
+        {
+            go = new GameObject("TagContainer");
+        }
+        return go.transform;
     }
 
     IEnumerator loadMovie()
@@ -686,33 +724,42 @@ public class MenuUnit : MonoBehaviour
 
     private void showTagLocationPlacement()
     {
+        if (taggerObject == null) { tagLocationMode = false; return; }
         Vector3 m = Input.mousePosition;
-        m = new Vector3(m.x,m.y,transform.position.y);
-		Vector3 p = camera.ScreenToWorldPoint(m);
-        
-		if (!doneTagging) {
-			taggerObject.transform.position = new Vector3(p.x,sampleHeight(taggerObject.transform.position),p.z);
+        m = new Vector3(m.x, m.y, transform.position.y);
+        Vector3 p = camera.ScreenToWorldPoint(m);
 
-            
-			if (Input.GetMouseButtonDown(0)) {
+        if (!doneTagging)
+        {
+            taggerObject.transform.position = new Vector3(p.x, sampleHeight(taggerObject.transform.position), p.z);
+
+
+            if (Input.GetMouseButtonDown(0))
+            {
                 doneTagging = true;
-			}
+            }
             //klik kanan untuk cancel
-            if (Input.GetMouseButtonDown(1)) 
+            if (Input.GetMouseButtonDown(1))
             {
                 Destroy(taggerObject);
             }
-		}
-		else {
-			if (Input.GetMouseButtonDown(0)) {
+        }
+        else
+        {
+            //if (Input.GetMouseButtonDown(0))
+            {
+                ListLokasiTemp.Add(new OperationLocation(taggerObject.transform.position,taggerObject.GetInstanceID()));
+                taggerObject.name = "Pin_" + taggerObject.GetInstanceID();
+                listLokasiTagObj.Add(taggerObject);
                 tagLocationMode = false;
-			}
-		}
-        
+            }
+        }
+
     }
 
     //sampleHeight, ada di BuildingPlacement juga
     float heightAboveGround = 0;
+
     private float sampleHeight(Vector3 vector3)
     {
 
@@ -728,18 +775,12 @@ public class MenuUnit : MonoBehaviour
             //float heightAboveGround = currentBuilding.position.y;// = 0;
             if (Physics.Raycast(vector3, Vector3.down, out hit, 4)) //currentBuilding.TransformDirection(Vector3.down),out hit))
             {
-                heightAboveGround = 5-hit.distance;
+                heightAboveGround = 5 - hit.distance;
             }
             //Debug.DrawRay(currentBuilding.position, currentBuilding.TransformDirection(Vector3.down)*Mathf.Infinity);
-            Debug.Log("height: " + heightAboveGround);
+            //Debug.Log("height: " + heightAboveGround);
             return heightAboveGround;
         }
-    }
-
-    private IEnumerator moveCamera(string p)
-    {
-        iTween.MoveUpdate(Camera.main.gameObject, iTween.Hash("path", iTweenPath.GetPath(p), "time", 10));
-        yield return new WaitForSeconds(1);
     }
 
     void OnGUI()
@@ -764,6 +805,8 @@ public class MenuUnit : MonoBehaviour
             if (!editUnitMode)
             {
                 getManajemenKegiatanGUI();
+
+                getLocationTagGUI();
 
             }// endif hudtop
             else
@@ -828,6 +871,35 @@ public class MenuUnit : MonoBehaviour
         if (editUnitMode && showSaveBrowser)
         {
             showSaveWindow(OperationManager.FILE_EXT_UNITCONF);
+        }
+    }
+
+    private void getLocationTagGUI()
+    {
+        for (int i = 0; i < listLokasiTagObj.Count; i++)
+        {
+            GameObject go = listLokasiTagObj[i];
+            if (go == null) continue;
+            PinLocation pin = go.GetComponent<PinLocation>();
+
+            //tampilkan detail
+            if (pin != null && pin.showTagDetail)
+            {
+                pin.tagString = ListLokasiTemp[i].locationName;
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(listLokasiTagObj[i].transform.position);
+
+                float menuH = 30f;
+                float menuW = 300;
+                float menuX = screenPos.x;
+                float menuY = Screen.height - screenPos.y - menuH;
+                Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
+
+                GUILayout.BeginArea(boxRect);
+                GUILayout.BeginVertical(GUI.skin.button, GUILayout.MinWidth(50));
+                GUILayout.Label(pin.tagString);
+                GUILayout.EndVertical();
+                GUILayout.EndArea();
+            }
         }
     }
 
@@ -1285,7 +1357,7 @@ public class MenuUnit : MonoBehaviour
             GUILayout.BeginVertical();
             for (int i = 0; i < OperationManager.operationList.Count; i++)
             {
-                
+
                 OperationItem operationItem = (OperationItem)OperationManager.operationList[i];
                 //kalo satuannya bukan satuan yg lagi dimainkan, lewat.
                 if (operationItem.satuan != PlayerPrefs.GetString("satuan"))
@@ -1377,18 +1449,32 @@ public class MenuUnit : MonoBehaviour
             GUILayout.Label(":: Form Kegiatan ::", styleFormTitle);
             GUILayout.Label("Nama Kegiatan : ");
             NamaKeg = GUILayout.TextField(NamaKeg, 25);
-            
+
             GUILayout.Label("Lokasi : ");
             GUILayout.BeginHorizontal();
-            Lokasi = GUILayout.TextField(Lokasi, 25);
-            if (GUILayout.Button("Tandai",GUILayout.Width(50)))
+            ////////Lokasi = GUILayout.TextField(Lokasi, 25);////////
+            if (GUILayout.Button("Tandai", GUILayout.Width(50)))
             {
-                taggerObject = (GameObject)Instantiate(taggerPrefab);
+                taggerObject = GameObject.Instantiate(taggerPrefab) as GameObject;
+                taggerObject.transform.parent = getTagContainer();
+
                 tagLocationMode = true;
                 doneTagging = false;
             }
             GUILayout.EndHorizontal();
-
+            for (int i = 0; i < ListLokasiTemp.Count; i++)
+            {
+                GUILayout.BeginHorizontal();
+                ListLokasiTemp[i].locationName = GUILayout.TextField(ListLokasiTemp[i].locationName,25);
+                GUI.backgroundColor = Color.red;
+                if (GUILayout.Button("X", GUILayout.Width(25)))
+                {
+                    removeLocationTagAt(i);
+                    
+                }
+                GUI.backgroundColor = Color.yellow;
+                GUILayout.EndHorizontal();
+            }
             GUILayout.Label("Deskripsi : ");
             Deskripsi = GUILayout.TextArea(Deskripsi, 200, GUILayout.Height(100));
 
@@ -1490,7 +1576,8 @@ public class MenuUnit : MonoBehaviour
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Simpan"))
             {
-                if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
+                //if (NamaKeg == "" || Lokasi == "" || Deskripsi == "")
+                if (NamaKeg == "" || ListLokasiTemp.Count<=0 || Deskripsi == "")
                 {
                     submitKegInfo = "Nama, Lokasi, dan Deskripsi kegiatan \nharus diisi.";
                     return;
@@ -1502,7 +1589,7 @@ public class MenuUnit : MonoBehaviour
                         //nambah
                         //mulai
                         int jamInt = 0, menitInt = 0;
-                        JamMulai = JamMulai == "" ? "00" : Int32.TryParse(JamMulai, out jamInt)?JamMulai:"00";
+                        JamMulai = JamMulai == "" ? "00" : Int32.TryParse(JamMulai, out jamInt) ? JamMulai : "00";
                         MenitMulai = MenitMulai == "" ? "00" : Int32.TryParse(MenitMulai, out menitInt) ? MenitMulai : "00";
                         string waktuMulai = JamMulai + ":" + MenitMulai;
                         //durasi
@@ -1521,12 +1608,13 @@ public class MenuUnit : MonoBehaviour
                                 Hari[selectedItemIndex].text,
                                 NamaKeg,
                                 Lokasi,
+                                ListLokasiTemp.ToArray(),
                                 Deskripsi,
                                 pathToUploadedFile, /*file*/
                                 unitConfTemp, /*unit config*/
                                 waktuMulai,
-                                durasi, 
-                                toggleFile, 
+                                durasi,
+                                toggleFile,
                                 toggleUnitConfig,
                                 Application.loadedLevelName
                                 ));
@@ -1651,7 +1739,20 @@ public class MenuUnit : MonoBehaviour
         //GUI.Label(new Rect(350, 2, 100, 20), ketSatuan);
     }
 
+    private void removeLocationTagAt(int i)
+    {
+        Destroy(GameObject.Find("Pin_" + ListLokasiTemp[i].objInstanceID));
+        ListLokasiTemp.RemoveAt(i);
+        listLokasiTagObj.RemoveAt(i);
+    }
 
+    private void addLocationTag()
+    {
+        ListLokasiTemp.Add(new OperationLocation(taggerObject.transform.position, taggerObject.GetInstanceID()));
+        taggerObject.name = "Pin_" + taggerObject.GetInstanceID();
+        listLokasiTagObj.Add(taggerObject);
+        taggerObject = null;
+    }
 
     private string loadUnitConfigFile(string p)
     {
@@ -1692,7 +1793,7 @@ public class MenuUnit : MonoBehaviour
             //submitUpload = "File berhasil diupload";
 
             /////return lokasiUpload + namaFile;
-            File.Copy(m_textPath, lokasiUpload + namaFile,true);
+            File.Copy(m_textPath, lokasiUpload + namaFile, true);
             ///isConvertingVideo = true;
 
             return lokasiUpload + namaFile;
@@ -1713,6 +1814,9 @@ public class MenuUnit : MonoBehaviour
         toggleUnitConfig = false;
         m_textPath = Const.EMPTY_FILE_STRING;
         unitConf_textPath = Const.EMPTY_FILE_STRING;
+        ListLokasiTemp.Clear();
+        listLokasiTagObj.Clear();
+        removeAllTagLocation();
     }
 
     private void getMilitaryUnitGUI()
