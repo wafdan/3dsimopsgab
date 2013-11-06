@@ -5,5 +5,6 @@ public class Const {
 
     public const string PETA_INDONESIA = "Game play";
     public const string EMPTY_FILE_STRING = "---- file kosong ----";
+    //public const string LOCATION_TAGGER_TAG = "locationTag";
 
 }
