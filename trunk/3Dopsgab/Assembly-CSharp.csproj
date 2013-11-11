@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\Alutsista\BuildingManager.cs" />
      <Compile Include="Assets\Scripts\Alutsista\BuildingPlacement.cs" />
      <Compile Include="Assets\Scripts\Alutsista\PlaceableBuilding.cs" />
+     <Compile Include="Assets\Scripts\Const.cs" />
      <Compile Include="Assets\Scripts\FileBrowser\CariFile.cs" />
      <Compile Include="Assets\Scripts\FileBrowser\FileBrowser.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraMovement.cs" />
@@ -91,6 +92,7 @@
      <Compile Include="Assets\Scripts\Navigasi\SelectPlayerUnitOnTrigger.cs" />
      <Compile Include="Assets\Scripts\Navigasi\boxMovement.cs" />
      <Compile Include="Assets\Scripts\OperationManager.cs" />
+     <Compile Include="Assets\Scripts\PinLocation.cs" />
      <Compile Include="Assets\Scripts\Unit\Actor.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanKapal.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanRMGrad.cs" />

@@ -19,15 +19,15 @@ public class HeliMenembak : MonoBehaviour {
 	void Start () {
 		myTransform = transform;
 		
-		missileSource1 = myTransform.FindChild("Missile Source1");
-		missileSource2 = myTransform.FindChild("Missile Source2");
+		missileSource1 = myTransform.FindChild("1");
+		missileSource2 = myTransform.FindChild("2");
 		
 		StartCoroutine(StartFire());
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if( startFire == true && Time.time > nextFire && Time.time < 8)
+		if( startFire == true && Time.time > nextFire && Time.time < 9)
 		{
 			nextFire = Time.time + fireRate;	
 			
@@ -40,6 +40,7 @@ public class HeliMenembak : MonoBehaviour {
 			Instantiate( missile, missileLocation1, missileSource1.rotation);
 			Instantiate( missile, missileLocation2, missileSource2.rotation);
 		}
+		Debug.Log(missileLocation1);
 	}
 	
 	IEnumerator StartFire()

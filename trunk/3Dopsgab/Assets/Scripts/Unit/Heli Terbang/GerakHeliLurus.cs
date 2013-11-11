@@ -10,6 +10,7 @@ public class GerakHeliLurus : MonoBehaviour {
 	void Start () {
 		myTransform = transform;
 		StartCoroutine(DestroyHeli());
+		
 	}
 	
 	// Update is called once per frame
