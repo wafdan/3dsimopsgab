@@ -76,7 +76,7 @@ public class AmfibiUnitMovement : BasicUnitMovement
             }
             if (curWaypointIdx < waypoints.Count)
             {
-
+                startEngineOnce();
                 // amfibi
 
                 Vector3 target = waypoints[curWaypointIdx];
@@ -172,7 +172,10 @@ public class AmfibiUnitMovement : BasicUnitMovement
                 } //end lurus
 
             }// end curwpidx < count
-
+            else
+            {
+                stopEngine();
+            }
         }
 
     }
@@ -400,8 +403,8 @@ public class AmfibiUnitMovement : BasicUnitMovement
                 GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
                 missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
                 Transform mt = missile.transform;
-                if (audioShootSound != null)
-                    audioShootSound.Play();
+                if (audioCannon != null)
+                    audioCannon.Play();
                 while (true)
                 {
                     yield return null;

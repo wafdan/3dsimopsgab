@@ -13,4 +13,7 @@ public abstract class UnitMovement : MonoBehaviour
     public abstract IEnumerator fireMissile(GameObject targetObj);
     public abstract bool IsPointingAtTarget(Vector3 target);
     public abstract void followWaypoint();
+    public abstract void stopEngine();
+    public abstract void startEngineOnce();
+
 }
