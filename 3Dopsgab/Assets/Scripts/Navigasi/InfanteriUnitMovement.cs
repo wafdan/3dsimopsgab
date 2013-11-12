@@ -420,8 +420,8 @@ public class InfanteriUnitMovement : BasicUnitMovement
                 GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
                 missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
                 Transform mt = missile.transform;
-                if (audioShootSound != null)
-                    audioShootSound.Play();
+                if (audioCannon != null)
+                    audioCannon.Play();
                 while (true)
                 {
                     yield return null;

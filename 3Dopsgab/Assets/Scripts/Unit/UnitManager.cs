@@ -726,6 +726,9 @@ public class UnitManager : MonoBehaviour
                             }
                         }
                         bUnitMovt.curTarpointIdx = 0;
+
+                        //stop suara engine
+                        bUnitMovt.stopEngine();
                     }
                 }
             }

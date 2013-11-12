@@ -56,7 +56,9 @@ public class BasicUnitMovement : UnitMovement
 
     //AUDIOS
     protected AudioSource[] audioSources;
-    protected AudioSource audioShootSound;
+    protected AudioSource audioCannon;
+    protected AudioSource audioEngine;
+    public bool audioEngineHasPlayed = false;
 
     // BELOK VARS
     protected bool belokMode = false;
@@ -147,7 +149,8 @@ public class BasicUnitMovement : UnitMovement
         audioSources = GetComponents<AudioSource>();
         //Debug.Log("audio count: " + audioSources.Length);
         if(audioSources.Length>0){
-            audioShootSound = audioSources[0];
+            audioCannon = audioSources[0];
+            audioEngine = audioSources[1];
         }
     }
 
@@ -261,7 +264,7 @@ public class BasicUnitMovement : UnitMovement
             }
             if (curWaypointIdx < waypoints.Count)
             {
-
+                startEngineOnce();
                 // unit laut, cek daratan
                 if (isUnitLaut)
                 {
@@ -430,9 +433,35 @@ public class BasicUnitMovement : UnitMovement
                 //}
 
             }// end curwpidx < count
-
+            else
+            {
+                //Debug.Log("engine stop harusnya");
+                //Debug.Log("Udah ada di GOAL!");
+                stopEngine();
+            }
         }
 
+    }
+
+    public override void startEngineOnce()
+    {
+        if (!audioEngineHasPlayed)
+        {
+            if (audioEngine != null)
+            {
+                audioEngineHasPlayed = true;
+                audioEngine.Play();
+            }
+        }
+    }
+
+    public override void stopEngine()
+    {
+        if (audioEngine != null)
+        {
+            audioEngine.Stop(); audioEngineHasPlayed = false;
+            Debug.Log("engine stop!!!");
+        }
     }
 
     private bool PointingAtTarget(Vector3 target)
@@ -797,8 +826,8 @@ public class BasicUnitMovement : UnitMovement
                 GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
                 missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
                 Transform mt = missile.transform;
-                if(audioShootSound!=null)
-                audioShootSound.Play();
+                if(audioCannon!=null)
+                    audioCannon.Play();
                 while (true)
                 {
                     yield return null;
