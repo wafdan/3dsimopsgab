@@ -37,7 +37,7 @@ public class PlaceableBuilding : MonoBehaviour {
     public bool IsKenaDaratan(Collider c)
     {
         bm = (bm==null)?gameObject.GetComponent<BasicUnitMovement>():bm;
-        if (bm.isUnitLaut)
+        if (bm!=null && bm.isUnitLaut)
         {
             if (c.tag == "daratan")
             {

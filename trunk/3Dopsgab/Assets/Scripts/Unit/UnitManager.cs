@@ -90,19 +90,24 @@ public class UnitManager : MonoBehaviour
         if (mouseOverGUI) return;
         if (Camera.main.enabled)
         {
+                                  
             Ray ray;
             RaycastHit hit;
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Debug.DrawRay(ray.GetPoint(10), Vector3.down, Color.magenta);
+            
 
             if (Input.GetMouseButtonDown(0))
             {
 
-                ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 {
                     if (debug)
                     {
-                        //Debug.Log ("You clicked " + hit.collider.gameObject.name, hit.collider.gameObject);
+                        Debug.Log("You clicked " + hit.collider.gameObject.name + " tag=" + hit.collider.tag);
                     }
                     /*
                     INI DICURIGAI SEBAGAI SEBAB BUG DIMANA SI UNIT NGOMBANG-AMBING GA JELAS
@@ -118,12 +123,13 @@ public class UnitManager : MonoBehaviour
             }
             if (Input.GetMouseButtonDown(1))
             {
-                ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                //ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 //Debug.DrawRay(ray.GetPoint(200), Vector3.down * 30, Color.yellow);
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 {
-                    if (debug)
+                    //if (debug)
                     {
+                        //Debug.DrawRay(ray.GetPoint(10), Vector3.down, Color.magenta);
                         //Debug.Log ("You right clicked " + hit.collider.gameObject.name, hit.collider.gameObject);
                     }
 
@@ -169,12 +175,23 @@ public class UnitManager : MonoBehaviour
                                     }
                                     else
                                     {
-
+                                        //jika unit laut mau masang waypoint di daratan, ga boleh. (BELUM BENER IMPLEMENTASINYA)
+                                        
                                         if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
                                             return;
+
                                         if(bum.waypoints.Count==0)
                                             bum.addWaypoint(bum.transform.position);
-                                        bum.addWaypoint(hit.point);
+
+                                        //if (!bum.isUnitDarat)
+                                        //{
+                                            bum.addWaypoint(hit.point);
+                                        //}
+                                        //else
+                                        //{
+                                            //spesial. generate waypoint. Add berkali-kali di terrain.
+                                            //bum.generateWaypointOnTerrain(hit.point);
+                                        //}
                                     }
                                 }
                             }
@@ -185,7 +202,47 @@ public class UnitManager : MonoBehaviour
                     }
                 }
             }
+            return;
+            //PENGECEKAN KETINGGIAN TERRAIN UNTUK PANDUAN PENEMPATAN TITIK WAYPOINT
+            //todo: generate waypoint antara dua titik yg garisnya memotong Terrain
+            foreach (GameObject go in selectedUnits)
+            {
+                BasicUnitMovement bum = (BasicUnitMovement)go.GetComponent(typeof(BasicUnitMovement));
+                if (bum != null)
+                {
+                    Vector3 m = Input.mousePosition;
+                    //m = new Vector3(m.x, m.y, transform.position.y);
+                    m = new Vector3(m.x, m.y, Camera.main.nearClipPlane + 300);
+                    Vector3 p = Camera.main.ScreenToWorldPoint(m);
 
+                    Ray rayw = Camera.main.ScreenPointToRay(Input.mousePosition);//new Ray(bum.transform.position, p - bum.transform.position);//Camera.main.ScreenPointToRay(p);
+                    RaycastHit hitw;
+
+                    Vector3 point = rayw.GetPoint(300);
+                    Vector3 vcheck = new Vector3(point.x, point.y, point.z);
+                    if (Physics.Raycast(rayw, out hitw, Mathf.Infinity))
+                    {
+                        string hitName = hitw.collider.gameObject.name;
+                        //Debug.Log("kena: " + hitw.collider.gameObject.name);
+                        if (hitName == "Terrain")
+                        {
+                            Debug.Log("jarak ke Terrain: " + hitw.distance);
+                            vcheck = rayw.GetPoint(hitw.distance);
+                        }
+                        if (bum.lastAddedWayPoint == Vector3.zero)
+                        {
+                            Debug.DrawRay(bum.transform.position, vcheck - bum.transform.position);
+                        }
+                        else
+                        {
+                            Debug.DrawRay(bum.lastAddedWayPoint, vcheck - bum.lastAddedWayPoint);
+                        }
+                        //Debug.Log(vcheck.ToString());
+                    }
+
+                    //Ray raywp = new Ray(lastRayOrigin, vcheck - lastRayOrigin);
+                }
+            }
             /*
             m = Input.mousePosition;
             //m = new Vector3(m.x,m.y,transform.position.y);
@@ -285,6 +342,12 @@ public class UnitManager : MonoBehaviour
             bum = gob.GetComponent<BasicUnitMovement>();
             if (bum != null)
             {
+                //hapus objek target di peta
+                for (int i = 0; i < bum.tarPointObjects.Count; i++)
+                {
+                    GameObject go = GameObject.Find(bum.tarPointObjects[i].name);
+                    if (go != null) Destroy(go);
+                }
                 bum.tarPointObjects.Clear();
             }
             selectedUnits.Remove(gob);
@@ -420,7 +483,7 @@ public class UnitManager : MonoBehaviour
         bool showAturKetinggian = true;
         foreach (GameObject gob in unitsToBeProcessed)
         {
-            if (!gob.GetComponent<BasicUnitMovement>().isUnitUdara)
+            if (gob!=null && !gob.GetComponent<BasicUnitMovement>().isUnitUdara)
                 showAturKetinggian = false;
         }
         if (showAturKetinggian)
@@ -646,11 +709,23 @@ public class UnitManager : MonoBehaviour
                     if (bUnitMovt != null)
                     {
                         bUnitMovt.GetComponent<LineRenderer>().enabled = true;
+                        //reset posisi di waypoint
                         if (bUnitMovt.waypoints.Count > 0)
                         {
                             bUnitMovt.gameObject.transform.position = bUnitMovt.waypoints[0];
                             bUnitMovt.curWaypointIdx = 0;
                         }
+                        //adakan kembali tarpoint yg udah hancur
+                        if (bUnitMovt.tarPointObjects.Count > 0)
+                        {
+                            for (int j = 0; j < bUnitMovt.tarPointObjects.Count; j++)
+                            {
+                                GameObject go = bUnitMovt.tarPointObjects[j];
+                                if(go!=null) go.SetActive(true);
+                                
+                            }
+                        }
+                        bUnitMovt.curTarpointIdx = 0;
                     }
                 }
             }
@@ -665,8 +740,29 @@ public class UnitManager : MonoBehaviour
             Transform t = unitConObject.transform;
             for (int x = 0; x < t.childCount; x++)
             {
-                if (t.GetChild(x) != null)
-                    Destroy(t.GetChild(x).gameObject);
+                Transform chld = t.GetChild(x);
+                if (chld != null)
+                {
+                    //Debug.Log("unit name: " + chld.name);
+                    //GameObject g = (GameObject)Instantiate(gob);
+                    BasicUnitMovement bum = chld.GetComponent<BasicUnitMovement>();
+                    if (bum != null)
+                    {
+                        Debug.Log("unit name: " + chld.name + " tarpointsobjscount: " + bum.tarPointObjects.Count);
+                        //hapus objek target di peta
+                        for (int i = 0; i < bum.tarPointObjects.Count; i++)
+                        {
+                            GameObject go = bum.tarPointObjects[i];
+                            //GameObject go = GameObject.Find(bum.tarPointObjects[i].name);
+                            if (go != null) Destroy(go);
+                        }
+                        bum.tarPointObjects.Clear();
+                        //hapus objek missile
+                        //bum.missi
+                    }
+                    
+                    Destroy(chld.gameObject);
+                }
             }
         }
     }

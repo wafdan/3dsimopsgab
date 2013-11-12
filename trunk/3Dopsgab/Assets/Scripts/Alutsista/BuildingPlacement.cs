@@ -10,7 +10,7 @@ public class BuildingPlacement : MonoBehaviour {
 
     private Transform daratan;
 
-    private Color normalColor =new Color(0.846f, 0.808f, 0.808f, 1.000f);
+    private Color normalColor = Color.gray;//new Color(0.846f, 0.808f, 0.808f, 1.000f);
 
 	public static bool hasPlaced;
 	
@@ -30,6 +30,7 @@ public class BuildingPlacement : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        
 		Vector3 m = Input.mousePosition;
         m = new Vector3(m.x,m.y,transform.position.y);
 		Vector3 p = camera.ScreenToWorldPoint(m);
@@ -98,8 +99,9 @@ public class BuildingPlacement : MonoBehaviour {
 					if (placeableBuildingOld != null) {
 						placeableBuildingOld.SetSelected(false);
 					}
-					hit.collider.gameObject.GetComponent<PlaceableBuilding>().SetSelected(true);
-					placeableBuildingOld = hit.collider.gameObject.GetComponent<PlaceableBuilding>();
+                    PlaceableBuilding pb = hit.collider.gameObject.GetComponent<PlaceableBuilding>();
+                    if(pb!=null) pb.SetSelected(true);
+					placeableBuildingOld = pb;
 				}
 				else {
 					if (placeableBuildingOld != null) {
@@ -157,6 +159,20 @@ public class BuildingPlacement : MonoBehaviour {
         }
     }
 
+    private Color getOriginalColor()
+    {
+        Color color = normalColor;
+        BasicUnitMovement bm = GetComponent<BasicUnitMovement>();
+        if (bm != null)
+        {
+            if (bm.isUnitLaut)
+            {
+                color = new Color(0.419f, 0.419f, 0.419f, 1.000f);
+            }
+        }
+        return color;
+    }
+
     private void colorTheChilds(Transform curTransform, Color color)
     {
         if (curTransform.childCount > 0)
@@ -200,4 +216,5 @@ public class BuildingPlacement : MonoBehaviour {
         }
         currentBuilding.parent = unitConObject.transform;
 	}
+
 }

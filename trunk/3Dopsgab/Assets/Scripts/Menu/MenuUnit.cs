@@ -503,7 +503,7 @@ public class MenuUnit : MonoBehaviour
         // tampilkan detail info di dalam form kegiatan
         NamaKeg = operationItem.name;
         Lokasi = operationItem.location;
-        Deskripsi = operationItem.location;
+        Deskripsi = operationItem.description;
         //waktu mulai
         JamMulai = operationItem.startTime.Hour.ToString();
         MenitMulai = operationItem.startTime.Minute.ToString();
@@ -888,14 +888,15 @@ public class MenuUnit : MonoBehaviour
                 pin.tagString = ListLokasiTemp[i].locationName;
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(listLokasiTagObj[i].transform.position);
 
-                float menuH = 30f;
+                float menuH = 60f;
                 float menuW = 300;
                 float menuX = screenPos.x;
-                float menuY = Screen.height - screenPos.y - menuH;
+                float menuY = Screen.height - screenPos.y - menuH-7;
+                
                 Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
 
                 GUILayout.BeginArea(boxRect);
-                GUILayout.BeginVertical(GUI.skin.button, GUILayout.MinWidth(50));
+                GUILayout.BeginVertical(GUI.skin.button, GUILayout.MinHeight(60), GUILayout.MinWidth(100));
                 GUILayout.Label(pin.tagString);
                 GUILayout.EndVertical();
                 GUILayout.EndArea();
@@ -976,7 +977,10 @@ public class MenuUnit : MonoBehaviour
                 else
                 {
                     if (fileextension == OperationManager.FILE_EXT)
+                    {
+                        unitManager.resetUnitPos();
                         OperationManager.saveGameToFile(formattedName);
+                    }
                     else if (fileextension == OperationManager.FILE_EXT_UNITCONF)
                     {
                         unitManager.resetUnitPos();
@@ -1113,11 +1117,14 @@ public class MenuUnit : MonoBehaviour
         if (GUILayout.Button("Reset Posisi Unit"))
         {
             //testMovementMode = !testMovementMode;
+            
             unitManager.resetUnitPos();
+            testMovementMode = false;
         }
         if (GUILayout.Button("Hapus Semua Unit"))
         {
             //testMovementMode = !testMovementMode;
+            testMovementMode = false;
             unitManager.removeAllUnit();
         }
         //GUI.backgroundColor = Color.green;
@@ -1449,11 +1456,12 @@ public class MenuUnit : MonoBehaviour
             GUILayout.Label(":: Form Kegiatan ::", styleFormTitle);
             GUILayout.Label("Nama Kegiatan : ");
             NamaKeg = GUILayout.TextField(NamaKeg, 25);
-
-            GUILayout.Label("Lokasi : ");
+            
             GUILayout.BeginHorizontal();
+            GUILayout.Label("Lokasi : ");
+            
             ////////Lokasi = GUILayout.TextField(Lokasi, 25);////////
-            if (GUILayout.Button("Tandai", GUILayout.Width(50)))
+            if (GUILayout.Button("Tandai", GUILayout.MinWidth(50)))
             {
                 taggerObject = GameObject.Instantiate(taggerPrefab) as GameObject;
                 taggerObject.transform.parent = getTagContainer();
@@ -1461,11 +1469,12 @@ public class MenuUnit : MonoBehaviour
                 tagLocationMode = true;
                 doneTagging = false;
             }
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             for (int i = 0; i < ListLokasiTemp.Count; i++)
             {
                 GUILayout.BeginHorizontal();
-                ListLokasiTemp[i].locationName = GUILayout.TextField(ListLokasiTemp[i].locationName,25);
+                ListLokasiTemp[i].locationName = GUILayout.TextField(ListLokasiTemp[i].locationName,30);
                 GUI.backgroundColor = Color.red;
                 if (GUILayout.Button("X", GUILayout.Width(25)))
                 {

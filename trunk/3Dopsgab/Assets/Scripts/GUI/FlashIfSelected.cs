@@ -12,11 +12,28 @@ public class FlashIfSelected : MonoBehaviour {
 	void Start() {
 		GameObject unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
 		unitManager = unitManagerObject.GetComponent<UnitManager>();
-		originalColor = renderer.material.color;
+		originalColor = getOriginalColor();
+        
+        //MeshRenderer mr = GetComponent<MeshRenderer>();
+        //Debug.Log("ORIG COLOR OF " + gameObject.name + " : " + originalColor+". amount: "+mr.materials.Length);
         flashColor = Color.green;
         myTransform = transform;
 		//StartCoroutine("Flash");
 	}
+
+    private Color getOriginalColor()
+    {
+        Color color = renderer.material.color;
+        BasicUnitMovement bm = GetComponent<BasicUnitMovement>();
+        if (bm != null)
+        {
+            if (bm.isUnitLaut)
+            {
+                color = new Color(0.419f, 0.419f, 0.419f, 1.000f);
+            }
+        }
+        return color;
+    }
 	
 	void Update() {
         if (!BuildingPlacement.hasPlaced) return;
@@ -25,9 +42,10 @@ public class FlashIfSelected : MonoBehaviour {
             renderer.material.color = flashColor;
             if (myTransform.childCount > 0)
             {
-                for (int i = 0; i < myTransform.childCount; i++)
+                MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    myTransform.GetChild(i).gameObject.renderer.material.color = flashColor;
+                    rends[i].material.color = Color.green;
                 }
             }
 		}
@@ -36,9 +54,10 @@ public class FlashIfSelected : MonoBehaviour {
 			renderer.material.color = originalColor;
             if (myTransform.childCount > 0)
             {
-                for (int i = 0; i < myTransform.childCount; i++)
+                MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    myTransform.GetChild(i).gameObject.renderer.material.color = originalColor;
+                    rends[i].material.color = originalColor;
                 }
             }
 		}
