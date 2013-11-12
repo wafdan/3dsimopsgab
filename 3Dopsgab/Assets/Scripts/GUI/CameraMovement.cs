@@ -10,7 +10,12 @@ public class CameraMovement : MonoBehaviour
 	private const int MinCameraHeight = 50;
 	private const int RotateAmount = 10;
 	private const int RotateSpeed = 100;
-	
+
+    public float horizontalBoundR = -310f;
+    public float horizontalBoundL = 320f;
+    public float verticalBoundB = 550f;
+    public float verticalBoundT = 200f;
+
 	void start(){
 	}
 	
@@ -38,19 +43,19 @@ public class CameraMovement : MonoBehaviour
 			if ((xpos >= 0 && xpos < ScrollWidth || Input.GetKey (KeyCode.A)))
 			{			
 				movement.x -= ScrollSpeed;
-				if( origin.x >= 320f)
+                if (origin.x >= horizontalBoundL)
 				{
-					origin = new Vector3(320f, origin.y, origin.z);	
+                    origin = new Vector3(horizontalBoundL, origin.y, origin.z);	
 				}
 			}	
 			
 			else if (xpos <= width && xpos > width - ScrollWidth || Input.GetKey (KeyCode.D))
 			{
 				movement.x += ScrollSpeed;
-				
-				if( origin.x <= -310f)
+
+                if (origin.x <= horizontalBoundR)
 				{
-					origin = new Vector3(-310f, origin.y, origin.z);	
+                    origin = new Vector3(horizontalBoundR, origin.y, origin.z);	
 				}
 			}
 		
@@ -59,18 +64,18 @@ public class CameraMovement : MonoBehaviour
 			{
 				movement.z -= ScrollSpeed;
 				
-				if( origin.z > 550f)
+				if( origin.z > verticalBoundB)
 				{
-					origin = new Vector3( origin.x, origin.y, 550f);	
+                    origin = new Vector3(origin.x, origin.y, verticalBoundB);	
 				}
 			}
 			else if (ypos <= height && ypos > height - ScrollWidth || Input.GetKey (KeyCode.W))
 			{
 				movement.z += ScrollSpeed;
-				
-				if( origin.z < 200f)
+
+                if (origin.z < verticalBoundT)
 				{
-					origin = new Vector3( origin.x, origin.y, 200f);	
+                    origin = new Vector3(origin.x, origin.y, verticalBoundT);	
 				}
 				
 			}

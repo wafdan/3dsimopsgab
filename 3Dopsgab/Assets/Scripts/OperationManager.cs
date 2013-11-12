@@ -145,6 +145,7 @@ public class OperationManager : MonoBehaviour
                                     }
                                     //if (opItIn.locationPoints.Length > 0)
                                     //{
+                                    Debug.Log("play location: " + opItIn.name);
                                         loadOperationLocationTags(opItIn);
                                     //}
 

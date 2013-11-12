@@ -1,0 +1,82 @@
+fileFormatVersion: 2
+guid: 7a351ae5333941d40abbcb15747911ae
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: m17_aux_prop
+    100002: m17_main_body
+    100004: m17_main_prop
+    100006: //RootNode
+    100008: Mi17_Add_prop
+    100010: Mi17_arm
+    100012: Mi17_main_prop
+    100014: Mi17mainbody
+    400000: m17_aux_prop
+    400002: m17_main_body
+    400004: m17_main_prop
+    400006: //RootNode
+    400008: Mi17_Add_prop
+    400010: Mi17_arm
+    400012: Mi17_main_prop
+    400014: Mi17mainbody
+    4300000: m17_aux_prop
+    4300002: m17_main_prop
+    4300004: m17_main_body
+    7400000: Mi17_Fly
+    7400002: Mi17_idle
+    9500000: //RootNode
+    13700000: m17_aux_prop
+    13700002: m17_main_body
+    13700004: m17_main_prop
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    handles: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  additionalBone: 1
+  animationType: 2
+  userData: 
