@@ -25,7 +25,23 @@ public class BasicUnitMovement : UnitMovement
     public bool isUnitAmfibi;
 
     // UNIT MANAGER
-    protected UnitManager unitManager;
+    private UnitManager uman;
+    protected UnitManager unitManager
+    {
+        get
+        {
+            if (uman == null)
+            {
+                uman = GameObject.FindGameObjectWithTag("unitmanager").GetComponent<UnitManager>();
+                return uman;
+            }
+            return uman;
+        }
+        set
+        {
+
+        }
+    }
     protected GameObject unitManagerObject;
 
     // WAYPOINTING
