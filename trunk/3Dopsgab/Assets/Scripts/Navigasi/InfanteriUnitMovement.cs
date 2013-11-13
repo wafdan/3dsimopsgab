@@ -7,6 +7,10 @@ using System.Linq;
 public class InfanteriUnitMovement : BasicUnitMovement
 {
 
+    AnimationState standAnim;
+    AnimationState runAnim;
+    AnimationState shootAnim;
+
     void Start()
     {
         initAnimations();
@@ -15,9 +19,27 @@ public class InfanteriUnitMovement : BasicUnitMovement
 
     private void initAnimations()
     {
-        Animator[] anims = GetComponents<Animator>();
-        Debug.Log("anims count of Infanteri: " + anims.Length);
-        anims[0].StartPlayback();
+        Animation[] anims = GetComponents<Animation>();
+        
+        Debug.Log("anims count of Infanteri: " + anims.Length);animation.Play("ready_weapon");
+        if (anims.Length > 0)
+        {
+            
+            foreach (AnimationState state in animation)
+            {
+                Debug.Log("anim =" + state.name);
+                if (state.name == "run")
+                {
+                    runAnim = state;
+                }
+            }
+
+            //runAnim = anims[3];
+            //for (int i = 0; i < anims.Length; i++)
+            //{
+            //    Debug.Log("anim " + i + "=" + anims[i]);
+            //}
+        }
     }
 
     void FixedUpdate()
@@ -77,7 +99,7 @@ public class InfanteriUnitMovement : BasicUnitMovement
         if (waypoints.Count > 0)
         {
             //cek if posisi awal sama dengan posisi waypoint terakhir
-            if (myTransform.position == waypoints[waypoints.Count - 1])
+            if (Vector3.Distance(myTransform.position,waypoints[waypoints.Count - 1])<=0.3f)
             {
                 //Debug.Log("Udah ada di GOAL!");
                 stopWalking();
@@ -171,7 +193,7 @@ public class InfanteriUnitMovement : BasicUnitMovement
                     }
 
 
-                    if (distToNextPoint <= 0.1f)
+                    if (distToNextPoint <= 0.2f)
                     {
                         curWaypointIdx++;
                         if (curWaypointIdx < waypoints.Count)
@@ -181,20 +203,35 @@ public class InfanteriUnitMovement : BasicUnitMovement
                 } //end lurus
 
             }// end curwpidx < count
-
+            else
+            {
+                stopWalking();
+            }
         }
 
     }
 
     private void startWalking()
     {
-        //animation.CrossFade("run");
+        if (!animationEngineHasPlayed)
+        {
+            if (runAnim != null)
+            {
+                animationEngineHasPlayed = true;
+                animation.Play("run");
+            }
+        }
         Debug.Log("RUN!!!");
     }
 
     private void stopWalking()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("STOP RUNNING!!!");
+        if (runAnim != null)
+        {
+            animation.Stop("run"); animationEngineHasPlayed = false;
+
+        }
     }
 
     private bool PointingAtTarget(Vector3 target)
