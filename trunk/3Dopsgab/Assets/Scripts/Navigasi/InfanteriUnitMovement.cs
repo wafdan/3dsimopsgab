@@ -73,7 +73,7 @@ public class InfanteriUnitMovement : BasicUnitMovement
 
     public override void followWaypoint()
     {
-        Debug.Log("execute movement of: " + gameObject.name);
+        //Debug.Log("execute movement of: " + gameObject.name);
         if (waypoints.Count > 0)
         {
             //cek if posisi awal sama dengan posisi waypoint terakhir

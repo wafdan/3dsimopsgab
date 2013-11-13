@@ -27,7 +27,9 @@ public class UnitManager : MonoBehaviour
     private string[] intersectedMenu;
     public static string UNIT_TAG = "Building";
     private GUIStyle historyStyle;
+    
     private bool targettingMode = false; //jika true maka klik kanan jadi menentukan sasaran, bukan waypoint
+    private bool terjunMode = false; //mirip targetting mode, tapi ini khusus penerjunan pasukan dari udara
 
     public static bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
 
@@ -168,7 +170,8 @@ public class UnitManager : MonoBehaviour
                                     if (targettingMode)
                                     {
                                         Debug.Log("targetting mode!");
-                                        bum.addTargetpoint(hit.point);
+                                        if (terjunMode) bum.addTerjunpoint(hit.point);
+                                        else bum.addTargetpoint(hit.point);
                                     }
                                     else
                                     {
@@ -391,88 +394,7 @@ public class UnitManager : MonoBehaviour
     private float selectedUnitUdaraHeight = BasicUnitMovement.UNIT_UDARA_Y; // nilai ketinggian unit udara berdasarkan slider
     private float sliderUdaraH, btKembaliH; //tambahan ketinggian menu, opsional
     private float btMenuLain; //tambahan menu lain opsional
-    void _showSelectedUnitMenu()
-    {
-        //screenPos = Camera.main.WorldToScreenPoint(transform.position);
-        screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
-
-        menuH = 30f + 25f * ((float)unitOrderList.Length) + sliderUdaraH + btMenuLain + btKembaliH;
-        menuW = 300;
-        menuX = screenPos.x;
-        menuY = Screen.height - screenPos.y - menuH;
-
-        //Debug.Log("target is " + screenPos.x +","+screenPos.y+","+screenPos.z+ " pixels from the left");
-        menuItemX = screenPos.x + 5;
-        menuItemY = menuY + 20;
-        menuItemW = menuW - 10;
-        menuItemH = 25;
-
-        Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
-        GUI.Box(boxRect, "menu unit");
-
-        //cek apalah mouse ada di dalam rect, utk mencegah deselect yg tidak diinginkan akibat click yg nembus GUI ke objek di belakangnya
-        if (boxRect.Contains(Event.current.mousePosition))
-        {
-            mouseOverGUI = true;
-        }
-        else
-        {
-            mouseOverGUI = false;
-        }
-
-        foreach (string order in unitOrderList)
-        {
-            if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), order))
-            {
-                switch (order)
-                {
-                    case "Delete":
-                        if (destroySelectedUnits()) { menuVisible = false; }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            menuItemY += menuItemH + 2;
-        }
-        // cek if semua yg diselect adalah unit udara
-        bool showAturKetinggian = true;
-        foreach (GameObject gob in unitsToBeProcessed)
-        {
-            if (!gob.GetComponent<BasicUnitMovement>().isUnitUdara)
-                showAturKetinggian = false;
-            //else
-                //selectedUnitUdaraHeight = gob.transform.position.y;
-            //else
-            //gob.transform.position = new Vector3(gob.transform.position.x, selectedUnitUdaraHeight, gob.transform.position.z);    
-        }
-        if (showAturKetinggian)
-        {
-            sliderUdaraH = 50;
-            //if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "menu ketinggian yohoo"))
-            //{
-            //}
-            GUI.Label(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Ketinggian Unit: " + selectedUnitUdaraHeight + " km");
-            menuItemY += menuItemH + 2;
-            selectedUnitUdaraHeight = GUI.HorizontalSlider(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), selectedUnitUdaraHeight, 0.0f, 100.0f);
-            menuItemY += menuItemH + 2;
-        }
-        btMenuLain = 25;
-        if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Set Sasaran Serangan"))
-        {
-            targettingMode = true;
-            Debug.Log("true targetting!");
-        }
-        menuItemY += menuItemH + 2;
-
-        btKembaliH = 25;
-        if (GUI.Button(new Rect(menuItemX, menuItemY, menuItemW, menuItemH), "Kembali"))
-        {
-            targettingMode = false;
-            menuVisible = false;
-        }
-    }
-
+    
     void showSelectedUnitMenu()
     {
         //screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -495,6 +417,7 @@ public class UnitManager : MonoBehaviour
             if (GUILayout.Button("Selesai"))
             {
                 targettingMode = false;
+                terjunMode = false;
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
@@ -544,7 +467,8 @@ public class UnitManager : MonoBehaviour
                             targettingMode = true;
                             break;
                         case "Set Titik Terjun":
-                            //terjunMode = true;
+                            targettingMode = true;
+                            terjunMode = true;
                             break;
                         default:
                             break;
@@ -557,6 +481,7 @@ public class UnitManager : MonoBehaviour
             if (GUILayout.Button("Kembali"))
             {
                 targettingMode = false;
+                terjunMode = false;
                 menuVisible = false;
             }
 
@@ -611,6 +536,7 @@ public class UnitManager : MonoBehaviour
     static float hisItemH = 50;
     static float hisItemW = hisPosW;// *0.9f;
     private Vector2 scrollPosUnitDetail = Vector2.zero;
+    
 
     void showHistoryGUI()
     {
@@ -730,6 +656,7 @@ public class UnitManager : MonoBehaviour
 
     internal void resetUnitPos()
     {
+        StopCoroutine("attackMove");
         BasicUnitMovement bUnitMovt;
         GameObject unitConObject = GameObject.Find("UnitContainer");
         if (unitConObject != null)

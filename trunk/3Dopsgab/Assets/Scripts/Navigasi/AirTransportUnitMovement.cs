@@ -8,9 +8,16 @@ public class AirTransportUnitMovement : BasicUnitMovement
 {
 
     Animation animationEngine;
+    private bool isCargo = false;
+    private bool targetInLeft = false; //posisi target apakah di kiri unit atau kanan unit, khusus penerjunan.
+    GameObject paraTroopObject;
+    GameObject infanteriObject;
 
     void Start()
     {
+        isCargo = GetComponent<UnitAction>().UNIT_AIRCARGO;
+        paraTroopObject = Resources.Load("Models/Miscellaneous/Parachute_ready") as GameObject;
+        infanteriObject = Resources.Load("Models/Units/Infantri/Soldier_prefab") as GameObject;
         initEngineAnimation();
         base.Start();
     }
@@ -135,7 +142,7 @@ public class AirTransportUnitMovement : BasicUnitMovement
                 float distToNextPoint = Vector3.Distance(myTransform.position, target);
                 //float distToTuj;
                 /* curWaypointIdx>0 penting agar dia ga gelinjang2 pas pertama kali gerak */
-                if ((distToNextPoint < 10f) && (curWaypointIdx < waypoints.Count - 1) && curWaypointIdx>0)
+                if ((distToNextPoint < 10f) && (curWaypointIdx < waypoints.Count - 1) && curWaypointIdx > 0)
                 {
                     if (startBelokPoint == Vector3.zero)
                     {
@@ -492,17 +499,14 @@ public class AirTransportUnitMovement : BasicUnitMovement
             {
                 if (tarpoints.Count > 0)
                 {
-                    //foreach (Vector3 target in tarpoints)
-                    //{
-                    /* serangan serial */
-                    //yield return StartCoroutine(fireMissile(target)); 
-                    /* serangan paralel */
                     adjustMainGun();
                     while (curTarpointIdx < tarPointObjects.Count)
                     {
-                        //RadicalRoutineExtensions.StartExtendedCoroutine(gameObject,(fireMissile(tarPointObjects[curTarpointIdx]))); 
-                        //Debug.Log("Armature child? [" + turret.name + "]: " + turret.transform.GetChild(0).GetChild(0).name);
-                        StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx]));
+
+                        if (isCargo)
+                            StartCoroutine(deployParatrooper(tarPointObjects[curTarpointIdx]));
+                        else //fighter maybe?
+                            StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx]));
                         curTarpointIdx++;
                     }
                 }
@@ -510,6 +514,73 @@ public class AirTransportUnitMovement : BasicUnitMovement
             }
 
         }
+    }
+
+    public IEnumerator deployParatrooper(GameObject targetObj)
+    {
+        Debug.Log("TERJUNKAN! : " + targetObj.transform.position.ToString());
+        Vector3 target = targetObj.transform.position;
+        distMinToTar = Vector3.Distance(myTransform.position, target);
+
+        while (true)
+        {
+
+            yield return null;
+
+            if (IsPointingAtTarget(target))
+            {
+                //Vector3 target;
+                GameObject paraTroop = Instantiate(paraTroopObject, myTransform.position, myTransform.rotation) as GameObject;
+                //paraTroop.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                Transform mt = paraTroop.transform;
+                if (audioCannon != null)
+                    audioCannon.Play();
+                while (true)
+                {
+                    yield return null;
+                    if (mt != null)
+                    {
+                        //mt.LookAt(target);
+                        //Debug.DrawRay(mt.position, mt.forward * 30);
+                        mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed);
+                        //mt.Translate(target-mt.position, Space.World);
+
+                        Vector3 eulerAngles = mt.rotation.eulerAngles;
+                        eulerAngles = new Vector3(-90, eulerAngles.y, eulerAngles.z);// biar parasutnya ga jungkir balik
+                        mt.rotation = Quaternion.Euler(eulerAngles);
+
+                        float distToTar = Vector3.Distance(mt.position, target);
+
+
+                        //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
+                        if (distToTar <= 0.1f)
+                        {
+                            //isMoving = false;
+                            //break; // kalo break doang, nanti dia nembak berkali2
+                            targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
+                            
+                            //paraTroop diganti jadi infanteri
+                            GameObject infanteri = Instantiate(infanteriObject, mt.position, myTransform.rotation) as GameObject;
+                            //dimasukkin ke unit container
+                            GameObject unitConObject = GameObject.Find("UnitContainer");
+                            if (unitConObject != null)
+                            {
+                                infanteri.transform.parent = unitConObject.transform; 
+                            }
+                            //parasutnya dihapus
+                            Destroy(paraTroop);
+
+                            //break;
+                            yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
+                        }
+                    }
+                    //Debug.Log("firing to " + target.ToString());
+
+                }//endwhile
+            }//endif
+
+        }//endwhile
+
     }
 
     public override IEnumerator fireMissile(GameObject targetObj)
@@ -574,32 +645,45 @@ public class AirTransportUnitMovement : BasicUnitMovement
 
     public override bool IsPointingAtTarget(Vector3 target)
     {
-
-        if (!isUnitDarat)
+        if (!isCargo) //unit nonkargo (fighter) begitu deteksi target langsung tembak.
         {
             float distUnitToTar = Vector3.Distance(myTransform.position, target);
             return distUnitToTar <= ATTACK_RANGE;
         }
-        else
+        else //khusus kargo ada perhitungan khusus, tujuannya agar terjunnya pas target udah di belakang unit.
         {
-            Vector3 barrelForwardDir = -barrel.transform.right;//harusnya forward, tapi right yg dipake karena mungkin kesalahan di modeling.
-            target.y = barrel.transform.position.y;
-            Vector3 barrelPos = barrel.transform.position;
-            Vector3 barrelDir = target - barrelPos;
-            float distUnitToTar = barrelDir.magnitude;
+            //Debug.LogError("DistUnitToTar: " + distUnitToTar);
+            Vector3 targetDir = (target - myTransform.position);
 
-            //Debug.DrawRay(barrelPos, barrel.transform.forward*50, Color.green);
-            Debug.DrawRay(barrelPos, barrelForwardDir * 50, Color.cyan);
-            //Debug.DrawRay(barrelPos, barrel.transform.up * 50, Color.blue);
-            //Debug.DrawRay(barrelPos, myTransform.forward * 50, Color.blue);
-            //Debug.DrawRay(barrelPos, barrelDir, Color.red);
+            //Debug.DrawRay(myTransform.position, targetDir.normalized * ATTACK_RANGE, Color.yellow);
+            //Debug.DrawRay(myTransform.position, myTransform.right * ATTACK_RANGE, Color.red);
+            //Debug.DrawRay(myTransform.position, -myTransform.right * ATTACK_RANGE, Color.green);
+            //Debug.DrawRay(myTransform.position, -myTransform.up * ATTACK_RANGE, Color.cyan);
 
-            float angle = Vector3.Angle(barrelForwardDir, barrelDir);
-            float halfFireingArc = 5.0f;
-            //Debug.Log("firingArc = " + angle + " attackArc=" + halfFireingArc + " dist=" + distUnitToTar+" range="+ATTACK_RANGE);
-            return (angle < halfFireingArc && distUnitToTar <= ATTACK_RANGE);
-            //else false;
-            //return distUnitToTar <= ATTACK_RANGE;
+            //Debug.DrawRay(myTransform.position, (-myTransform.up * ATTACK_RANGE) + (-myTransform.right * ATTACK_RANGE), Color.cyan);
+
+            // cari sudut antara vektor ke target dengan plane kiri dan kanan (diwakili resultan vektor arah bawah dan kiri/kanan)
+            float angleLeft = Vector3.Angle(targetDir.normalized, (-myTransform.up) + (-myTransform.right));
+            float angleRight = Vector3.Angle(targetDir.normalized, (-myTransform.up) + (myTransform.right));
+
+            targetInLeft = (angleLeft <= angleRight); // cek posisi target apakah ada di sisi kiri unit?
+
+            // cek arah positif atau negatif sudutnya, pakai operasi cross. (sumber: http://answers.unity3d.com/questions/181867/is-there-way-to-find-a-negative-angle.html)
+            Vector3 crossDownLeft = Vector3.Cross(targetDir.normalized, (-myTransform.up) + (-myTransform.right));
+            Vector3 crossDownRight = Vector3.Cross(targetDir.normalized, (-myTransform.up) + (myTransform.right));
+            if (crossDownLeft.y < 0) angleLeft = -angleLeft;
+            if (crossDownRight.y < 0) angleRight = -angleRight;
+
+            //Debug.Log("arahTarget? "+(targetInLeft?"kiri":"kanan")+" angleLeft=" + angleLeft + " angleRight=" + angleRight);
+
+            float distUnitToTar = Vector3.Distance(myTransform.position, target);
+            float halfFireingLeftArc = 35.0f;
+            float halfFireingRightArc = -35.0f;
+
+            //jika target ada di arah yg sesuai dan sudutnya udah berada di belakang unit (biar terjunnya ke belakang), dan ada di dalam jangkauan, maka true.
+            return ((targetInLeft && (angleLeft > halfFireingLeftArc))
+                    || (!targetInLeft && (angleRight < halfFireingRightArc))
+                    && distUnitToTar <= ATTACK_RANGE);
         }
     }
 
