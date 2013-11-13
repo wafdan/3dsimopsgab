@@ -44,24 +44,35 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AVProWindowsMedia\Editor\AVProWindowsMediaMovieEditor.cs" />
      <Compile Include="Assets\Editor\Water (Pro Only)\Water4\GerstnerDisplaceEditor.cs" />
      <Compile Include="Assets\Editor\Water (Pro Only)\Water4\PlanarReflectionEditor.cs" />
      <Compile Include="Assets\Editor\Water (Pro Only)\Water4\SpecularLightingEditor.cs" />
      <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterBaseEditor.cs" />
      <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterEditorUtility.cs" />
+     <Compile Include="Assets\Editor\unitygems.com\whydoidoit.com\FindAndFixBrokenScripts.cs" />
+     <Compile Include="Assets\Editor\unitygems.com\whydoidoit.com\FixMissingScripts.cs" />
      <Compile Include="Assets\Pixelplacement\iTweenPath\Editor\iTweenPathEditor.cs" />
      <Compile Include="Assets\TerrainToolkit\Editor\TerrainToolkitEditor.cs" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_HDYC2RGBA.shader" />
      <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YUY22RGBA.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_Shared.cginc" />
      <None Include="Assets\Detonator Explosion Framework\Resources\Detonator\Textures\HeatDistort.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-SimpleWater4.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_NV12_709.shader" />
      <None Include="Assets\Plugins\whydoidoit.com\license.txt" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Sources\Shaders\FX-Water.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_RAW_BGRA2RGBA.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_UYVY2RGBA.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-Water4.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YVYU2RGBA .shader" />
      <None Include="Assets\UnitySerializer\readme.txt" />
      <None Include="Assets\TerrainToolkit\Read me.txt" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YUY27092RGBA.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>

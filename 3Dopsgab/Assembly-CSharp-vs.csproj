@@ -44,6 +44,14 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaGUIDisplay.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaManager.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaMaterialApply.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaMeshApply.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaMovie.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMedia.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMediaFormatConverter.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMediaPlugin.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\Detonator.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\DetonatorBurstEmitter.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\DetonatorCloudRing.cs" />
@@ -83,15 +91,21 @@
      <Compile Include="Assets\Scripts\Menu\MenuKegiatan.cs" />
      <Compile Include="Assets\Scripts\Menu\MenuOpsiH.cs" />
      <Compile Include="Assets\Scripts\Menu\MenuUnit.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\AirTransportUnitMovement.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\AmfibiUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\BasicUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\DeselectPlayerUnitOnClicked.cs" />
      <Compile Include="Assets\Scripts\Navigasi\DetectClicks.cs" />
      <Compile Include="Assets\Scripts\Navigasi\DragSelect.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\InfanteriUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\MoveSelectedUnitOnRightClick.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectLocationOnClicked.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectPlayerUnitOnTrigger.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\TankUnitMovement.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\UnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\boxMovement.cs" />
      <Compile Include="Assets\Scripts\OperationManager.cs" />
+     <Compile Include="Assets\Scripts\OperationPlayVideo.cs" />
      <Compile Include="Assets\Scripts\PinLocation.cs" />
      <Compile Include="Assets\Scripts\Unit\Actor.cs" />
      <Compile Include="Assets\Scripts\Unit\BantuanTembakanKapal.cs" />
@@ -133,6 +147,7 @@
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\Trigger.cs" />
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\cameraBerbarisUnitUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\komandanBarisUnitUdara.cs" />
+     <Compile Include="Assets\Scripts\Unit\PesawatLanding.cs" />
      <Compile Include="Assets\Scripts\Unit\RanjauHancur.cs" />
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\Tankmenembak.cs" />
@@ -175,17 +190,25 @@
      <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
      <Compile Include="Assets\iTween\Sample\RotateSample.cs" />
      <Compile Include="Assets\iTween\Sample\SampleInfo.cs" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_HDYC2RGBA.shader" />
      <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YUY22RGBA.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_Shared.cginc" />
      <None Include="Assets\Detonator Explosion Framework\Resources\Detonator\Textures\HeatDistort.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-SimpleWater4.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_NV12_709.shader" />
      <None Include="Assets\Plugins\whydoidoit.com\license.txt" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Sources\Shaders\FX-Water.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_RAW_BGRA2RGBA.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_UYVY2RGBA.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-Water4.shader" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YVYU2RGBA .shader" />
      <None Include="Assets\UnitySerializer\readme.txt" />
      <None Include="Assets\TerrainToolkit\Read me.txt" />
+     <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YUY27092RGBA.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>
