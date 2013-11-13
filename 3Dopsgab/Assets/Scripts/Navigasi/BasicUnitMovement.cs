@@ -47,6 +47,7 @@ public class BasicUnitMovement : UnitMovement
     [SerializeThis]
     public int curTarpointIdx = 0;
     protected GameObject targetEffectObject; //diambil dari Resources
+    protected GameObject targetTerjunEffectObject;
     protected GameObject missileObject;
     protected float distMinToTar = float.MaxValue; // jarak minimum unit ke sasaran, diupdate terus
 
@@ -87,6 +88,7 @@ public class BasicUnitMovement : UnitMovement
 
         if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
         targetEffectObject = Resources.Load("TargetEffect") as GameObject;
+        targetTerjunEffectObject = Resources.Load("TargetTerjunEffect") as GameObject;
         missileObject = Resources.Load("MissileEffect") as GameObject;
 
         goal = transform.position;
@@ -684,6 +686,19 @@ public class BasicUnitMovement : UnitMovement
         //add to history
         HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, getCleanName(myTransform, "name"), getCleanName(myTransform, "prefab"), tp));
 
+    }
+
+    public void addTerjunpoint(Vector3 tp)
+    {
+        if (tarpoints == null) return;
+        GameObject go = Instantiate(targetTerjunEffectObject, tp, targetTerjunEffectObject.transform.rotation) as GameObject;
+        go.name = "TargetObj" + go.GetInstanceID();
+
+        tarPointObjects.Add(go);
+        tarpoints.Add(tp);
+
+        //add to history
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_TARPOINT, getCleanName(myTransform, "name"), getCleanName(myTransform, "prefab"), tp));
     }
 
     public void removeLastWayPoint()
