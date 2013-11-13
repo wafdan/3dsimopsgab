@@ -190,7 +190,7 @@ public class BuildingPlacement : MonoBehaviour {
 	bool IsLegalPosition() {
 		if (placeableBuilding.colliders.Count > 0) {
             //Debug.Log("Collider Count: " + placeableBuilding.colliders.Count);
-            Debug.Log("Collider 0 name: " + placeableBuilding.colliders[0].name);
+            //Debug.Log("Collider 0 name: " + placeableBuilding.colliders[0].name);
 			return false;	
 		}
 		return true;

@@ -690,6 +690,14 @@ public class MenuUnit : MonoBehaviour
         }
     }
 
+
+    void FixedUpdate()
+    {
+        if(!testMovementMode)
+        unitManager.setUnitAltitude();
+    }
+
+
     /*    void Awake()
         {
             location = "C:\\.*" + path;

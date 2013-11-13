@@ -80,6 +80,37 @@ public class AirTransportUnitMovement : BasicUnitMovement
         }
     }
 
+    public override void addWaypoint(Vector3 wpItem)
+    {
+        if (waypoints == null) return;
+        //unit udara!
+        if (waypoints.Count > 0)
+        {
+            wpItem.y = UNIT_UDARA_Y + sampleHeight(wpItem);
+        }
+
+        goal = wpItem;
+
+        lineRenderer = (this.lineRenderer != null) ? this.lineRenderer : gameObject.GetComponent<LineRenderer>();
+        lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH);
+        lineRenderer.SetVertexCount(waypoints.Count + 2);
+        if (lastAddedWayPoint == Vector3.zero)
+            lastAddedWayPoint = myTransform.position;
+        if (waypoints.Count > 0)
+            lastAddedWayPoint = waypoints[waypoints.Count - 1];
+        lineRenderer.SetPosition(waypoints.Count, lastAddedWayPoint);
+        lineRenderer.SetPosition(waypoints.Count + 1, goal);
+        lastAddedWayPoint = goal;
+        lastAddedWaypointIdx++;
+
+        waypoints.Add(wpItem);
+
+        //add to history
+        HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_WAYPOINT, getCleanName(myTransform, "prefab"), getCleanName(myTransform, "prefab"), wpItem));
+
+    }
+
+
     public override void followWaypoint()
     {
         //Debug.Log("execute movement of: " + gameObject.name);
@@ -103,8 +134,8 @@ public class AirTransportUnitMovement : BasicUnitMovement
                 //mulai hitung2an belok mode, kalo jaraknya udah sepersepuluh dari target point, belok mode ON!
                 float distToNextPoint = Vector3.Distance(myTransform.position, target);
                 //float distToTuj;
-
-                if (distToNextPoint < 10f && curWaypointIdx < waypoints.Count - 1)
+                /* curWaypointIdx>0 penting agar dia ga gelinjang2 pas pertama kali gerak */
+                if ((distToNextPoint < 10f) && (curWaypointIdx < waypoints.Count - 1) && curWaypointIdx>0)
                 {
                     if (startBelokPoint == Vector3.zero)
                     {
@@ -578,6 +609,7 @@ public class AirTransportUnitMovement : BasicUnitMovement
         Animation[] anms = GetComponents<Animation>();
         if (anms.Length > 0)
         {
+            Debug.Log("animation length?? " + anms.Length);
             animationEngine = anms[0];
         }
 

@@ -95,13 +95,9 @@ public class UnitManager : MonoBehaviour
             RaycastHit hit;
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            Debug.DrawRay(ray.GetPoint(10), Vector3.down, Color.magenta);
-            
-
+            //Debug.DrawRay(ray.GetPoint(10), Vector3.down, Color.magenta);
             if (Input.GetMouseButtonDown(0))
             {
-
-                
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 {
@@ -168,6 +164,7 @@ public class UnitManager : MonoBehaviour
                                     //lineRenderer.SetPosition(bum.idx+1, bum.goal);
                                     //bum.lastPoint = bum.goal;
                                     //bum.idx++;
+                                    Debug.Log("targetting mode? "+targettingMode);
                                     if (targettingMode)
                                     {
                                         Debug.Log("targetting mode!");
@@ -274,6 +271,20 @@ public class UnitManager : MonoBehaviour
                 //   do nothing
                 //}
             }*/
+        }
+    }
+
+    /* untuk mengatur ketinggian unit berdasarkan input dari slider. sementara khusus unit udara */
+    public void setUnitAltitude()
+    {
+        for (int i = 0; i < selectedUnits.Count; i++)
+        {
+            BasicUnitMovement bum = selectedUnits[i].GetComponent<BasicUnitMovement>();
+            if (bum != null && bum.isUnitUdara)
+            {
+                Vector3 upos = selectedUnits[i].transform.position;
+                selectedUnits[i].transform.position = new Vector3(upos.x, bum.sampleHeight(upos)+1+selectedUnitUdaraHeight, upos.z);
+            }
         }
     }
 
@@ -467,70 +478,93 @@ public class UnitManager : MonoBehaviour
         //screenPos = Camera.main.WorldToScreenPoint(transform.position);
         screenPos = Camera.main.WorldToScreenPoint(selectedUnitPos);
 
-        menuH = 30f + 25f * ((float)intersectedMenu.Length+1) + sliderUdaraH + btMenuLain + btKembaliH;
-        menuW = 300;
-        menuX = screenPos.x;
-        menuY = Screen.height - screenPos.y - menuH;
-        Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
-
-        mouseOverGUI = boxRect.Contains(Event.current.mousePosition);
-
-        GUI.backgroundColor = Color.yellow;
-        GUILayout.BeginArea(boxRect);
-        GUILayout.BeginVertical(GUI.skin.box);
-        GUILayout.Label("Menu Unit");
-
-        bool showAturKetinggian = true;
-        foreach (GameObject gob in unitsToBeProcessed)
+        //kalo lagi narget, menu lain sembunyikan dulu
+        if (targettingMode)
         {
-            if (gob!=null && !gob.GetComponent<BasicUnitMovement>().isUnitUdara)
-                showAturKetinggian = false;
-        }
-        if (showAturKetinggian)
-        {
-            sliderUdaraH = 50;
-            GUILayout.Label("Ketinggian Unit: " + selectedUnitUdaraHeight + " km");
-            selectedUnitUdaraHeight = GUILayout.HorizontalSlider(selectedUnitUdaraHeight, 0.0f, 100.0f, GUI.skin.horizontalSlider, GUI.skin.button);
-        }
+            //persiapkan hitungan posisi menu
+            menuH = 30f;
+            menuW = 200;
+            menuX = screenPos.x;
+            menuY = Screen.height - screenPos.y;
+            Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
 
-        foreach (string order in intersectedMenu)
-        {
-            if (GUILayout.Button(order))
+            mouseOverGUI = boxRect.Contains(Event.current.mousePosition);
+            
+            GUILayout.BeginArea(boxRect);
+            GUILayout.BeginVertical(GUI.skin.box);
+            if (GUILayout.Button("Selesai"))
             {
-                switch (order)
-                {
-                    case "Delete":
-                        if (destroySelectedUnits()) { menuVisible = false; }
-                        break;
-                    case "Set Sasaran Tembak":
-                        targettingMode = true;
-                        break;
-                    case "Set Titik Terjun":
-                        //terjunMode = true;
-                        break;
-                    default:
-                        break;
-                }
+                targettingMode = false;
             }
-            menuItemY += menuItemH + 2;
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+            
         }
-
-        //if (GUILayout.Button("Set Sasaran Serangan"))
-        //{
-        //    targettingMode = true;
-        //    //Debug.Log("true targetting!");
-        //}
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Kembali"))
+        if (!targettingMode)
         {
-            targettingMode = false;
-            menuVisible = false;
+            //persiapkan hitungan posisi menu
+            menuH = 30f + 25f * ((float)intersectedMenu.Length + 1) + sliderUdaraH + btMenuLain + btKembaliH;
+            menuW = 300;
+            menuX = screenPos.x;
+            menuY = Screen.height - screenPos.y - menuH;
+            Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
+
+            mouseOverGUI = boxRect.Contains(Event.current.mousePosition);
+
+            GUI.backgroundColor = Color.yellow;
+            GUILayout.BeginArea(boxRect);
+            GUILayout.BeginVertical(GUI.skin.box);
+
+            //ini baru menu2 unitnya
+            GUILayout.Label("Menu Unit");
+
+            bool showAturKetinggian = true;
+            foreach (GameObject gob in unitsToBeProcessed)
+            {
+                if (gob != null && !gob.GetComponent<BasicUnitMovement>().isUnitUdara)
+                    showAturKetinggian = false;
+            }
+            if (showAturKetinggian)
+            {
+                sliderUdaraH = 50;
+                GUILayout.Label("Ketinggian Unit: " + selectedUnitUdaraHeight + " km");
+                selectedUnitUdaraHeight = GUILayout.HorizontalSlider(selectedUnitUdaraHeight, 0.0f, 100.0f, GUI.skin.horizontalSlider, GUI.skin.button);
+            }
+
+            foreach (string order in intersectedMenu)
+            {
+                if (GUILayout.Button(order))
+                {
+                    switch (order)
+                    {
+                        case "Delete":
+                            if (destroySelectedUnits()) { menuVisible = false; }
+                            break;
+                        case "Set Sasaran Tembak":
+                            targettingMode = true;
+                            break;
+                        case "Set Titik Terjun":
+                            //terjunMode = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                menuItemY += menuItemH + 2;
+            }
+
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Kembali"))
+            {
+                targettingMode = false;
+                menuVisible = false;
+            }
+
+
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+            GUI.backgroundColor = Color.white;
         }
-
-
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
-        GUI.backgroundColor = Color.white;
         return;
 
 
