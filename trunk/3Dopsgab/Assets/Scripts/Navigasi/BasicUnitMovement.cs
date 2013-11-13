@@ -644,7 +644,7 @@ public class BasicUnitMovement : UnitMovement
         return curvedPoints.ToArray();
     }
 
-    public void addWaypoint(Vector3 wpItem)
+    public override void addWaypoint(Vector3 wpItem)
     {
         if (waypoints == null) return;
 
