@@ -39,30 +39,46 @@ public class FlashIfSelected : MonoBehaviour {
         if (!BuildingPlacement.hasPlaced) return;
 		if(unitManager.IsSelected(gameObject)) {
 			//StartCoroutine("Flash");
-            renderer.material.color = flashColor;
+            gameObject.renderer.material.color = flashColor;
             if (myTransform.childCount > 0)
             {
-                MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
-                for (int i = 0; i < rends.Length; i++)
-                {
-                    rends[i].material.color = Color.green;
-                }
+                //MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
+                //for (int i = 0; i < rends.Length; i++)
+                //{
+                //    rends[i].material.color = Color.green;
+                //}
+                colorTheChilds(myTransform,Color.green);
             }
 		}
 		else {
 			//StopAllCoroutines();
-			renderer.material.color = originalColor;
+			gameObject.renderer.material.color = originalColor;
             if (myTransform.childCount > 0)
             {
-                MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
-                for (int i = 0; i < rends.Length; i++)
-                {
-                    rends[i].material.color = originalColor;
-                }
+                //MeshRenderer[] rends = myTransform.GetComponentsInChildren<MeshRenderer>();
+                //for (int i = 0; i < rends.Length; i++)
+                //{
+                //    rends[i].material.color = originalColor;
+                //}
+                colorTheChilds(myTransform, originalColor);
             }
 		}
 	}
-	
+
+    private void colorTheChilds(Transform curTransform, Color color)
+    {
+        if (curTransform.childCount > 0)
+        {
+            Renderer[] co = curTransform.GetComponentsInChildren<Renderer>();
+            for (int i = 0; i < co.Length; i++)
+            {
+                co[i].material.color = color;
+                //colorTheChilds(co[i].transform, color);
+            }
+        }
+    }
+
+	/*
 	IEnumerator Flash() {
 		float t = 0;
 		while(t < flashRate) {
@@ -84,4 +100,5 @@ public class FlashIfSelected : MonoBehaviour {
         renderer.material.color = flashColor;
 		StartCoroutine("Flash");
 	}
+    */
 }

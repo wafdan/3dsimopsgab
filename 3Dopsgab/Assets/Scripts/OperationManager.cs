@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Runtime.InteropServices;
+
 [SerializeAll]
 public class OperationManager : MonoBehaviour
 {
@@ -48,13 +50,24 @@ public class OperationManager : MonoBehaviour
     private bool movReady;
     public static MovieTexture movTexture;
 
+    //HD MOVIE RELATED
+    //public AVProWindowsMediaMovie _movie;
+    //public AVProWindowsMediaGUIDisplay _movieDisplay;
+    public OperationPlayVideo Oplayvid;
+    private GCHandle _bytesHandle;
+    private System.IntPtr _moviePtr;
+    private uint _movieLength;
+
     // SIMPAN ANTAR SCENE
     public static OperationItem curOpItem;
     private GameObject taggerPrefab;
+    private bool isMovieNowPlaying = false;
 
     void Start()
     {
-        
+        //_movieDisplay = Camera.main.GetComponent<AVProWindowsMediaGUIDisplay>();
+        //_movie = Camera.main.GetComponent<AVProWindowsMediaMovie>();
+        Oplayvid = Camera.main.GetComponent<OperationPlayVideo>();
         StartCoroutine(startTheGameClock());
         StartCoroutine(playTheKegs());
     }
@@ -141,7 +154,16 @@ public class OperationManager : MonoBehaviour
                                     if (opItIn.hasUnitMovement)
                                     {
                                         if(!opItIn.isRunning)
-                                            playIndividualOperation(opItIn);
+                                            playOperationUnitMovement(opItIn);
+                                    }
+                                    if (opItIn.hasVideo)
+                                    {
+                                        //kalau belum main, mulai mainkan
+                                        if (!isMovieNowPlaying)
+                                            playOperationMovie(opItIn);
+                                        //cek apakah sudah berakhir
+                                        
+
                                     }
                                     //if (opItIn.locationPoints.Length > 0)
                                     //{
@@ -169,6 +191,72 @@ public class OperationManager : MonoBehaviour
 
         }
     }
+
+    private void playOperationMovie(OperationItem operationToPlay)
+    {
+        Debug.Log("File loading dari " + operationToPlay.files);
+        if (operationToPlay.hasVideo)
+        {
+
+            //LoadFileToMemory("",operationToPlay.files);
+            Oplayvid._movie._filename = operationToPlay.files;
+            //AVProWindowsMedia moviePlayer = _movie.MovieInstance;
+            Oplayvid._movie.LoadMovie(true);
+            //moviePlayer.Play();
+            isMovieNowPlaying = true;
+            //if (File.Exists(operationToPlay.files))
+            //{
+            //    Debug.Log("File berhasil loaded. "+_movieDisplay);
+            //    _movieDisplay._movie._filename = operationToPlay.files;
+            //    _movieDisplay._movie.LoadMovie(true);
+            //    _movieDisplay._movie.Play();
+            //    isMovieNowPlaying = true;
+            //}
+            //else
+            //{
+            //    Debug.LogError("File tidak ditemukan di " + operationToPlay.files);
+            //}
+        }
+    }
+
+    private void ReleaseMemoryFile()
+    {
+        if (_bytesHandle.IsAllocated)
+            _bytesHandle.Free();
+        _moviePtr = System.IntPtr.Zero;
+        _movieLength = 0;
+    }
+
+    private void LoadFileToMemory(string folder, string filename)
+    {
+        string filePath = Path.Combine(folder, filename);
+        Debug.Log("File loading dari " + filePath);
+        // If we're running outside of the editor we may need to resolve the relative path
+        // as the working-directory may not be that of the application EXE.
+        if (!Application.isEditor && !Path.IsPathRooted(filePath))
+        {
+            string rootPath = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            filePath = Path.Combine(rootPath, filePath);
+        }
+
+        ReleaseMemoryFile();
+        if (File.Exists(filePath))
+        {
+            Debug.Log("loaded from " + filePath);
+            byte[] bytes = System.IO.File.ReadAllBytes(filePath);
+            if (bytes.Length > 0)
+            {
+                Debug.Log("bytes ada");
+                _bytesHandle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                _moviePtr = _bytesHandle.AddrOfPinnedObject();
+                _movieLength = (uint)bytes.Length;
+
+                Oplayvid._movie.LoadMovieFromMemory(true, filename, _moviePtr, _movieLength);
+                Debug.Log("sampe");
+            }
+        }
+    }
+
 
     private IEnumerator startTheGameClock()
     {
@@ -278,7 +366,7 @@ public class OperationManager : MonoBehaviour
         }
     }
 
-    private void playIndividualOperation(OperationItem operationToPlay)
+    private void playOperationUnitMovement(OperationItem operationToPlay)
     {
         //mainkan pergerakan
         if (operationToPlay.hasUnitMovement)
@@ -289,26 +377,6 @@ public class OperationManager : MonoBehaviour
             MenuUnit.testMovementMode = true;
         }
 
-        if (operationToPlay.hasVideo)
-        {
-            if (File.Exists(operationToPlay.files))
-            {
-                Debug.Log("File loading dari " + operationToPlay.files);
-                if (!movReady)
-                {
-                    StartCoroutine(loadKegMovie(operationToPlay.files));
-                }
-                else
-                {
-                    movTexture.Play();
-                    //Debug.Log("loading keneh euy..");
-                }
-            }
-            else
-            {
-                Debug.LogError("File tidak ditemukan di " + operationToPlay.files);
-            }
-        }
 
     }
 
@@ -421,6 +489,7 @@ public class OperationManager : MonoBehaviour
         {
             ((OperationItem)operationList[i]).isRunning = false;
         }
+        
     }
 }
 
