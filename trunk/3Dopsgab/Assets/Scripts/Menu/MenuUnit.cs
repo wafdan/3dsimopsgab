@@ -1515,7 +1515,7 @@ public class MenuUnit : MonoBehaviour
                 if (GUILayout.Button("Browse", GUILayout.Width(110)))
                 {
                     m_fileBrowser = new FileBrowser(new Rect(450, 0, 600, 500), "Pilih File", FileSelectedCallback);
-                    m_fileBrowser.SelectionPattern = "*.ogg";
+                    m_fileBrowser.SelectionPattern = "*.*";
                     m_fileBrowser.DirectoryImage = m_directoryImage;
                     m_fileBrowser.FileImage = m_fileImage;
                 }
