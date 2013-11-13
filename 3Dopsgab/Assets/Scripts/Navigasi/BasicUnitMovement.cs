@@ -60,6 +60,9 @@ public class BasicUnitMovement : UnitMovement
     protected AudioSource audioEngine;
     public bool audioEngineHasPlayed = false;
 
+    //ANIMATIONS
+    public bool animationEngineHasPlayed = false;
+
     // BELOK VARS
     protected bool belokMode = false;
     protected Vector3[] belokPoints;
