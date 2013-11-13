@@ -29,9 +29,8 @@ public class LepasLandas : MonoBehaviour {
 		float rotationSpeed = 0;
 		
 		acceleration += 2f * Time.time;
-	
-		
-		myTransform.Translate(Vector3.forward * kecepatanPesawat * acceleration * Time.deltaTime);	
+
+        myTransform.Translate(Vector3.forward * kecepatanPesawat * acceleration * Time.deltaTime);	
 		
 		if( acceleration > 3f)
 		{
