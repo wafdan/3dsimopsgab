@@ -124,9 +124,11 @@ public class AirTransportUnitMovement : BasicUnitMovement
         if (waypoints.Count > 0)
         {
             //cek if posisi awal sama dengan posisi waypoint terakhir
-            if (myTransform.position == waypoints[waypoints.Count - 1])
+            //if (myTransform.position == waypoints[waypoints.Count - 1])
+            if (Vector3.Distance(myTransform.position, waypoints[waypoints.Count - 1]) <= 0.3f)
             {
                 //Debug.Log("Udah ada di GOAL!");
+                stopEngine();
                 return;
             }
             if (curWaypointIdx < waypoints.Count)
@@ -164,6 +166,7 @@ public class AirTransportUnitMovement : BasicUnitMovement
                 }
 
                 // BELOK MODE ON!
+                #region belok
                 if (belokMode)
                 {
 
@@ -222,7 +225,9 @@ public class AirTransportUnitMovement : BasicUnitMovement
 
                     }
 
-                } //BELOK MODE OFF, LURUS2 saja
+                }
+                #endregion belok
+                //BELOK MODE OFF, LURUS2 saja
                 else
                 {
                     //Debug.Log("Lurus..");
@@ -266,14 +271,15 @@ public class AirTransportUnitMovement : BasicUnitMovement
 
     public override void startEngineOnce()
     {
-        if (!audioEngineHasPlayed)
-        {
-            if (audioEngine != null)
-            {
-                audioEngineHasPlayed = true;
-                audioEngine.Play();
-            }
-        }
+        base.startEngineOnce();
+        //if (!audioEngineHasPlayed)
+        //{
+        //    if (audioEngine != null)
+        //    {
+        //        audioEngineHasPlayed = true;
+        //        audioEngine.Play();
+        //    }
+        //}
         if (!animationEngineHasPlayed)
         {
             if (animationEngine != null)
@@ -286,11 +292,12 @@ public class AirTransportUnitMovement : BasicUnitMovement
 
     public override void stopEngine()
     {
-        if (audioEngine != null)
-        {
-            audioEngine.Stop(); audioEngineHasPlayed = false;
-            Debug.Log("engine stop!!!");
-        }
+        base.stopEngine();
+        //if (audioEngine != null && audioEngine.isPlaying)
+        //{
+        //    audioEngine.Stop(); audioEngineHasPlayed = false;
+        //    Debug.Log("engine stop!!!");
+        //}
 
         if (animationEngine != null)
         {

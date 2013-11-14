@@ -187,6 +187,10 @@ public class BasicUnitMovement : UnitMovement
             followWaypoint();
             //adjustMainGun();
         }
+        else //kalau "Berhenti" ditekan
+        {
+            stopEngine();
+        }
 
         if (lineRenderer != null)
             lineRenderer.enabled = unitManager.IsSelected(this.gameObject);
@@ -278,9 +282,11 @@ public class BasicUnitMovement : UnitMovement
         if (waypoints.Count > 0)
         {
             //cek if posisi awal sama dengan posisi waypoint terakhir
-            if (myTransform.position == waypoints[waypoints.Count - 1])
+            //if (myTransform.position == waypoints[waypoints.Count - 1])
+            if (Vector3.Distance(myTransform.position, waypoints[waypoints.Count - 1]) <= 0.3f)
             {
                 //Debug.Log("Udah ada di GOAL!");
+                stopEngine();
                 return;
             }
             if (curWaypointIdx < waypoints.Count)
@@ -468,7 +474,7 @@ public class BasicUnitMovement : UnitMovement
     {
         if (!audioEngineHasPlayed)
         {
-            if (audioEngine != null)
+            if (audioEngine != null && !audioEngine.isPlaying)
             {
                 audioEngineHasPlayed = true;
                 audioEngine.Play();
@@ -478,9 +484,9 @@ public class BasicUnitMovement : UnitMovement
 
     public override void stopEngine()
     {
-        if (audioEngine != null)
+        if (audioEngine != null && audioEngine.isPlaying)
         {
-            audioEngine.Stop(); audioEngineHasPlayed = false;
+            audioEngine.Pause(); audioEngineHasPlayed = false;
             Debug.Log("engine stop!!!");
         }
     }
