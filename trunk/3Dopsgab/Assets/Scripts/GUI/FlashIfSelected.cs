@@ -23,7 +23,7 @@ public class FlashIfSelected : MonoBehaviour {
 
     private Color getOriginalColor()
     {
-        Color color = renderer.material.color;
+        Color color = (renderer.material.HasProperty("_Color")) ? renderer.material.color : (new Color(0.419f, 0.419f, 0.419f, 1.000f)); //mencegah error: Material doesn't have a color property '_Color'
         BasicUnitMovement bm = GetComponent<BasicUnitMovement>();
         if (bm != null)
         {

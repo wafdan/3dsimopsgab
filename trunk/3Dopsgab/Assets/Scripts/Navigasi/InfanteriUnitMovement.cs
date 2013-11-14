@@ -10,11 +10,13 @@ public class InfanteriUnitMovement : BasicUnitMovement
     AnimationState standAnim;
     AnimationState runAnim;
     AnimationState shootAnim;
+    private bool diamDulu = false;
 
     void Start()
     {
         initAnimations();
         base.Start();
+        missileObject = Resources.Load("BulletEffect") as GameObject;
     }
 
     private void initAnimations()
@@ -113,7 +115,13 @@ public class InfanteriUnitMovement : BasicUnitMovement
                 Vector3 target = waypoints[curWaypointIdx];
                 Vector3 moveDir = target - myTransform.position;
 
-
+                //if detek target tembak, diem dulu.
+                if (diamDulu)
+                {
+                    stopWalking();
+                    startShooting();
+                    return;
+                }
                 //mulai hitung2an belok mode, kalo jaraknya udah sepersepuluh dari target point, belok mode ON!
                 float distToNextPoint = Vector3.Distance(myTransform.position, target);
                 //float distToTuj;
@@ -221,7 +229,24 @@ public class InfanteriUnitMovement : BasicUnitMovement
                 animation.Play("run");
             }
         }
+        if (audioEngine!=null && !audioEngine.isPlaying)
+        {
+            audioEngine.Play();
+        }
         Debug.Log("RUN!!!");
+    }
+
+    private void startShooting()
+    {
+        //if (!animationEngineHasPlayed)
+        //{
+        //    if (runAnim != null)
+        //    {
+        //        animationEngineHasPlayed = true;
+                animation.Play("ready_weapon");
+        //    }
+        //}
+        //Debug.Log("RUN!!!");
     }
 
     private void stopWalking()
@@ -230,7 +255,10 @@ public class InfanteriUnitMovement : BasicUnitMovement
         if (runAnim != null)
         {
             animation.Stop("run"); animationEngineHasPlayed = false;
-
+        }
+        if (audioEngine != null && audioEngine.isPlaying)
+        {
+            audioEngine.Stop();
         }
     }
 
@@ -421,11 +449,11 @@ public class InfanteriUnitMovement : BasicUnitMovement
                 if (tarpoints.Count > 0)
                 {
 
-                    adjustMainGun();
+                    //adjustMainGun();
                     while (curTarpointIdx < tarPointObjects.Count)
                     {
-                        StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx]));
-                        curTarpointIdx++;
+                        StartCoroutine(fireMissile(tarPointObjects[curTarpointIdx++]));
+                        //curTarpointIdx++;
                     }
                 }
 
@@ -434,6 +462,7 @@ public class InfanteriUnitMovement : BasicUnitMovement
         }
     }
 
+    //untuk infantri bukan missile harusnya, peluru saja. hehe
     public override IEnumerator fireMissile(GameObject targetObj)
     {
         Debug.Log("TEMBAK! : " + targetObj.transform.position.ToString());
@@ -451,59 +480,73 @@ public class InfanteriUnitMovement : BasicUnitMovement
             Debug.DrawRay(myTransform.position, (target - myTransform.position).normalized * ATTACK_RANGE, Color.yellow);
 
             //if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
-            if (this.IsPointingAtTarget(target))
+            if (getNearestTarget(tarpoints) == target) // harus dicek gini supaya berurutan nembak target yg terdekat dulu
             {
-                //Vector3 target;
-                GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
-                missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
-                Transform mt = missile.transform;
-                if (audioCannon != null)
-                    audioCannon.Play();
-                while (true)
+                if (this.IsPointingAtTarget(target))
                 {
-                    yield return null;
-                    if (mt != null)
+                    diamDulu = true;
+
+                    myTransform.LookAt(target);
+                    //Vector3 target;
+                    Vector3 spawnPoint = new Vector3(myTransform.position.x, myTransform.position.y+0.003f,myTransform.position.z);
+                    GameObject missile = Instantiate(missileObject, spawnPoint, myTransform.rotation) as GameObject;
+                    missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                    Transform mt = missile.transform;
+                    if (audioCannon != null)
+                        audioCannon.Play();
+                    while (true)
                     {
-                        mt.LookAt(target);
-                        //Debug.DrawRay(mt.position, mt.forward * 30);
-                        mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 5f);
-
-
-                        float distToTar = Vector3.Distance(mt.position, target);
-
-
-                        //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
-                        if (distToTar <= 0.1f)
+                        yield return null;
+                        if (mt != null)
                         {
-                            //isMoving = false;
-                            //break; // kalo break doang, nanti dia nembak berkali2
-                            targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
+                            mt.LookAt(target);
+                            //Debug.DrawRay(mt.position, mt.forward * 30);
+                            mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 9f);
 
-                            Destroy(missile); // missilenya juga lah..
 
-                            //break;
-                            yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
+                            float distToTar = Vector3.Distance(mt.position, target);
+
+
+                            //mt.Translate(mt.forward * moveSpeed * Time.deltaTime);
+                            if (distToTar <= 0.1f)
+                            {
+                                //isMoving = false;
+                                //break; // kalo break doang, nanti dia nembak berkali2
+                                targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
+
+                                Destroy(missile); // missilenya juga lah..
+
+                                //break;
+                                diamDulu = false;
+                                yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
+                                
+                            }
                         }
-                    }
-                    //Debug.Log("firing to " + target.ToString());
+                        //Debug.Log("firing to " + target.ToString());
 
-                }//endwhile
-            }//endif
-
+                    }//endwhile
+                }//endif
+            }//endif nearesttarget
         }//endwhile
 
     }
 
+    public override void stopEngine()
+    {
+        stopWalking();
+    }
+
     public override bool IsPointingAtTarget(Vector3 target)
     {
-        Debug.Log("ispointing dari tankUnitMovement");
-        if (!isUnitDarat)
-        {
+        Debug.Log("ispointing dari infantri");
+        //simpel aja deh kayak unit udara
+        //if (!isUnitDarat)
+        //{
             float distUnitToTar = Vector3.Distance(myTransform.position, target);
             return distUnitToTar <= ATTACK_RANGE;
-        }
-        else
-        {
+        //}
+        //else
+        /*{
             Vector3 barrelForwardDir = barrel.transform.forward;//harusnya forward, tapi right yg dipake karena mungkin kesalahan di modeling.
             target.y = barrel.transform.position.y;
             Vector3 barrelPos = barrel.transform.position;
@@ -522,7 +565,7 @@ public class InfanteriUnitMovement : BasicUnitMovement
             return (angle < halfFireingArc && distUnitToTar <= ATTACK_RANGE);
             //else false;
             //return distUnitToTar <= ATTACK_RANGE;
-        }
+        }*/
     }
 
     /* end of class */

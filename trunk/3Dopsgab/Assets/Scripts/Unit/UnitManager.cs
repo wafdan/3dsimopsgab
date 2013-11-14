@@ -688,7 +688,7 @@ public class UnitManager : MonoBehaviour
                         }
                         bUnitMovt.curTarpointIdx = 0;
 
-                        //stop suara engine
+                        //stop suara engine dan animasinya
                         bUnitMovt.stopEngine();
                     }
                 }
