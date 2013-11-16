@@ -482,6 +482,7 @@ public class MenuUnit : MonoBehaviour
         initSceneNames();
         StartCoroutine(convertVideoManager());
         initSelectedOperation();
+        Debug.Log("persistent dir: " + Application.persistentDataPath);
     }
 
     private void initSelectedOperation()
@@ -793,6 +794,10 @@ public class MenuUnit : MonoBehaviour
 
     void OnGUI()
     {
+        
+        //GUI.enabled = !unitManager.followCameraMode; // jika lagi mode kamera follow unit, GUI disable dulu
+        if (unitManager.followCameraMode) return;// jika lagi mode kamera follow unit, GUI ga nampil dulu
+
         if (m_fileBrowser != null)
         {
             m_fileBrowser.OnGUI();
