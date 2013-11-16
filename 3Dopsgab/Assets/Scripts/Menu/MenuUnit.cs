@@ -796,7 +796,7 @@ public class MenuUnit : MonoBehaviour
     {
         
         //GUI.enabled = !unitManager.followCameraMode; // jika lagi mode kamera follow unit, GUI disable dulu
-        if (unitManager.followCameraMode) return;// jika lagi mode kamera follow unit, GUI ga nampil dulu
+        if (UnitManager.followCameraMode) return;// jika lagi mode kamera follow unit, GUI ga nampil dulu
 
         if (m_fileBrowser != null)
         {

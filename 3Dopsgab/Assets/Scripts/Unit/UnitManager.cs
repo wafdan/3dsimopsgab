@@ -628,7 +628,7 @@ public class UnitManager : MonoBehaviour
     private Vector2 scrollPosUnitDetail = Vector2.zero;
 
     //kamera mode follow atau tidak
-    public bool followCameraMode = false;
+    public static bool followCameraMode = false;
     //nilai rotasi terakhir sebelum cinamatic Mode
     private Quaternion lastCamRot;
     private Vector3 lastCamPos;
