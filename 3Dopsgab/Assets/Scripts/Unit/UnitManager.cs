@@ -21,13 +21,13 @@ public class UnitManager : MonoBehaviour
     private float menuItemY;
     private float menuItemW;
     private float menuItemH;
-    private string[] unitOrderList = new string[] { "Delete"};
+    private string[] unitOrderList = new string[] { "Delete" };
     private Vector3 selectedUnitPos;
     private List<GameObject> unitsToBeProcessed;
     private string[] intersectedMenu;
     public static string UNIT_TAG = "Building";
     private GUIStyle historyStyle;
-    
+
     private bool targettingMode = false; //jika true maka klik kanan jadi menentukan sasaran, bukan waypoint
     private bool terjunMode = false; //mirip targetting mode, tapi ini khusus penerjunan pasukan dari udara
 
@@ -87,12 +87,71 @@ public class UnitManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
     }
 
+    public static float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360F)
+            angle += 360F;
+        if (angle > 360F)
+            angle -= 360F;
+        return Mathf.Clamp(angle, min, max);
+    }
+
     void Update()
     {
         if (mouseOverGUI) return;
         if (Camera.main.enabled)
         {
-                                  
+            //handle orbiting camera to selected units
+            if (Input.GetKeyUp(KeyCode.C))
+            {
+                if (!followCameraMode) //sedang mode biasa
+                {
+                    //simpan posisi dan rotasi teakhir kamera
+                    lastCamRot = Camera.main.transform.rotation;//Quaternion.Euler(Camera.main.transform.rotation.x, Camera.main.transform.rotation.y, Camera.main.transform.rotation.z);
+                    lastCamPos = Camera.main.transform.position;
+                }
+                else //sedang follow mode
+                {
+                    //kembalikan posisi dan rotasi teakhir kamera
+                    Camera.main.transform.rotation = lastCamRot;
+                    Camera.main.transform.position = lastCamPos;
+                    //lastSelectedUnits.Clear();
+                }
+                followCameraMode = !followCameraMode;
+            }
+
+            if (followCameraMode)
+            {
+                Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
+                if (selectedUnitCenter != Vector3.zero)
+                {
+                    
+                    //handle mouse movement
+                    xCam += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
+                    yCam += Input.GetAxis("Mouse Y") * ySpeed * distance * 0.02f;
+
+                    yCam = ClampAngle(yCam, yMinLimit, yMaxLimit);
+                    Quaternion rot = Quaternion.Euler(-yCam, xCam, 0); // -yCam harus minus agar gerakan tidak invert
+                    distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
+
+                    RaycastHit hitCam;
+                    if (Physics.Linecast(selectedUnitCenter, Camera.main.transform.position, out hitCam))
+                    {
+                        distance -= hitCam.distance;
+                    }
+                    //Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+                    Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+                    Vector3 position = rot * negDistance + selectedUnitCenter;
+
+                    Camera.main.transform.rotation = rot;
+                    Camera.main.transform.position = position;
+
+                    //kalo ga ada mouse input, rotasi
+                    //Camera.main.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 10);
+                }
+            }
+            //end camera handle
+
             Ray ray;
             RaycastHit hit;
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -166,7 +225,7 @@ public class UnitManager : MonoBehaviour
                                     //lineRenderer.SetPosition(bum.idx+1, bum.goal);
                                     //bum.lastPoint = bum.goal;
                                     //bum.idx++;
-                                    Debug.Log("targetting mode? "+targettingMode);
+                                    Debug.Log("targetting mode? " + targettingMode);
                                     if (targettingMode)
                                     {
                                         Debug.Log("targetting mode!");
@@ -176,21 +235,21 @@ public class UnitManager : MonoBehaviour
                                     else
                                     {
                                         //jika unit laut mau masang waypoint di daratan, ga boleh. (BELUM BENER IMPLEMENTASINYA)
-                                        
+
                                         if (bum.isUnitLaut && hit.collider.gameObject.tag == "daratan")
                                             return;
 
-                                        if(bum.waypoints.Count==0)
+                                        if (bum.waypoints.Count == 0)
                                             bum.addWaypoint(bum.transform.position);
 
                                         //if (!bum.isUnitDarat)
                                         //{
-                                            bum.addWaypoint(hit.point);
+                                        bum.addWaypoint(hit.point);
                                         //}
                                         //else
                                         //{
-                                            //spesial. generate waypoint. Add berkali-kali di terrain.
-                                            //bum.generateWaypointOnTerrain(hit.point);
+                                        //spesial. generate waypoint. Add berkali-kali di terrain.
+                                        //bum.generateWaypointOnTerrain(hit.point);
                                         //}
                                     }
                                 }
@@ -277,6 +336,35 @@ public class UnitManager : MonoBehaviour
         }
     }
 
+    private Vector3 GetSelectedUnitCenterPos()
+    {
+        Vector3 centroid = Vector3.zero;
+        if (selectedUnits.Count > 0)
+        {
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                centroid += selectedUnits[i].transform.position;
+            }
+            centroid /= selectedUnits.Count;
+            lastSelectedUnits = new List<GameObject>(selectedUnits); //masukkan ke cache
+            selectedUnits.Clear(); //hapus biar ga glowing
+        }
+        else
+        {
+            // biar dia bisa tetep nyotot walaupun udah ga diselect
+            if (lastSelectedUnits != null && lastSelectedUnits.Count > 0)
+            {
+                for (int i = 0; i < lastSelectedUnits.Count; i++)
+                {
+                    if(lastSelectedUnits[i]!=null)
+                    centroid += lastSelectedUnits[i].transform.position;
+                }
+                centroid /= lastSelectedUnits.Count;
+            }
+        }
+        return centroid;
+    }
+
     /* untuk mengatur ketinggian unit berdasarkan input dari slider. sementara khusus unit udara */
     public void setUnitAltitude()
     {
@@ -286,7 +374,7 @@ public class UnitManager : MonoBehaviour
             if (bum != null && bum.isUnitUdara)
             {
                 Vector3 upos = selectedUnits[i].transform.position;
-                selectedUnits[i].transform.position = new Vector3(upos.x, bum.sampleHeight(upos)+1+selectedUnitUdaraHeight, upos.z);
+                selectedUnits[i].transform.position = new Vector3(upos.x, bum.sampleHeight(upos) + 1 + selectedUnitUdaraHeight, upos.z);
             }
         }
     }
@@ -373,10 +461,12 @@ public class UnitManager : MonoBehaviour
         return true;
     }
 
-    
+
     // GUI operations
     void OnGUI()
     {
+        if (followCameraMode) return; // jika lagi mode kamera follow unit, GUI ga nampil dulu
+        
         if (menuVisible && Camera.main.enabled)
             showSelectedUnitMenu();
         else
@@ -394,7 +484,7 @@ public class UnitManager : MonoBehaviour
     private float selectedUnitUdaraHeight = BasicUnitMovement.UNIT_UDARA_Y; // nilai ketinggian unit udara berdasarkan slider
     private float sliderUdaraH, btKembaliH; //tambahan ketinggian menu, opsional
     private float btMenuLain; //tambahan menu lain opsional
-    
+
     void showSelectedUnitMenu()
     {
         //screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -411,7 +501,7 @@ public class UnitManager : MonoBehaviour
             Rect boxRect = new Rect(menuX, menuY, menuW, menuH);
 
             mouseOverGUI = boxRect.Contains(Event.current.mousePosition);
-            
+
             GUILayout.BeginArea(boxRect);
             GUILayout.BeginVertical(GUI.skin.box);
             if (GUILayout.Button("Selesai"))
@@ -421,7 +511,7 @@ public class UnitManager : MonoBehaviour
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
-            
+
         }
         if (!targettingMode)
         {
@@ -536,7 +626,28 @@ public class UnitManager : MonoBehaviour
     static float hisItemH = 50;
     static float hisItemW = hisPosW;// *0.9f;
     private Vector2 scrollPosUnitDetail = Vector2.zero;
+
+    //kamera mode follow atau tidak
+    public bool followCameraMode = false;
+    //nilai rotasi terakhir sebelum cinamatic Mode
+    private Quaternion lastCamRot;
+    private Vector3 lastCamPos;
     
+    private float xCam;
+    private float yCam;
+    
+    private float xSpeed = 120.0f;
+    private float ySpeed = 120.0f;
+
+    private float yMinLimit = -80f;
+    private float yMaxLimit = 80f;
+
+    private float distance = 15.0f;
+    private float distanceMin = 15.5f;
+    private float distanceMax = 250f;
+    private Vector3 lastCentroid;
+    private List<GameObject> lastSelectedUnits;
+
 
     void showHistoryGUI()
     {
@@ -544,7 +655,7 @@ public class UnitManager : MonoBehaviour
         historyStyle.fontSize = 11;
 
         //hisPosW = 350;
-        hisPosH = hideHisList?25:(Screen.height/2-120);//250;
+        hisPosH = hideHisList ? 25 : (Screen.height / 2 - 120);//250;
         hisPosX = Screen.width - hisPosW;
         //hisPosY = 0;
         //hisItemH = 40;
@@ -554,8 +665,8 @@ public class UnitManager : MonoBehaviour
         GUILayout.BeginArea(new Rect(hisPosX, hisPosY, hisPosW, hisPosH), GUI.skin.box);
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
-        GUILayout.Label("HISTORI AKSI",styleFormTitle);
-        if (GUILayout.Button("V",GUILayout.Width(30)))
+        GUILayout.Label("HISTORI AKSI", styleFormTitle);
+        if (GUILayout.Button("V", GUILayout.Width(30)))
         {
             hideHisList = !hideHisList;
         }
@@ -605,13 +716,13 @@ public class UnitManager : MonoBehaviour
             scrollPosition.y = newScrollPosY >= 0 ? newScrollPosY : scrollPosition.y;
             lastHistoryCount = HistoryManager.historyList.Count;
         }
-        
+
     }
 
     //GameObject curUnitObj;
     void showExistingUnitDetail()
     {
-        GUILayout.BeginArea(new Rect(hisPosX, hisPosY+hisPosH+2, hisPosW, 200), GUI.skin.box);
+        GUILayout.BeginArea(new Rect(hisPosX, hisPosY + hisPosH + 2, hisPosW, 200), GUI.skin.box);
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         GUILayout.Label("UNIT PADA PETA", styleFormTitle);
@@ -627,19 +738,19 @@ public class UnitManager : MonoBehaviour
             BasicUnitMovement bum = curUnitObj.GetComponent<BasicUnitMovement>();
 
             GUI.backgroundColor = Color.red;
-            if (GUILayout.Button(curUnitObj.name+
-                "\n"+curUnitObj.transform.position.ToString()+
-                "\nwaypoint ("+bum.waypoints.Count+")"+
-                "\nlastAddPoint("+bum.lastAddedWaypointIdx+")="+bum.lastAddedWayPoint+
-                "\ncurIdx="+bum.curWaypointIdx
-                
-                ,GUI.skin.button))
+            if (GUILayout.Button(curUnitObj.name +
+                "\n" + curUnitObj.transform.position.ToString() +
+                "\nwaypoint (" + bum.waypoints.Count + ")" +
+                "\nlastAddPoint(" + bum.lastAddedWaypointIdx + ")=" + bum.lastAddedWayPoint +
+                "\ncurIdx=" + bum.curWaypointIdx
+
+                , GUI.skin.button))
             {
                 SelectSingleUnit(curUnitObj);
             }
             GUI.backgroundColor = Color.white;
 
-            
+
             if (bum != null)
             {
                 for (int y = 0; y < bum.waypoints.Count; y++)
@@ -682,8 +793,8 @@ public class UnitManager : MonoBehaviour
                             for (int j = 0; j < bUnitMovt.tarPointObjects.Count; j++)
                             {
                                 GameObject go = bUnitMovt.tarPointObjects[j];
-                                if(go!=null) go.SetActive(true);
-                                
+                                if (go != null) go.SetActive(true);
+
                             }
                         }
                         bUnitMovt.curTarpointIdx = 0;
@@ -724,7 +835,7 @@ public class UnitManager : MonoBehaviour
                         //hapus objek missile
                         //bum.missi
                     }
-                    
+
                     Destroy(chld.gameObject);
                 }
             }
