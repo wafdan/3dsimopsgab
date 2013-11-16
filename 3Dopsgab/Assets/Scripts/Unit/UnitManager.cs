@@ -804,6 +804,13 @@ public class UnitManager : MonoBehaviour
                     }
                 }
             }
+            //hapus sisa2 missile
+            GameObject[] puffs = GameObject.FindGameObjectsWithTag("puffymesh");
+            if (puffs.Length > 0)
+            {
+                for (int ii = 0; ii < puffs.Length; ii++)
+                    Destroy(puffs[ii]);
+            }
         }
     }
 
@@ -838,6 +845,13 @@ public class UnitManager : MonoBehaviour
 
                     Destroy(chld.gameObject);
                 }
+            }
+            //hapus sisa2 missile
+            GameObject[] puffs = GameObject.FindGameObjectsWithTag("puffymesh");
+            if (puffs.Length > 0)
+            {
+                for(int ii=0;ii<puffs.Length;ii++)
+                Destroy(puffs[ii]);
             }
         }
     }

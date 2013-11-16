@@ -590,6 +590,10 @@ public class AirTransportUnitMovement : BasicUnitMovement
 
     }
 
+    //static List<HomingMissile> missiles = new List<HomingMissile>();
+    //private Puffy_Emitter emitter;
+    //public int launchCount = 1;
+
     public override IEnumerator fireMissile(GameObject targetObj)
     {
         Debug.Log("TEMBAK! : " + targetObj.transform.position.ToString());
@@ -609,10 +613,30 @@ public class AirTransportUnitMovement : BasicUnitMovement
             //if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
             if (IsPointingAtTarget(target))
             {
+                //begin. integrasi PuffySmoke
+                
+
+                //end. integrasi PuffySmoke
+                
                 //Vector3 target;
                 GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
-                missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                missile.tag = "puffymesh";
+                //puffysmoke tak menghendaki;// missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
                 Transform mt = missile.transform;
+
+
+                //PuffySmokeRelated
+                Puffy_Emitter emitter = mt.GetComponent<Puffy_Emitter>();
+                //if (emitter == null) emitter = mt.gameObject.AddComponent<Puffy_Emitter>();
+                if (emitter)
+                {
+                    if (emitter.PuffyRenderer == null)
+                    {
+                        Puffy_Renderer smoke_renderer = mt.GetComponent<Puffy_Renderer>();//Puffy_Renderer.GetRenderer();
+                        if (smoke_renderer) smoke_renderer.AddEmitter(emitter);
+                    }
+                }
+
                 if (audioCannon != null)
                     audioCannon.Play();
                 while (true)
@@ -635,9 +659,12 @@ public class AirTransportUnitMovement : BasicUnitMovement
                             //break; // kalo break doang, nanti dia nembak berkali2
                             targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
 
-                            Destroy(missile); // missilenya juga lah..
-
+                            //Destroy(missile); // missilenya juga lah..
+                            //missile.SetActive(false);
                             //break;
+                            missile.particleSystem.loop = false;
+                            yield return new WaitForSeconds(3);
+                            Destroy(missile); // missilenya juga lah..
                             yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
                         }
                     }
