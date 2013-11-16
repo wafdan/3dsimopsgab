@@ -81,15 +81,15 @@ public class NavalUnitMovement : BasicUnitMovement
                     elapse_time += Time.deltaTime;
 
                     yield return null;
-                    
+                    if (mt == null) break;
                     float distToTar = Vector3.Distance(mt.position, target);
-                    Debug.Log("distToTar:" + distToTar);
+                    //Debug.Log("distToTar:" + distToTar);
                     if (distToTar <= 1.5f)
                     {
                         //isMoving = false;
                         //break; // kalo break doang, nanti dia nembak berkali2
                         targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
-                        missile.particleSystem.loop = false;
+                        mt.particleSystem.loop = false;
                         yield return new WaitForSeconds(3);
                         Destroy(missile); // missilenya juga lah..
 
