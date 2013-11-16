@@ -94,6 +94,9 @@ public class Puffy_Renderer : MonoBehaviour {
 		// identify the main camera
 		_camera = Camera.main;
 		_cameraTransform = _camera.transform;
+
+        // identify light
+        if (_light == null) { _light = GameObject.Find("Directional light").light; }
 		_lightTransform = _light.transform;
 		
 		TextureFrameCount = (TextureColCount*TextureRowCount)-1;
@@ -994,6 +997,7 @@ public class Puffy_Renderer : MonoBehaviour {
 			
 			gameObject = new GameObject();
 			gameObject.name = "Puffy_MESH_"+n.ToString();
+            gameObject.tag = "puffymesh"; //tambahan dari Wafdan
 			MeshFilter mf = gameObject.AddComponent("MeshFilter") as MeshFilter;
 			mf.sharedMesh = mesh;
 			
