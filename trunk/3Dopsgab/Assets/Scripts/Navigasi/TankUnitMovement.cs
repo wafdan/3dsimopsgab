@@ -10,6 +10,7 @@ public class TankUnitMovement : BasicUnitMovement
     void Start()
     {
         base.Start();
+        missileObject = Resources.Load("TankProjectileEffect") as GameObject;
     }
 
     void FixedUpdate()
@@ -469,8 +470,15 @@ public class TankUnitMovement : BasicUnitMovement
             if (this.IsPointingAtTarget(target))
             {
                 //Vector3 target;
-                GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
-                missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                Vector3 spawnPoint = myTransform.position;
+                if (isUnitDarat)
+                {
+                    spawnPoint = barrel.transform.position;
+                }
+                GameObject missile = Instantiate(missileObject, spawnPoint, myTransform.rotation) as GameObject;
+                //GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
+                missile.tag = "puffymesh";
+                //missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
                 Transform mt = missile.transform;
                 if(audioCannon!=null)
                 audioCannon.Play();
@@ -493,6 +501,8 @@ public class TankUnitMovement : BasicUnitMovement
                             //isMoving = false;
                             //break; // kalo break doang, nanti dia nembak berkali2
                             targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
+
+                            blowTheTarget(mt, target);
 
                             Destroy(missile); // missilenya juga lah..
 

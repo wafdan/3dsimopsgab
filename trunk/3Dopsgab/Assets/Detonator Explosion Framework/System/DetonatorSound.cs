@@ -50,7 +50,7 @@ public class DetonatorSound : DetonatorComponent {
 	//		_soundComponent.minVolume = minVolume;
 	//		_soundComponent.maxVolume = maxVolume;
 	//		_soundComponent.rolloffFactor = rolloffFactor;
-			
+            _soundComponent.minDistance = 10; // tambahan Wafdan
 			if (Vector3.Distance(Camera.main.transform.position, this.transform.position) < distanceThreshold)
 			{
 				_idx = (int)(Random.value * nearSounds.Length);

@@ -6,12 +6,15 @@ using System.Linq;
 //[DoNotSerialize]
 public class NavalUnitMovement : BasicUnitMovement
 {
-    //private float tijd;
-    //private float hoek = 45f;
-    //private float kracht = 1f;
-    //public int aantalkogels = 1;
+    
     private int firingAngle = 60;
     private float gravity = 9.8f;
+
+    void Start()
+    {
+        base.Start();
+        missileObject = Resources.Load("NavalMissileEffect") as GameObject;
+    }
 
     //yg beda dengan BasicUnitMovement cuma gerakan missilenya aja, parabola.
     // sumber: http://answers.unity3d.com/questions/58096/parabola-angle-doesnt-work.html
@@ -84,15 +87,16 @@ public class NavalUnitMovement : BasicUnitMovement
                     if (mt == null) break;
                     float distToTar = Vector3.Distance(mt.position, target);
                     //Debug.Log("distToTar:" + distToTar);
-                    if (distToTar <= 1.5f)
+                    if (distToTar <= 2.5f)
                     {
                         //isMoving = false;
                         //break; // kalo break doang, nanti dia nembak berkali2
                         targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
                         mt.particleSystem.loop = false;
+                        blowTheTarget(mt,target);
+
                         yield return new WaitForSeconds(3);
                         Destroy(missile); // missilenya juga lah..
-
                         //break;
                         yield break; // kalo diyield, dia nembak sekali aja begitu kena, beres.
                     }
