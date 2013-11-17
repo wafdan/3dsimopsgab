@@ -92,8 +92,6 @@ public class BasicUnitMovement : UnitMovement
     protected float lastStep;
     protected float LINE_WIDTH = 0.7f;
 
-
-
     protected void Start()
     {
         unitManagerObject = GameObject.FindGameObjectWithTag("unitmanager");
@@ -854,6 +852,10 @@ public class BasicUnitMovement : UnitMovement
 
             yield return null;
 
+            Debug.DrawRay(barrel.transform.position, barrel.transform.forward * 30, Color.red);
+            Debug.DrawRay(barrel.transform.position, barrel.transform.right * 30, Color.white);
+            Debug.DrawRay(barrel.transform.position, barrel.transform.up * 30, Color.green);
+
             float distUnitToTar = Vector3.Distance(myTransform.position, target);
 
             //Debug.LogError("DistUnitToTar: " + distUnitToTar);
@@ -862,9 +864,20 @@ public class BasicUnitMovement : UnitMovement
             //if (distUnitToTar <= ATTACK_RANGE)// && distUnitToTar<=distMinToTar)
             if (IsPointingAtTarget(target))
             {
-                //Vector3 target;
-                GameObject missile = Instantiate(missileObject, myTransform.position, myTransform.rotation) as GameObject;
-                missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                Vector3 spawnPoint = myTransform.position;
+                GameObject missile;
+                if (isUnitDarat)
+                {
+                    spawnPoint = barrel.transform.position - barrel.transform.right * 4;
+                    //spawnPoint = new Vector3(barrel.transform.position.x - 7, barrel.transform.position.y, barrel.transform.position.z + 7);
+                    missile = Instantiate(missileObject, spawnPoint, barrel.transform.rotation) as GameObject;
+                }
+                else
+                {
+                    missile = Instantiate(missileObject, spawnPoint, myTransform.rotation) as GameObject;
+                }
+                //missile.transform.parent = myTransform; //dijadiin anak biar pas dihapus unitnya, missilenya kehapus juga.
+                missile.tag = "puffymesh";
                 Transform mt = missile.transform;
                 if(audioCannon!=null)
                     audioCannon.Play();
@@ -875,7 +888,7 @@ public class BasicUnitMovement : UnitMovement
                     {
                         mt.LookAt(target);
                         //Debug.DrawRay(mt.position, mt.forward * 30);
-                        mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 5f);
+                        mt.position = Vector3.MoveTowards(mt.position, target, Time.deltaTime * moveSpeed * 10f);
 
 
                         float distToTar = Vector3.Distance(mt.position, target);
@@ -887,6 +900,8 @@ public class BasicUnitMovement : UnitMovement
                             //isMoving = false;
                             //break; // kalo break doang, nanti dia nembak berkali2
                             targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
+
+                            blowTheTarget(mt,target);
 
                             Destroy(missile); // missilenya juga lah..
 
@@ -931,6 +946,17 @@ public class BasicUnitMovement : UnitMovement
             return (angle < halfFireingArc && distUnitToTar <= ATTACK_RANGE);
             //else false;
             //return distUnitToTar <= ATTACK_RANGE;
+        }
+    }
+
+    protected void blowTheTarget(Transform projectileTransform, Vector3 target)
+    {
+
+        GameObject explosion = projectileTransform.GetComponent<UnitProjectileExplosion>().explosionPrefab;
+        if (explosion != null)
+        {
+            GameObject exp = Instantiate(explosion, target, Quaternion.identity) as GameObject;
+            Destroy(exp, 7);
         }
     }
 

@@ -424,7 +424,7 @@ public class AmfibiUnitMovement : BasicUnitMovement
                             //isMoving = false;
                             //break; // kalo break doang, nanti dia nembak berkali2
                             targetObj.SetActive(false);//diaktivasi target object kalo udah kena, jangan dihapus ntar exception!
-
+                            blowTheTarget(mt,target);
                             Destroy(missile); // missilenya juga lah..
 
                             //break;

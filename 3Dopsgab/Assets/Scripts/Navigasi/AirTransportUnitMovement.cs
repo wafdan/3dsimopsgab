@@ -663,6 +663,9 @@ public class AirTransportUnitMovement : BasicUnitMovement
                             //missile.SetActive(false);
                             //break;
                             missile.particleSystem.loop = false;
+
+                            blowTheTarget(mt,target);
+
                             yield return new WaitForSeconds(3);
                             Destroy(missile); // missilenya juga lah..
                             yield return null; // kalo diyield, dia nembak sekali aja begitu kena, beres.
