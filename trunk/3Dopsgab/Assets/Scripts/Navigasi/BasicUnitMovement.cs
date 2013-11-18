@@ -58,7 +58,7 @@ public class BasicUnitMovement : UnitMovement
     // TARGETING
     [SerializeThis]
     public List<Vector3> tarpoints;
-    [SerializeThis]
+    //[SerializeThis]
     public List<GameObject> tarPointObjects;
     [SerializeThis]
     public int curTarpointIdx = 0;
@@ -100,13 +100,14 @@ public class BasicUnitMovement : UnitMovement
         myTransform = this.transform;
         m_Position = this.transform.position;
 
-        if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
+        //if (LevelSerializer.IsDeserializing) return; // skip initialization when loading saved game
         targetEffectObject = Resources.Load("TargetEffect") as GameObject;
         targetTerjunEffectObject = Resources.Load("TargetTerjunEffect") as GameObject;
         missileObject = Resources.Load("MissileEffect") as GameObject;
 
         goal = transform.position;
         initWaypoint();
+        //if (!LevelSerializer.IsDeserializing)
         initTarpoint();
         initAudios();
         lastAddedWaypointIdx = 0;
@@ -154,12 +155,15 @@ public class BasicUnitMovement : UnitMovement
 
         if (tarpoints.Count > 0)
         {
-            for (int i = 0, len = tarpoints.Count; i < len; i++)
+            tarpoints = tarpoints.Distinct<Vector3>().ToList<Vector3>();
+            Debug.Log("tarpoints count:" + tarpoints.Count);
+            for (int i = 0; i < tarpoints.Count; i++)
             {
                 GameObject go = Instantiate(targetEffectObject, (Vector3)tarpoints[i], targetEffectObject.transform.rotation) as GameObject;
                 go.name = "TargetObj"+go.GetInstanceID();
                 tarPointObjects.Add(go);
             }
+            
         }
     }
 
@@ -180,6 +184,7 @@ public class BasicUnitMovement : UnitMovement
 
     protected void FixedUpdate()
     {
+        tarPointObjects.RemoveAll(delegate(GameObject o) { return o == null; });//INI UNTUK MENGHAPUS ITEM YG NULL SEHABIS LOAD GAME, ENTAH DIPASANG NULL OLEH BAGIAN MANA, BAHKAN SETELAH dikomen [SerializeThis] TETAP SAJA MUNCUL NULL RANDOM. MAKANYA LEBIH BAIK DIHAPUS BERKALA SAJA.
         if (MenuUnit.testMovementMode)
         {
             followWaypoint();

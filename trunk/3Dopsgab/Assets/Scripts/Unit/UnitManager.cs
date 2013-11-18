@@ -31,12 +31,18 @@ public class UnitManager : MonoBehaviour
     private bool targettingMode = false; //jika true maka klik kanan jadi menentukan sasaran, bukan waypoint
     private bool terjunMode = false; //mirip targetting mode, tapi ini khusus penerjunan pasukan dari udara
 
+    private bool submergePointMode = false; //titik selam kapalselam
+    private bool ascendPointMode = false; //titik apung kapalselam
+
     public static bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
+    Transform uconTransform;
 
     void Start()
     {
         //if (LevelSerializer.IsDeserializing) return;
         LevelSerializer.AddPrefabPath("Prefabs/");
+        GameObject ucon = (GameObject.Find("UnitContainer") as GameObject);
+        if (ucon != null) uconTransform = ucon.transform;
 
         selectedUnits.Clear();
 
@@ -125,7 +131,7 @@ public class UnitManager : MonoBehaviour
                 Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
                 if (selectedUnitCenter != Vector3.zero)
                 {
-                    
+
                     //handle mouse movement
                     xCam += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
                     yCam += Input.GetAxis("Mouse Y") * ySpeed * distance * 0.02f;
@@ -229,7 +235,15 @@ public class UnitManager : MonoBehaviour
                                     if (targettingMode)
                                     {
                                         Debug.Log("targetting mode!");
-                                        if (terjunMode) bum.addTerjunpoint(hit.point);
+                                        if (terjunMode)
+                                        {
+                                            bum.addTerjunpoint(hit.point);
+                                        }
+                                        else if (submergePointMode)
+                                        {
+                                            SubmarineUnitMovement subbum = (SubmarineUnitMovement)bum;
+                                            subbum.addSubmergepoint(hit.point);
+                                        }
                                         else bum.addTargetpoint(hit.point);
                                     }
                                     else
@@ -356,8 +370,8 @@ public class UnitManager : MonoBehaviour
             {
                 for (int i = 0; i < lastSelectedUnits.Count; i++)
                 {
-                    if(lastSelectedUnits[i]!=null)
-                    centroid += lastSelectedUnits[i].transform.position;
+                    if (lastSelectedUnits[i] != null)
+                        centroid += lastSelectedUnits[i].transform.position;
                 }
                 centroid /= lastSelectedUnits.Count;
             }
@@ -466,7 +480,7 @@ public class UnitManager : MonoBehaviour
     void OnGUI()
     {
         if (followCameraMode) return; // jika lagi mode kamera follow unit, GUI ga nampil dulu
-        
+
         if (menuVisible && Camera.main.enabled)
             showSelectedUnitMenu();
         else
@@ -508,6 +522,8 @@ public class UnitManager : MonoBehaviour
             {
                 targettingMode = false;
                 terjunMode = false;
+                submergePointMode = false;
+                ascendPointMode = false;
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
@@ -546,6 +562,8 @@ public class UnitManager : MonoBehaviour
 
             foreach (string order in intersectedMenu)
             {
+                //handleSubmarineMenu(order);
+
                 if (GUILayout.Button(order))
                 {
                     switch (order)
@@ -560,6 +578,14 @@ public class UnitManager : MonoBehaviour
                             targettingMode = true;
                             terjunMode = true;
                             break;
+                        //case "Set Titik Selam":
+                        //    targettingMode = true;
+                        //    submergePointMode = true;
+                        //    break;
+                        //case "Set Titik Apung":
+                        //    targettingMode = true;
+                        //    ascendPointMode = true;
+                        //    break;
                         default:
                             break;
                     }
@@ -572,6 +598,8 @@ public class UnitManager : MonoBehaviour
             {
                 targettingMode = false;
                 terjunMode = false;
+                submergePointMode = false;
+                ascendPointMode = false;
                 menuVisible = false;
             }
 
@@ -585,6 +613,36 @@ public class UnitManager : MonoBehaviour
 
     }
 
+    void handleSubmarineMenu(string order)
+    {
+        if (order == "Set Titik Selam")
+        {
+            //cek selected unit kalau dia ada waypoint barulah boleh Set TItik selam
+            GUI.enabled = false;
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                SubmarineUnitMovement sub = selectedUnits[i].GetComponent<SubmarineUnitMovement>();
+                if (sub != null)
+                    if (sub.waypoints.Count > 0)
+                        GUI.enabled = true;
+            }
+
+        }
+        else if (order == "Set Titik Apung")
+        {
+            //cek kalau dia sudah set titik selam barulah boleh set titik apung
+            GUI.enabled = false;
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                SubmarineUnitMovement sub = selectedUnits[i].GetComponent<SubmarineUnitMovement>();
+                if (sub != null)
+                    if (sub.selampoints.Count > 0)
+                        GUI.enabled = true;
+            }
+        }
+        else
+            GUI.enabled = true;
+    }
     private Vector2 scrollPosition = Vector2.zero;
     private float hScrollvH = 200;
     private int lastHistoryCount = 0;
@@ -632,10 +690,10 @@ public class UnitManager : MonoBehaviour
     //nilai rotasi terakhir sebelum cinamatic Mode
     private Quaternion lastCamRot;
     private Vector3 lastCamPos;
-    
+
     private float xCam;
     private float yCam;
-    
+
     private float xSpeed = 120.0f;
     private float ySpeed = 120.0f;
 
@@ -732,9 +790,9 @@ public class UnitManager : MonoBehaviour
         }
         GUILayout.EndHorizontal();
         scrollPosUnitDetail = GUILayout.BeginScrollView(scrollPosUnitDetail, GUILayout.Height(hisPosH - 50));
-        for (int x = 0; x < transform.childCount; x++)
+        for (int x = 0; x < uconTransform.childCount; x++)
         {
-            GameObject curUnitObj = transform.GetChild(x).gameObject;
+            GameObject curUnitObj = uconTransform.GetChild(x).gameObject;
             BasicUnitMovement bum = curUnitObj.GetComponent<BasicUnitMovement>();
 
             GUI.backgroundColor = Color.red;
@@ -742,15 +800,15 @@ public class UnitManager : MonoBehaviour
                 "\n" + curUnitObj.transform.position.ToString() +
                 "\nwaypoint (" + bum.waypoints.Count + ")" +
                 "\nlastAddPoint(" + bum.lastAddedWaypointIdx + ")=" + bum.lastAddedWayPoint +
-                "\ncurIdx=" + bum.curWaypointIdx
-
+                "\ncurIdx=" + bum.curWaypointIdx +
+                //"\ntarpoint (" + bum.tarpoints.Count + ")" +
+                //"\ncurTarIdx=" + bum.curTarpointIdx +
+                ""
                 , GUI.skin.button))
             {
                 SelectSingleUnit(curUnitObj);
             }
-            GUI.backgroundColor = Color.white;
-
-
+            
             if (bum != null)
             {
                 for (int y = 0; y < bum.waypoints.Count; y++)
@@ -850,8 +908,8 @@ public class UnitManager : MonoBehaviour
             GameObject[] puffs = GameObject.FindGameObjectsWithTag("puffymesh");
             if (puffs.Length > 0)
             {
-                for(int ii=0;ii<puffs.Length;ii++)
-                Destroy(puffs[ii]);
+                for (int ii = 0; ii < puffs.Length; ii++)
+                    Destroy(puffs[ii]);
             }
         }
     }
