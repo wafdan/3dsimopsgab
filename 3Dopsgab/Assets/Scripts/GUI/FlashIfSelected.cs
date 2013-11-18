@@ -36,7 +36,7 @@ public class FlashIfSelected : MonoBehaviour {
     }
 	
 	void Update() {
-        if (!BuildingPlacement.hasPlaced) return;
+        //if (!BuildingPlacement.hasPlaced) return;
 		if(unitManager.IsSelected(gameObject)) {
 			//StartCoroutine("Flash");
             gameObject.renderer.material.color = flashColor;
