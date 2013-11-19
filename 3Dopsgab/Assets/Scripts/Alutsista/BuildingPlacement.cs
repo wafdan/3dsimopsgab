@@ -37,6 +37,7 @@ public class BuildingPlacement : MonoBehaviour {
         
         if (currentBuilding != null)
         {
+            hasPlaced = false;
             BasicUnitMovement bm = currentBuilding.GetComponent<BasicUnitMovement>();
             if (bm.isUnitUdara)
             {
@@ -56,6 +57,7 @@ public class BuildingPlacement : MonoBehaviour {
         }
         else
         {
+            hasPlaced = true;
             return;
         }
 
@@ -83,6 +85,8 @@ public class BuildingPlacement : MonoBehaviour {
                     HistoryManager.addToHistory(new HistoryItem(HistoryManager.HISTORY_ADD_UNIT,getCleanName(currentBuilding,"name"),getCleanName(currentBuilding,"prefab"),currentBuilding.position));
                     //change name of the new added unit
                     currentBuilding.collider.gameObject.name = getCleanName(currentBuilding, "name");
+
+                    currentBuilding = null;
 				}
 			}
             //klik kanan untuk cancel
