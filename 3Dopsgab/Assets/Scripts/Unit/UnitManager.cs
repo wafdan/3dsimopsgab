@@ -37,12 +37,26 @@ public class UnitManager : MonoBehaviour
     public static bool mouseOverGUI = false; //pendanda apakah mouse pointer ada di atas GUI
     Transform uconTransform;
 
+    //kamera untuk mini view
+    Camera secondCamera;
     void Start()
     {
         //if (LevelSerializer.IsDeserializing) return;
         LevelSerializer.AddPrefabPath("Prefabs/");
         GameObject ucon = (GameObject.Find("UnitContainer") as GameObject);
         if (ucon != null) uconTransform = ucon.transform;
+        GameObject secondCameraObj = GameObject.Find("Secondary Camera");
+        if (secondCameraObj != null)
+        {
+            secondCamera = secondCameraObj.camera;
+        }
+        //if (secondCameraObj == null)
+        //{
+        //    secondCameraObj = new GameObject("Secondary Camera");
+        //    secondCamera = secondCameraObj.AddComponent<Camera>().camera;
+        //    secondCamera.transform.position = Camera.main.transform.position;
+        //    secondCamera.pixelRect = new Rect(0.74f, 0.58f, 0.25f, 0.35f);
+        //}
 
         selectedUnits.Clear();
 
@@ -105,6 +119,21 @@ public class UnitManager : MonoBehaviour
     void Update()
     {
         if (mouseOverGUI) return;
+        //mini view camera handle
+        secondCamera.enabled = (MenuUnit.showPlayMode || MenuUnit.testMovementMode);
+        if (secondCamera!=null && secondCamera.enabled)
+        {
+            Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
+            if (selectedUnitCenter != Vector3.zero)
+            {
+                Vector3 vcam = Quaternion.Euler(-30, 0, 0) * -Vector3.forward;
+                secondCamera.transform.position = selectedUnitCenter - vcam * 50;
+                //kalo ga ada mouse input, rotasi
+                secondCamera.transform.LookAt(selectedUnitCenter);
+                secondCamera.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 2);
+            }
+        }
+        //follow camera handle
         if (Camera.main.enabled)
         {
             //handle orbiting camera to selected units
@@ -676,6 +705,7 @@ public class UnitManager : MonoBehaviour
     }
     protected GUIStyle m_formTitle;
     private bool hideHisList = false;
+    private bool hideUnitList = false;
 
     static float hisPosW = 250;
     static float hisPosH = 0;//hideHisList ? 25 : (Screen.height / 2 - 120);//250;
@@ -713,7 +743,7 @@ public class UnitManager : MonoBehaviour
         historyStyle.fontSize = 11;
 
         //hisPosW = 350;
-        hisPosH = hideHisList ? 25 : (Screen.height / 2 - 120);//250;
+        hisPosH = hideHisList ? 27 : (Screen.height / 2 - 120);//250;
         hisPosX = Screen.width - hisPosW;
         //hisPosY = 0;
         //hisItemH = 40;
@@ -724,7 +754,7 @@ public class UnitManager : MonoBehaviour
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         GUILayout.Label("HISTORI AKSI", styleFormTitle);
-        if (GUILayout.Button("V", GUILayout.Width(30)))
+        if (GUILayout.Button("v", GUILayout.Width(30)))
         {
             hideHisList = !hideHisList;
         }
@@ -780,45 +810,48 @@ public class UnitManager : MonoBehaviour
     //GameObject curUnitObj;
     void showExistingUnitDetail()
     {
-        GUILayout.BeginArea(new Rect(hisPosX, hisPosY + hisPosH + 2, hisPosW, 200), GUI.skin.box);
+        float ulistH = hideUnitList ? 27 : (Screen.height / 2 - 120);//250;
+        GUILayout.BeginArea(new Rect(hisPosX, hisPosY + hisPosH + 2, hisPosW, ulistH), GUI.skin.box);
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         GUILayout.Label("UNIT PADA PETA", styleFormTitle);
-        if (GUILayout.Button("V", GUILayout.Width(30)))
+        if (GUILayout.Button("v", GUILayout.Width(30)))
         {
-            //hideUnitList = !hideUnitList;
+            hideUnitList = !hideUnitList;
         }
         GUILayout.EndHorizontal();
-        scrollPosUnitDetail = GUILayout.BeginScrollView(scrollPosUnitDetail, GUILayout.Height(hisPosH - 50));
-        for (int x = 0; x < uconTransform.childCount; x++)
+        if (!hideUnitList)
         {
-            GameObject curUnitObj = uconTransform.GetChild(x).gameObject;
-            BasicUnitMovement bum = curUnitObj.GetComponent<BasicUnitMovement>();
+            scrollPosUnitDetail = GUILayout.BeginScrollView(scrollPosUnitDetail, GUILayout.Height(hisPosH - 50));
+            for (int x = 0; x < uconTransform.childCount; x++)
+            {
+                GameObject curUnitObj = uconTransform.GetChild(x).gameObject;
+                BasicUnitMovement bum = curUnitObj.GetComponent<BasicUnitMovement>();
 
-            GUI.backgroundColor = Color.red;
-            if (GUILayout.Button(curUnitObj.name +
-                "\n" + curUnitObj.transform.position.ToString() +
-                "\nwaypoint (" + bum.waypoints.Count + ")" +
-                "\nlastAddPoint(" + bum.lastAddedWaypointIdx + ")=" + bum.lastAddedWayPoint +
-                "\ncurIdx=" + bum.curWaypointIdx +
-                //"\ntarpoint (" + bum.tarpoints.Count + ")" +
-                //"\ncurTarIdx=" + bum.curTarpointIdx +
-                ""
-                , GUI.skin.button))
-            {
-                SelectSingleUnit(curUnitObj);
-            }
-            
-            if (bum != null)
-            {
-                for (int y = 0; y < bum.waypoints.Count; y++)
+                GUI.backgroundColor = Color.red;
+                if (GUILayout.Button(curUnitObj.name +
+                    "\n" + curUnitObj.transform.position.ToString() +
+                    "\nwaypoint (" + bum.waypoints.Count + ")" +
+                    "\nlastAddPoint(" + bum.lastAddedWaypointIdx + ")=" + bum.lastAddedWayPoint +
+                    "\ncurIdx=" + bum.curWaypointIdx +
+                    //"\ntarpoint (" + bum.tarpoints.Count + ")" +
+                    //"\ncurTarIdx=" + bum.curTarpointIdx +
+                    ""
+                    , GUI.skin.button))
                 {
-                    GUILayout.Button(bum.waypoints[y].ToString());
+                    SelectSingleUnit(curUnitObj);
+                }
+
+                if (bum != null)
+                {
+                    for (int y = 0; y < bum.waypoints.Count; y++)
+                    {
+                        GUILayout.Button(bum.waypoints[y].ToString());
+                    }
                 }
             }
+            GUILayout.EndScrollView();
         }
-        GUILayout.EndScrollView();
-
         GUILayout.EndVertical();
         GUILayout.EndArea();
     }

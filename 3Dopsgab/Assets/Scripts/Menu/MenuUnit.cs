@@ -1182,7 +1182,7 @@ public class MenuUnit : MonoBehaviour
         float clockX = (Screen.width - clockW);
         float clockY = 0;
         float boxW = 300;
-        float boxH = 260;
+        float boxH = (Screen.height - clockH);// 260;
         float boxX = (Screen.width - boxW);
         float boxY = clockH + 2;
         //if (!op.hasUnitMovement)
@@ -1355,6 +1355,7 @@ public class MenuUnit : MonoBehaviour
             //showFormKegiatan = !showFormKegiatan;
             showFormKegiatan = true; // jadi true saja
             emptyTheField();
+            submitKegInfo = "";
             nowEditingOpId = GA_NGEDIT;
         }
         //tombol toggle show list kegiatan
@@ -1466,7 +1467,7 @@ public class MenuUnit : MonoBehaviour
             //pake guilayout biar lebih indah
             GUILayout.BeginArea(new Rect(cornerBox_X, cornerBox_Y, wBox, hBox), GUI.skin.box);
             GUILayout.BeginVertical();
-            GUILayout.Label(":: Form Kegiatan ::", styleFormTitle);
+            GUILayout.Label((nowEditingOpId==GA_NGEDIT)?":: Tambah Kegiatan ::":":: Edit Kegiatan ::", styleFormTitle);
             GUILayout.Label("Nama Kegiatan : ");
             NamaKeg = GUILayout.TextField(NamaKeg, 25);
             
