@@ -1,12 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Unit\PesawatLanding.cs">
-    <Files>
-      <File FileName="Assets\Scripts\Unit\PesawatLanding.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Assets\Plugins\whydoidoit.com\Serialization\LevelSerializer.cs" line="1194" />
+      <Breakpoint file="C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Assets\Scripts\Menu\MenuUnit.cs" line="1006" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
+    <Watch file="Assets\Plugins\whydoidoit.com\Serialization\UnitySerializer.cs" line="643" offsetX="148" offsetY="9632" expression="array" liveUpdate="False" />
+  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
 </Properties>

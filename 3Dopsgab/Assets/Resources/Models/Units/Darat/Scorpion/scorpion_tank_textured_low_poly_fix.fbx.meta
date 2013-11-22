@@ -21,6 +21,21 @@ ModelImporter:
     100030: track_gear_low_005
     100032: track_gear_low_007
     100034: track_rail_low_006
+    100036: Turret_Detail
+    100038: Scorpion_Turret_Detail
+    100040: Scorpion_Body_Detail
+    100042: Scorpion_Main_Body
+    100044: Scorpion_Track
+    100046: Scorpion_Upper_Body
+    100048: Scorpion_Wheel_001
+    100050: Scorpion_Wheel_002
+    100052: Scorpion_Wheel_003
+    100054: Scorpion_Wheel_004
+    100056: Scorpion_Wheel_006
+    100058: Scorpion_Wheel_005
+    100060: Scorpion_Wheel_007
+    100062: Scorpion_Machine_Gun
+    100064: Scorpion_Cannon
     400000: BezierCircle_001
     400002: Cannon
     400004: Circle_000
@@ -39,6 +54,21 @@ ModelImporter:
     400030: track_gear_low_005
     400032: track_gear_low_007
     400034: track_rail_low_006
+    400036: Turret_Detail
+    400038: Scorpion_Turret_Detail
+    400040: Scorpion_Body_Detail
+    400042: Scorpion_Main_Body
+    400044: Scorpion_Track
+    400046: Scorpion_Upper_Body
+    400048: Scorpion_Wheel_001
+    400050: Scorpion_Wheel_002
+    400052: Scorpion_Wheel_003
+    400054: Scorpion_Wheel_004
+    400056: Scorpion_Wheel_006
+    400058: Scorpion_Wheel_005
+    400060: Scorpion_Wheel_007
+    400062: Scorpion_Machine_Gun
+    400064: Scorpion_Cannon
     2300000: BezierCircle_001
     2300002: Cannon
     2300004: Circle_000
@@ -56,6 +86,21 @@ ModelImporter:
     2300028: track_gear_low_005
     2300030: track_gear_low_007
     2300032: track_rail_low_006
+    2300034: Turret_Detail
+    2300036: Scorpion_Turret_Detail
+    2300038: Scorpion_Body_Detail
+    2300040: Scorpion_Main_Body
+    2300042: Scorpion_Track
+    2300044: Scorpion_Upper_Body
+    2300046: Scorpion_Wheel_001
+    2300048: Scorpion_Wheel_002
+    2300050: Scorpion_Wheel_003
+    2300052: Scorpion_Wheel_004
+    2300054: Scorpion_Wheel_006
+    2300056: Scorpion_Wheel_005
+    2300058: Scorpion_Wheel_007
+    2300060: Scorpion_Machine_Gun
+    2300062: Scorpion_Cannon
     3300000: BezierCircle_001
     3300002: Cannon
     3300004: Circle_000
@@ -73,6 +118,21 @@ ModelImporter:
     3300028: track_gear_low_005
     3300030: track_gear_low_007
     3300032: track_rail_low_006
+    3300034: Turret_Detail
+    3300036: Scorpion_Turret_Detail
+    3300038: Scorpion_Body_Detail
+    3300040: Scorpion_Main_Body
+    3300042: Scorpion_Track
+    3300044: Scorpion_Upper_Body
+    3300046: Scorpion_Wheel_001
+    3300048: Scorpion_Wheel_002
+    3300050: Scorpion_Wheel_003
+    3300052: Scorpion_Wheel_004
+    3300054: Scorpion_Wheel_006
+    3300056: Scorpion_Wheel_005
+    3300058: Scorpion_Wheel_007
+    3300060: Scorpion_Machine_Gun
+    3300062: Scorpion_Cannon
     4300006: Tank_Main_Body
     4300008: track_gear_low_007
     4300010: track_rail_low_006
@@ -87,6 +147,21 @@ ModelImporter:
     4300028: Cannon
     4300030: Cube_001
     4300032: Cube
+    4300034: Turret_Detail
+    4300036: Scorpion_Turret_Detail
+    4300038: Scorpion_Body_Detail
+    4300040: Scorpion_Main_Body
+    4300042: Scorpion_Track
+    4300044: Scorpion_Upper_Body
+    4300046: Scorpion_Wheel_001
+    4300048: Scorpion_Wheel_003
+    4300050: Scorpion_Wheel_002
+    4300052: Scorpion_Wheel_006
+    4300054: Scorpion_Wheel_004
+    4300056: Scorpion_Wheel_007
+    4300058: Scorpion_Wheel_005
+    4300060: Scorpion_Machine_Gun
+    4300062: Scorpion_Cannon
     7400000: Default Take
     9500000: //RootNode
   materials:

@@ -123,6 +123,7 @@ public class BasicUnitMovement : UnitMovement
         if (waypoints == null)
             waypoints = new List<Vector3>();
         lineRenderer = (this.lineRenderer != null) ? this.lineRenderer : gameObject.GetComponent<LineRenderer>();
+        lineRenderer.enabled = true;
         if (lineRenderer != null && waypoints.Count > 0)
         {
             waypoints = waypoints.Distinct<Vector3>().ToList<Vector3>();
@@ -196,7 +197,7 @@ public class BasicUnitMovement : UnitMovement
         }
 
         if (lineRenderer != null)
-            lineRenderer.enabled = unitManager.IsSelected(this.gameObject);
+            lineRenderer.enabled = isSelected;//unitManager.IsSelected(this.gameObject);
     }
 
     public override void adjustMainGun()

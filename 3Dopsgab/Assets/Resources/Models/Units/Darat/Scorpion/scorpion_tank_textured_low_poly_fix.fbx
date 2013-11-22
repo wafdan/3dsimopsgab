@@ -517,7 +517,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Tank_Main_Body", "Mesh" {
+	Model: "Model::Scorpion_Main_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -815,7 +815,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_007", "Mesh" {
+	Model: "Model::Scorpion_Track", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1008,7 +1008,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_rail_low_006", "Mesh" {
+	Model: "Model::Scorpion_Wheel_001", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1166,7 +1166,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_005", "Mesh" {
+	Model: "Model::Scorpion_Wheel_007", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1324,7 +1324,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_004", "Mesh" {
+	Model: "Model::Scorpion_Wheel_006", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1482,7 +1482,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_003", "Mesh" {
+	Model: "Model::Scorpion_Wheel_005", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1640,7 +1640,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_002", "Mesh" {
+	Model: "Model::Scorpion_Wheel_004", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1798,7 +1798,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low_001", "Mesh" {
+	Model: "Model::Scorpion_Wheel_003", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -1956,7 +1956,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::track_gear_low", "Mesh" {
+	Model: "Model::Scorpion_Wheel_002", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -2114,7 +2114,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Circle_010", "Mesh" {
+	Model: "Model::Scorpion_Body_Detail", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -2348,7 +2348,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Tank_Upper_Body", "Mesh" {
+	Model: "Model::Scorpion_Upper_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -2614,7 +2614,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Cannon", "Mesh" {
+	Model: "Model::Scorpion_Cannon", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -3009,7 +3009,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Cube_001", "Mesh" {
+	Model: "Model::Scorpion_Machine_Gun", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -3153,7 +3153,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::Scorpion_Turret_Detail", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -4876,59 +4876,59 @@ Objects:  {
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,0.000000000000000,0.247086256742477,0.644121885299683,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Tank_Main_Body"
+			Node: "Model::Scorpion_Main_Body"
 			Matrix: 0.000000075497901,0.000000000000000,-1.000000000000000,0.000000000000000,-1.000000000000000,0.000000000000000,-0.000000075497901,0.000000000000000,0.000000000000000,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_007"
+			Node: "Model::Scorpion_Track"
 			Matrix: -0.000001258477369,-0.000000075498143,-9.366539955139160,0.000000000000000,-0.000000194707283,1.000000000000000,-0.000000707154129,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828089917079,0.567187547683716,0.962272405624390,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_rail_low_006"
+			Node: "Model::Scorpion_Wheel_001"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828301792964,0.761050939559937,2.849537611007690,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_005"
+			Node: "Model::Scorpion_Wheel_007"
 			Matrix: -0.000000093666458,-0.000000052632370,-0.697136640548706,0.000000000000000,-0.000000135737508,0.697136640548706,-0.000000052632352,0.000000000000000,0.697136640548706,0.000000135737508,-0.000000093666465,0.000000000000000,-0.003828287124634,0.750157058238983,-1.031730294227600,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_004"
+			Node: "Model::Scorpion_Wheel_006"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828287124634,0.508634626865387,-0.454277634620667,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_003"
+			Node: "Model::Scorpion_Wheel_005"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828287124634,0.508634626865387,0.203602313995361,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_002"
+			Node: "Model::Scorpion_Wheel_004"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828287124634,0.508634626865387,0.883001625537872,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low_001"
+			Node: "Model::Scorpion_Wheel_003"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828287124634,0.508634626865387,1.547029972076416,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::track_gear_low"
+			Node: "Model::Scorpion_Wheel_002"
 			Matrix: -0.000000134358814,-0.000000075497930,-1.000000000000000,0.000000000000000,-0.000000194707198,1.000000000000000,-0.000000075497901,0.000000000000000,1.000000000000000,0.000000194707184,-0.000000134358828,0.000000000000000,-0.003828287124634,0.508634626865387,2.209786891937256,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Circle_010"
+			Node: "Model::Scorpion_Body_Detail"
 			Matrix: 0.206175431609154,-0.000000002256451,0.000000005500247,0.000000000000000,-0.000000005432966,0.036650598049164,-0.278137236833572,0.000000000000000,0.000000001518548,0.204408422112465,0.026935230940580,0.000000000000000,0.411278903484344,1.483226537704468,1.938987016677856,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Tank_Upper_Body"
+			Node: "Model::Scorpion_Upper_Body"
 			Matrix: 0.000000075497901,0.000000000000000,-1.000000000000000,0.000000000000000,-1.000000000000000,0.000000000000000,-0.000000075497901,0.000000000000000,0.000000000000000,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Cannon"
+			Node: "Model::Scorpion_Cannon"
 			Matrix: 0.000000075497901,0.000000000000000,-1.000000000000000,0.000000000000000,-1.000000000000000,0.000000000000000,-0.000000075497901,0.000000000000000,0.000000000000000,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Cube_001"
+			Node: "Model::Scorpion_Machine_Gun"
 			Matrix: 0.000000004685098,0.000000000000000,-0.062056005001068,0.000000000000000,-0.062056005001068,0.000000000000000,-0.000000004685098,0.000000000000000,0.000000000000000,0.062056005001068,0.000000000000000,0.000000000000000,-0.451165944337845,2.109577417373657,0.110813140869141,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Cube"
+			Node: "Model::Scorpion_Turret_Detail"
 			Matrix: 0.000000075497901,0.000000000000000,-1.000000000000000,0.000000000000000,-1.000000000000000,0.000000000000000,-0.000000075497901,0.000000000000000,0.000000000000000,1.000000000000000,0.000000000000000,0.000000000000000,0.358741939067841,2.081901073455811,0.244811207056046,1.000000000000000
 		}
 	}
@@ -4956,33 +4956,33 @@ Relations:  {
 	}
 	Model: "Model::Circle_008", "Mesh" {
 	}
-	Model: "Model::Tank_Main_Body", "Mesh" {
+	Model: "Model::Scorpion_Main_Body", "Mesh" {
 	}
-	Model: "Model::track_gear_low_007", "Mesh" {
+	Model: "Model::Scorpion_Track", "Mesh" {
 	}
-	Model: "Model::track_rail_low_006", "Mesh" {
+	Model: "Model::Scorpion_Wheel_001", "Mesh" {
 	}
-	Model: "Model::track_gear_low_005", "Mesh" {
+	Model: "Model::Scorpion_Wheel_007", "Mesh" {
 	}
-	Model: "Model::track_gear_low_004", "Mesh" {
+	Model: "Model::Scorpion_Wheel_006", "Mesh" {
 	}
-	Model: "Model::track_gear_low_003", "Mesh" {
+	Model: "Model::Scorpion_Wheel_005", "Mesh" {
 	}
-	Model: "Model::track_gear_low_002", "Mesh" {
+	Model: "Model::Scorpion_Wheel_004", "Mesh" {
 	}
-	Model: "Model::track_gear_low_001", "Mesh" {
+	Model: "Model::Scorpion_Wheel_003", "Mesh" {
 	}
-	Model: "Model::track_gear_low", "Mesh" {
+	Model: "Model::Scorpion_Wheel_002", "Mesh" {
 	}
-	Model: "Model::Circle_010", "Mesh" {
+	Model: "Model::Scorpion_Body_Detail", "Mesh" {
 	}
-	Model: "Model::Tank_Upper_Body", "Mesh" {
+	Model: "Model::Scorpion_Upper_Body", "Mesh" {
 	}
-	Model: "Model::Cannon", "Mesh" {
+	Model: "Model::Scorpion_Cannon", "Mesh" {
 	}
-	Model: "Model::Cube_001", "Mesh" {
+	Model: "Model::Scorpion_Machine_Gun", "Mesh" {
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::Scorpion_Turret_Detail", "Mesh" {
 	}
 	Model: "Model::Producer Perspective", "Camera" {
 	}
@@ -5035,37 +5035,37 @@ Connections:  {
 	Connect: "OO", "Model::BezierCircle_001", "Model::Scene"
 	Connect: "OO", "Model::Circle_000", "Model::Scene"
 	Connect: "OO", "Model::Circle_008", "Model::Scene"
-	Connect: "OO", "Model::Tank_Main_Body", "Model::Scene"
-	Connect: "OO", "Model::track_gear_low_007", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_rail_low_006", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low_005", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low_004", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low_003", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low_002", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low_001", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::track_gear_low", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::Circle_010", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::Tank_Upper_Body", "Model::Tank_Main_Body"
-	Connect: "OO", "Model::Cannon", "Model::Tank_Upper_Body"
-	Connect: "OO", "Model::Cube_001", "Model::Tank_Upper_Body"
-	Connect: "OO", "Model::Cube", "Model::Tank_Upper_Body"
+	Connect: "OO", "Model::Scorpion_Main_Body", "Model::Scene"
+	Connect: "OO", "Model::Scorpion_Track", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_001", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_007", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_006", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_005", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_004", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_003", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Wheel_002", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Body_Detail", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Upper_Body", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Model::Scorpion_Cannon", "Model::Scorpion_Upper_Body"
+	Connect: "OO", "Model::Scorpion_Machine_Gun", "Model::Scorpion_Upper_Body"
+	Connect: "OO", "Model::Scorpion_Turret_Detail", "Model::Scorpion_Upper_Body"
 	Connect: "OO", "Material::Track_gear_mat", "Model::Circle_000"
-	Connect: "OO", "Material::body__scorpion_tank_main_body_texture_png", "Model::Tank_Main_Body"
-	Connect: "OO", "Material::track_rail_mat", "Model::track_gear_low_007"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_rail_low_006"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low_005"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low_004"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low_003"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low_002"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low_001"
-	Connect: "OO", "Material::Track_gear_mat", "Model::track_gear_low"
-	Connect: "OO", "Material::main_body_acc__main_body_acc_texture", "Model::Circle_010"
-	Connect: "OO", "Material::upper_body_mat", "Model::Tank_Upper_Body"
-	Connect: "OO", "Material::main_cannon_mat", "Model::Cannon"
-	Connect: "OO", "Material::machine_gun_mat", "Model::Cube_001"
-	Connect: "OO", "Material::upper_body_acc_mat", "Model::Cube"
-	Connect: "OO", "Texture::scorpion_tank_main_body_texture_png", "Model::Tank_Main_Body"
-	Connect: "OO", "Texture::main_body_acc_texture", "Model::Circle_010"
+	Connect: "OO", "Material::body__scorpion_tank_main_body_texture_png", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Material::track_rail_mat", "Model::Scorpion_Track"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_001"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_007"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_006"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_005"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_004"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_003"
+	Connect: "OO", "Material::Track_gear_mat", "Model::Scorpion_Wheel_002"
+	Connect: "OO", "Material::main_body_acc__main_body_acc_texture", "Model::Scorpion_Body_Detail"
+	Connect: "OO", "Material::upper_body_mat", "Model::Scorpion_Upper_Body"
+	Connect: "OO", "Material::main_cannon_mat", "Model::Scorpion_Cannon"
+	Connect: "OO", "Material::machine_gun_mat", "Model::Scorpion_Machine_Gun"
+	Connect: "OO", "Material::upper_body_acc_mat", "Model::Scorpion_Turret_Detail"
+	Connect: "OO", "Texture::scorpion_tank_main_body_texture_png", "Model::Scorpion_Main_Body"
+	Connect: "OO", "Texture::main_body_acc_texture", "Model::Scorpion_Body_Detail"
 	Connect: "OO", "Video::main_body_acc_texture", "Texture::main_body_acc_texture"
 	Connect: "OO", "Video::scorpion_tank_main_body_texture_png", "Texture::scorpion_tank_main_body_texture_png"
 }
@@ -5339,7 +5339,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Tank_Main_Body" {
+		Model: "Model::Scorpion_Main_Body" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5425,7 +5425,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_007" {
+		Model: "Model::Scorpion_Track" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5511,7 +5511,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_rail_low_006" {
+		Model: "Model::Scorpion_Wheel_001" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5597,7 +5597,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_005" {
+		Model: "Model::Scorpion_Wheel_007" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5683,7 +5683,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_004" {
+		Model: "Model::Scorpion_Wheel_006" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5769,7 +5769,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_003" {
+		Model: "Model::Scorpion_Wheel_005" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5855,7 +5855,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_002" {
+		Model: "Model::Scorpion_Wheel_004" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -5941,7 +5941,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low_001" {
+		Model: "Model::Scorpion_Wheel_003" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6027,7 +6027,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::track_gear_low" {
+		Model: "Model::Scorpion_Wheel_002" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6113,7 +6113,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Circle_010" {
+		Model: "Model::Scorpion_Body_Detail" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6199,7 +6199,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Tank_Upper_Body" {
+		Model: "Model::Scorpion_Upper_Body" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6285,7 +6285,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Cannon" {
+		Model: "Model::Scorpion_Cannon" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6371,7 +6371,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Cube_001" {
+		Model: "Model::Scorpion_Machine_Gun" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6457,7 +6457,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Cube" {
+		Model: "Model::Scorpion_Turret_Detail" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {

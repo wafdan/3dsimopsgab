@@ -8,17 +8,21 @@ ModelImporter:
     100004: main_radar
     100006: radar_arm
     100008: //RootNode
+    100010: Thompson_Radar_Body
     400000: base
     400002: Cube
     400004: main_radar
     400006: radar_arm
     400008: //RootNode
+    400010: Thompson_Radar_Body
     4300000: Cube
+    4300002: Thompson_Radar_Body
     7400000: idle
     7400002: radar_active
     9500000: //RootNode
     11100000: //RootNode
     13700000: Cube
+    13700002: Thompson_Radar_Body
   materials:
     importMaterials: 1
     materialName: 0

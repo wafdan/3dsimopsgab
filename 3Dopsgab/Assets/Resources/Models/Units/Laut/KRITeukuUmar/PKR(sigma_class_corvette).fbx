@@ -136,7 +136,7 @@ Objects:  {
 		CameraName: 100
 		CameraIndexName:
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::PKR_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -2471,7 +2471,7 @@ Objects:  {
 		}
 		NbPoseNodes: 1
 		PoseNode:  {
-			Node: "Model::Cube"
+			Node: "Model::PKR_Body"
 			Matrix: 0.000000075497901,1.000000000000000,0.000000043711388,0.000000000000000,-1.000000000000000,0.000000075497901,0.000000000000004,0.000000000000000,0.000000000000000,-0.000000043711388,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 	}
@@ -2493,7 +2493,7 @@ Objects:  {
 ;------------------------------------------------------------------
 
 Relations:  {
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::PKR_Body", "Mesh" {
 	}
 	Model: "Model::Producer Perspective", "Camera" {
 	}
@@ -2525,10 +2525,10 @@ Relations:  {
 ;------------------------------------------------------------------
 
 Connections:  {
-	Connect: "OO", "Model::Cube", "Model::Scene"
-	Connect: "OO", "Material::corvette_asph", "Model::Cube"
-	Connect: "OO", "Material::corvette_black", "Model::Cube"
-	Connect: "OO", "Material::corvette_mat", "Model::Cube"
+	Connect: "OO", "Model::PKR_Body", "Model::Scene"
+	Connect: "OO", "Material::corvette_asph", "Model::PKR_Body"
+	Connect: "OO", "Material::corvette_black", "Model::PKR_Body"
+	Connect: "OO", "Material::corvette_mat", "Model::PKR_Body"
 }
 ;Takes and animation section
 ;----------------------------------------------------

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-[SerializeAll]
+
 public class OperationManager : MonoBehaviour
 {
 
@@ -28,10 +28,9 @@ public class OperationManager : MonoBehaviour
     }
 
     //attributes
-
     public static ArrayList operationList = new ArrayList();
     public static int InstanceIdx = 0;
-    public static string FILE_EXT=".tfgsg";
+    public static string FILE_EXT = ".tfgsg";
     public static string FILE_EXT_UNITCONF = ".tfguc";
 
     public static DateTime HARI_HA = new DateTime(2007, 10, 1, 00, 00, 00);
@@ -39,7 +38,7 @@ public class OperationManager : MonoBehaviour
     //PLAY MODE RELATED
     OperationItem opFirstPlay; //kegiatan yg diklik-play oleh user
     private DateTime opFirstPlayStartDate; //startTime opFirstPlay
-    
+
     DateTime gameClockTime; // clock virtual
     public static string gameClockValue; // nilai clock, dipake di GUI
     public static int gameClockSpeed = 1; // kecepatan default clock
@@ -53,7 +52,7 @@ public class OperationManager : MonoBehaviour
     //HD MOVIE RELATED
     //public AVProWindowsMediaMovie _movie;
     //public AVProWindowsMediaGUIDisplay _movieDisplay;
-    public OperationPlayVideo Oplayvid;
+    //public OperationPlayVideo Oplayvid;
     private GCHandle _bytesHandle;
     private System.IntPtr _moviePtr;
     private uint _movieLength;
@@ -67,7 +66,7 @@ public class OperationManager : MonoBehaviour
     {
         //_movieDisplay = Camera.main.GetComponent<AVProWindowsMediaGUIDisplay>();
         //_movie = Camera.main.GetComponent<AVProWindowsMediaMovie>();
-        Oplayvid = Camera.main.GetComponent<OperationPlayVideo>();
+        //Oplayvid = Camera.main.GetComponent<OperationPlayVideo>();
         StartCoroutine(startTheGameClock());
         StartCoroutine(playTheKegs());
     }
@@ -132,8 +131,9 @@ public class OperationManager : MonoBehaviour
                 for (int i = MenuUnit.curOpPlayIdx; i < OperationManager.operationList.Count; i++)//DI SINI MASALAHNYA, SOLUSINYA: SORTING BY DATE
                 {
                     yield return null;
+                    
                     OperationItem opItIn = (OperationItem)OperationManager.operationList[i];
-
+                    Debug.Log("play kegiatan: " + opItIn.name);
                     if (opItIn.satuan == PlayerPrefs.GetString("satuan"))
                     {
                         string pos = preProcPosHar(opItIn.posisiHari);
@@ -151,25 +151,24 @@ public class OperationManager : MonoBehaviour
                                 {
                                     nowPlayingList.Add(opItIn);
                                     curRunOp = opItIn;
-                                    if (opItIn.hasUnitMovement)
-                                    {
-                                        if(!opItIn.isRunning)
-                                            playOperationUnitMovement(opItIn);
-                                    }
-                                    if (opItIn.hasVideo)
-                                    {
-                                        //kalau belum main, mulai mainkan
-                                        if (!isMovieNowPlaying)
-                                            playOperationMovie(opItIn);
-                                        //cek apakah sudah berakhir
-                                        
 
+
+
+                                    if (opItIn.locationPoints.Length > 0)
+                                    {
+                                        if (!opItIn.isRunning)
+                                        {
+                                            loadOperationLocationTags(opItIn);
+                                            playOperationVideoIfExists(opItIn);
+                                            while (AVProOperationVideo.isActiveMoviePlaying)
+                                            {
+                                                yield return null;
+                                                MenuUnit.testMovementMode = false;
+                                            }
+                                            moveOperationUnitIfExists(opItIn);
+                                            opItIn.isRunning = true;
+                                        }
                                     }
-                                    //if (opItIn.locationPoints.Length > 0)
-                                    //{
-                                    Debug.Log("play location: " + opItIn.name);
-                                        loadOperationLocationTags(opItIn);
-                                    //}
 
                                 }
                             }
@@ -192,71 +191,64 @@ public class OperationManager : MonoBehaviour
         }
     }
 
-    private void playOperationMovie(OperationItem operationToPlay)
+    //MOVIE METHODS
+    private void playOperationVideoIfExists(OperationItem operationToPlay)
     {
-        Debug.Log("File loading dari " + operationToPlay.files);
         if (operationToPlay.hasVideo)
         {
-
-            //LoadFileToMemory("",operationToPlay.files);
-            Oplayvid._movie._filename = operationToPlay.files;
-            //AVProWindowsMedia moviePlayer = _movie.MovieInstance;
-            Oplayvid._movie.LoadMovie(true);
-            //moviePlayer.Play();
-            isMovieNowPlaying = true;
-            //if (File.Exists(operationToPlay.files))
-            //{
-            //    Debug.Log("File berhasil loaded. "+_movieDisplay);
-            //    _movieDisplay._movie._filename = operationToPlay.files;
-            //    _movieDisplay._movie.LoadMovie(true);
-            //    _movieDisplay._movie.Play();
-            //    isMovieNowPlaying = true;
-            //}
-            //else
-            //{
-            //    Debug.LogError("File tidak ditemukan di " + operationToPlay.files);
-            //}
-        }
-    }
-
-    private void ReleaseMemoryFile()
-    {
-        if (_bytesHandle.IsAllocated)
-            _bytesHandle.Free();
-        _moviePtr = System.IntPtr.Zero;
-        _movieLength = 0;
-    }
-
-    private void LoadFileToMemory(string folder, string filename)
-    {
-        string filePath = Path.Combine(folder, filename);
-        Debug.Log("File loading dari " + filePath);
-        // If we're running outside of the editor we may need to resolve the relative path
-        // as the working-directory may not be that of the application EXE.
-        if (!Application.isEditor && !Path.IsPathRooted(filePath))
-        {
-            string rootPath = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-            filePath = Path.Combine(rootPath, filePath);
-        }
-
-        ReleaseMemoryFile();
-        if (File.Exists(filePath))
-        {
-            Debug.Log("loaded from " + filePath);
-            byte[] bytes = System.IO.File.ReadAllBytes(filePath);
-            if (bytes.Length > 0)
+            Debug.Log("File loading dari " + operationToPlay.files);
+            if (operationToPlay.hasVideo)
             {
-                Debug.Log("bytes ada");
-                _bytesHandle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                _moviePtr = _bytesHandle.AddrOfPinnedObject();
-                _movieLength = (uint)bytes.Length;
-
-                Oplayvid._movie.LoadMovieFromMemory(true, filename, _moviePtr, _movieLength);
-                Debug.Log("sampe");
+                summonVideoPlayerThenPlay(operationToPlay.files);
+                //isMovieNowPlaying = true;
             }
         }
     }
 
+    private void summonVideoPlayerThenPlay(string path)
+    {
+        GameObject om = GameObject.Find("OtherManager");
+        if (om != null)
+        {
+            AVProOperationVideo avp = om.GetComponent<AVProOperationVideo>();
+            if (avp != null)
+            {
+                Debug.Log("ngeplay nih!");
+                AVProOperationVideo.showPlayer = true;
+                avp.PlayOperationVideo(path);
+            }
+        }
+    }
+
+    private void pauseTestVideo()
+    {
+        GameObject om = GameObject.Find("OtherManager");
+        if (om != null)
+        {
+            AVProOperationVideo avp = om.GetComponent<AVProOperationVideo>();
+            if (avp != null)
+            {
+                //AVProOperationVideo.showPlayer = false;
+                avp.PauseTestVideo();
+            }
+        }
+    }
+
+    private void stopTestVideo()
+    {
+        GameObject om = GameObject.Find("OtherManager");
+        if (om != null)
+        {
+            AVProOperationVideo avp = om.GetComponent<AVProOperationVideo>();
+            if (avp != null)
+            {
+                AVProOperationVideo.showPlayer = false;
+                avp.StopTestVideo();
+            }
+        }
+    }
+
+    //END. MOVIE METHODS
 
     private IEnumerator startTheGameClock()
     {
@@ -279,17 +271,20 @@ public class OperationManager : MonoBehaviour
                 gameClockValue = opFirstPlay.posisiHari + " " + string.Format("{0}:{1}:{2}", gameClockTime.Hour, gameClockTime.Minute, gameClockTime.Second);
                 while (true)
                 {
-                    
-                    gameClockTime = gameClockTime.AddSeconds(1*gameClockSpeed);
-                    yield return new WaitForSeconds(1/gameClockSpeed);
-                    //proses posHar
-                    posHariInGameClock = getEndPosHar(curPosHar);
+                    yield return null;
+                    if (!AVProOperationVideo.isActiveMoviePlaying) // STOP CLOCK SELAMA IA MAIN VIDEONYA
+                    {
+                        gameClockTime = gameClockTime.AddSeconds(1 * gameClockSpeed);
+                        yield return new WaitForSeconds(1 / gameClockSpeed);
+                        //proses posHar
+                        posHariInGameClock = getEndPosHar(curPosHar);
 
-                    gameClockValue = posHariInGameClock + " " + gameClockTime.ToString(" HH:mm:ss");//("dd/MM/yyyy HH:mm:ss");
-                    //+ "\nmulai: " + sTim.ToString("dd/MM/yyyy HH:mm") + "\ntamat: " + eTim.ToString("dd/MM/yyyy HH:mm");
+                        gameClockValue = posHariInGameClock + " " + gameClockTime.ToString(" HH:mm:ss");//("dd/MM/yyyy HH:mm:ss");
+                        //+ "\nmulai: " + sTim.ToString("dd/MM/yyyy HH:mm") + "\ntamat: " + eTim.ToString("dd/MM/yyyy HH:mm");
 
-                    if (!MenuUnit.showPlayMode) { break; }
-                    
+                        if (!MenuUnit.showPlayMode) { break; }
+                    }
+
                 }//endwhile
             }//endif
         }//endwhile
@@ -327,7 +322,7 @@ public class OperationManager : MonoBehaviour
 
     //private IEnumerator playIndividualOperation(OperationItem opItIndv)
     //{
-        
+
     //}
 
     private IEnumerator loadKegMovie(string p)
@@ -336,18 +331,18 @@ public class OperationManager : MonoBehaviour
         //GameObject go = GameObject.Find("movieTestObject");
         //GUITexture gtex = go.GetComponent<GUITexture>();
         //AudioSource auds = gameObject.AddComponent<AudioSource>();
-        p = @"file://"+"C:\\Users\\Asus\\Documents\\UnityProject\\seskoadrev18\\3Dopsgab\\Assets\\Movie\\Test.ogg";
+        p = @"file://" + "C:\\Users\\Asus\\Documents\\UnityProject\\seskoadrev18\\3Dopsgab\\Assets\\Movie\\Test.ogg";
         //p = "http://www.unity3d.com/webplayers/Movie/sample.ogg";
         //if (File.Exists(p))
         {
-            
+
             WWW www = new WWW(p);
-            Debug.Log("loading movie from " + p+" "+www.size);
+            Debug.Log("loading movie from " + p + " " + www.size);
             movTexture = www.movie;
 
             while (!movTexture.isReadyToPlay)
             {
-                Debug.Log("loading process.."+www.progress);
+                Debug.Log("loading process.." + www.progress);
                 yield return null;
             }
             movReady = true;
@@ -366,15 +361,22 @@ public class OperationManager : MonoBehaviour
         }
     }
 
-    private void playOperationUnitMovement(OperationItem operationToPlay)
+    private void moveOperationUnitIfExists(OperationItem operationToPlay)
     {
         //mainkan pergerakan
         if (operationToPlay.hasUnitMovement)
         {
-            operationToPlay.isRunning = true;
-            if(Application.loadedLevelName == operationToPlay.sceneName)
-                LevelSerializer.LoadObjectTree(operationToPlay.unitConfig);
-            MenuUnit.testMovementMode = true;
+            //if (!AVProOperationVideo.isActiveMoviePlaying) // STOP PERGERAKAN SELAMA IA MAIN VIDEONYA
+            {
+                //operationToPlay.isRunning = true;
+                if (Application.loadedLevelName == operationToPlay.sceneName)
+                    LevelSerializer.LoadObjectTree(operationToPlay.unitConfig);
+                MenuUnit.testMovementMode = true;
+            }
+            //else
+            //{
+            //    MenuUnit.testMovementMode = false;
+            //}
         }
 
 
@@ -392,15 +394,15 @@ public class OperationManager : MonoBehaviour
         if (a == null) return false;
         operationList.Add(a);
         //LevelSerializer.SaveGame(a.ToString());
-        Debug.Log("tambah kegiatan: " + a.ToString()+" max saves:"+LevelSerializer.MaxGames);
+        Debug.Log("tambah kegiatan: " + a.ToString() + " max saves:" + LevelSerializer.MaxGames);
         return true;
     }
     /*
-	public static bool undoHistory(){
+    public static bool undoHistory(){
         if (historyList.Count == 0) return false;
         historyList.RemoveAt(historyList.Count - 1);
         return true;
-	}
+    }
      */
 
     public static bool undoOperation(OperationItem a)
@@ -464,8 +466,25 @@ public class OperationManager : MonoBehaviour
         Debug.Log("Saved as " + filename);
     }
 
+    public static byte[] saveUnitConfigTree()
+    {
+        byte[] bytarr = null;
+        GameObject ucon = GameObject.Find("UnitContainer") as GameObject;
+        if (ucon != null)
+        {
+            //BasicUnitMovement[] bumsInUcon = ucon.transform.GetComponentsInChildren<BasicUnitMovement>();
+            //for(int i=0; i<bumsInUcon.Length;i++)
+            //{
+            //    bumsInUcon[i].isSelected=true; //biar line renderenya aktif dulu;
+            //}
+            bytarr = LevelSerializer.SaveObjectTree(ucon);
+        }
+        return bytarr;
+    }
+
     public static bool deleteSavedGame(string filename)
     {
+        Debug.Log("mau delete: " + filename);
         try
         {
             // A.
@@ -489,11 +508,10 @@ public class OperationManager : MonoBehaviour
         {
             ((OperationItem)operationList[i]).isRunning = false;
         }
-        
     }
 }
 
-public class OperationItem: IComparable
+public class OperationItem : IComparable
 {
     public string satuan;
     public string posisiHari;
@@ -523,7 +541,7 @@ public class OperationItem: IComparable
         locationPoints = new OperationLocation[] { };
         description = "";
         files = "";
-        unitConfig = new byte[]{};
+        unitConfig = new byte[] { };
         startTime = OperationManager.HARI_HA;
         endTime = OperationManager.HARI_HA;
         sceneName = Const.PETA_INDONESIA;
@@ -572,7 +590,7 @@ public class OperationItem: IComparable
     }
 
     //yg dipake
-    public OperationItem(string satuan, string posHar, string nama, string lokasi, OperationLocation[] newLocPoints, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit,string sceneName)
+    public OperationItem(string satuan, string posHar, string nama, string lokasi, OperationLocation[] newLocPoints, string deskripsi, string file, byte[] newUnitConfig, string startTime, TimeSpan duration, bool hasFile, bool hasUnit, string sceneName)
     {
         this.satuan = satuan;
         this.posisiHari = posHar;
@@ -591,10 +609,10 @@ public class OperationItem: IComparable
         this.sceneName = sceneName;
     }
 
-    public void prosesStartAndEndTime(string startTime, string posisiHari,TimeSpan durasi)
+    public void prosesStartAndEndTime(string startTime, string posisiHari, TimeSpan durasi)
     {
         int jamStart = 0;
-        Int32.TryParse(startTime.Split(':')[0],out jamStart);
+        Int32.TryParse(startTime.Split(':')[0], out jamStart);
 
         int menitStart = 0;
         Int32.TryParse(startTime.Split(':')[1], out menitStart);
@@ -626,7 +644,7 @@ public class OperationItem: IComparable
     {
         string r = "";
         int posHarInt = this.getPosHarInt();
-        r += ((posHarInt<0)?("H"+posHarInt):(posHarInt>0)?("H+"+posHarInt):"hari H");
+        r += ((posHarInt < 0) ? ("H" + posHarInt) : (posHarInt > 0) ? ("H+" + posHarInt) : "hari H");
         r += " pukul ";
         r += this.startTime.ToString("HH:mm");
         return r;
@@ -649,7 +667,7 @@ public class OperationItem: IComparable
 
     public override string ToString()
     {
-        return name + "\nLokasi: " + location+"\nSatuan: "+satuan;
+        return name + "\nLokasi: " + location + "\nSatuan: " + satuan;
     }
 
     int IComparable.CompareTo(object obj) //ascending
@@ -667,7 +685,7 @@ public class OperationItem: IComparable
         {// harinya sama
             DateTime thisStartTime = this.startTime;
             DateTime oiStartTime = oi.startTime;
-            if (thisStartTime.CompareTo(oiStartTime) <0)
+            if (thisStartTime.CompareTo(oiStartTime) < 0)
             {
                 return -1;
             }
@@ -700,7 +718,19 @@ class OperationItem_SortByHariStartTimeAscending : IComparer
             else if (xStartTime.CompareTo(yStartTime) > 0)
                 return 1;
             else
-                return 0;
+            {
+                //kalo waktu mulai sama, maka yg punya video duluan main.
+                if (x.hasVideo && !y.hasVideo) return -1;
+                else if(!x.hasVideo && y.hasVideo) return 1;
+                else
+                {
+                    //kalo dua2nya punya video, maka yg punya pergerakan unit duluan.
+                    if (x.hasUnitMovement && !y.hasUnitMovement) return -1;
+                    else if (!x.hasUnitMovement && y.hasUnitMovement) return 1;
+                    else return 0;
+                }
+                //return 0;
+            }
         }
     }
 }

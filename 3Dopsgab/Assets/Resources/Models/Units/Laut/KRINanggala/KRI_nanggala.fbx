@@ -136,7 +136,7 @@ Objects:  {
 		CameraName: 100
 		CameraIndexName:
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::KRI_Nanggala_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -2564,7 +2564,7 @@ Objects:  {
 		}
 		NbPoseNodes: 1
 		PoseNode:  {
-			Node: "Model::Cube"
+			Node: "Model::KRI_Nanggala_Body"
 			Matrix: 0.000000075497901,1.000000000000000,0.000000043711388,0.000000000000000,-1.000000000000000,0.000000075497901,0.000000000000004,0.000000000000000,0.000000000000000,-0.000000043711388,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 	}
@@ -2586,7 +2586,7 @@ Objects:  {
 ;------------------------------------------------------------------
 
 Relations:  {
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::KRI_Nanggala_Body", "Mesh" {
 	}
 	Model: "Model::Producer Perspective", "Camera" {
 	}
@@ -2612,8 +2612,8 @@ Relations:  {
 ;------------------------------------------------------------------
 
 Connections:  {
-	Connect: "OO", "Model::Cube", "Model::Scene"
-	Connect: "OO", "Material::submarine_mat", "Model::Cube"
+	Connect: "OO", "Model::KRI_Nanggala_Body", "Model::Scene"
+	Connect: "OO", "Material::submarine_mat", "Model::KRI_Nanggala_Body"
 }
 ;Takes and animation section
 ;----------------------------------------------------
@@ -2627,7 +2627,7 @@ Takes:  {
 
 		;Models animation
 		;----------------------------------------------------
-		Model: "Model::Cube" {
+		Model: "Model::KRI_Nanggala_Body" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {

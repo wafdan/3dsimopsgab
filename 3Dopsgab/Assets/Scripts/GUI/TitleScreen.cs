@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 
 public class TitleScreen : MonoBehaviour {
 	
@@ -68,6 +69,7 @@ public class TitleScreen : MonoBehaviour {
 			notif = !notif;
 			if (Password == "admin" && Satuan != ""){
                 HistoryManager.showHistory = false;
+                createUserFolder();
 				Application.LoadLevel("Game play");
 			}
 		}
@@ -89,4 +91,19 @@ public class TitleScreen : MonoBehaviour {
 			Application.Quit();
 		}
 	}
+
+    private void createUserFolder()
+    {
+        string savedGamePath = Application.persistentDataPath+"/"+Satuan+"/Game";
+        string savedVideoPath = Application.persistentDataPath + "/" + Satuan + "/Video";
+        if (!File.Exists(savedGamePath))
+        {
+            Directory.CreateDirectory(savedGamePath);
+        }
+        if (!File.Exists(savedVideoPath))
+        {
+            Directory.CreateDirectory(savedVideoPath);
+        }
+
+    }
 }

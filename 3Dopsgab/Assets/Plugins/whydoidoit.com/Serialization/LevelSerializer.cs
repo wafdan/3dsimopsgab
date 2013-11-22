@@ -1181,7 +1181,16 @@ public static class LevelSerializer
         Object.DontDestroyOnLoad(go);
         var loader = go.AddComponent<LevelLoader>();
         loader.Data = ld;
-
+		Debug.Log ("wafdandebug");
+		for(int i=0;i<ld.StoredItems.Count;i++){
+		Debug.Log ("storedObjectNames["+i+"]=ClassId:"+ld.StoredItems[i].ClassId+"\nName:"+ld.StoredItems[i].Name+"\nType:"+ld.StoredItems[i].Type);
+//			public string ClassId;
+//        public byte[] Data;
+//        public string Name;
+//        public string Type;
+			//for(int j;j<d.StoredObjectNames[i]
+		}
+		Debug.Log ("end.wafdandebug");
         Application.LoadLevel(ld.Name);
         return loader;
     }

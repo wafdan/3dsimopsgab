@@ -142,7 +142,7 @@ Objects:  {
 		CameraName: 100
 		CameraIndexName:
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::BMP_Main_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -4118,7 +4118,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: "Model::Circle_001", "Mesh" {
+	Model: "Model::BMP_Upper_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -6383,11 +6383,11 @@ Objects:  {
 		}
 		NbPoseNodes: 2
 		PoseNode:  {
-			Node: "Model::Cube"
+			Node: "Model::BMP_Main_Body"
 			Matrix: 0.000001534349735,20.323078155517578,0.000000888349973,0.000000000000000,-20.323078155517578,0.000001534349735,0.000000000000072,0.000000000000000,0.000000000000005,-0.000000888349973,20.323078155517578,0.000000000000000,0.238962173461914,2.726484298706055,0.223781108856201,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Circle_001"
+			Node: "Model::BMP_Upper_Body"
 			Matrix: 0.000001534349622,20.323076248168945,0.000000888349973,0.000000000000000,-20.323076248168945,0.000001534349622,0.000000000000072,0.000000000000000,0.000000000000005,-0.000000888349973,20.323076248168945,0.000000000000000,0.238962173461914,3.558809280395508,-0.176648139953613,1.000000000000000
 		}
 	}
@@ -6409,9 +6409,9 @@ Objects:  {
 ;------------------------------------------------------------------
 
 Relations:  {
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::BMP_Main_Body", "Mesh" {
 	}
-	Model: "Model::Circle_001", "Mesh" {
+	Model: "Model::BMP_Upper_Body", "Mesh" {
 	}
 	Model: "Model::Producer Perspective", "Camera" {
 	}
@@ -6445,12 +6445,12 @@ Relations:  {
 ;------------------------------------------------------------------
 
 Connections:  {
-	Connect: "OO", "Model::Cube", "Model::Scene"
-	Connect: "OO", "Model::Circle_001", "Model::Cube"
-	Connect: "OO", "Material::BMP_main_body", "Model::Cube"
-	Connect: "OO", "Material::BMP_track", "Model::Cube"
-	Connect: "OO", "Material::BMP_upper__bmp3f_Upper_body_texture_png", "Model::Circle_001"
-	Connect: "OO", "Texture::bmp3f_Upper_body_texture_png", "Model::Circle_001"
+	Connect: "OO", "Model::BMP_Main_Body", "Model::Scene"
+	Connect: "OO", "Model::BMP_Upper_Body", "Model::BMP_Main_Body"
+	Connect: "OO", "Material::BMP_main_body", "Model::BMP_Main_Body"
+	Connect: "OO", "Material::BMP_track", "Model::BMP_Main_Body"
+	Connect: "OO", "Material::BMP_upper__bmp3f_Upper_body_texture_png", "Model::BMP_Upper_Body"
+	Connect: "OO", "Texture::bmp3f_Upper_body_texture_png", "Model::BMP_Upper_Body"
 	Connect: "OO", "Video::bmp3f_Upper_body_texture_png", "Texture::bmp3f_Upper_body_texture_png"
 }
 ;Takes and animation section
@@ -6465,7 +6465,7 @@ Takes:  {
 
 		;Models animation
 		;----------------------------------------------------
-		Model: "Model::Cube" {
+		Model: "Model::BMP_Main_Body" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
@@ -6551,7 +6551,7 @@ Takes:  {
 				}
 			}
 		}
-		Model: "Model::Circle_001" {
+		Model: "Model::BMP_Upper_Body" {
 			Version: 1.1
 			Channel: "Transform" {
 				Channel: "T" {
