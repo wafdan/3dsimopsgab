@@ -1,0 +1,10 @@
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\Assembly-CSharp-firstpass.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\UnityEditor.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\UnityEngine.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\Mono.Cecil.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\nunit.framework.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\Temp\bin\Debug\ICSharpCode.NRefactory.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\obj\Debug\Assembly-CSharp-firstpass.dll
+C:\Users\Asus\Documents\UnityProject\seskoadrev18\3Dopsgab\obj\Debug\Assembly-CSharp-firstpass.pdb

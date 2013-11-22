@@ -18,7 +18,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_2_0;UNITY_4_2;UNITY_64;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_2_1;UNITY_4_2;DEVELOPMENT_BUILD;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -37,13 +37,22 @@
     <Reference Include="System.XML" />
 	<Reference Include="System.Core" />
 	<Reference Include="UnityEngine">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AVProWindowsMedia\Demos\FrameExtractDemo.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\MaterialMappingDemo\AVProWindowsMediaMaterialMappingDemo.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\MultiChannelAudioDemo\MultiChannelDemo2.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\MultiChannelAudioDemo\MultiChannelDemo2User.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\MultiVideoDemo.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\PlayQueueDemo\PlayQueueDemo.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\PlayQueueDemo\PlayQueueDemoUI.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\PlayVideoDemo\AVProWindowsMediaPlayVideoDemo.cs" />
+     <Compile Include="Assets\AVProWindowsMedia\Demos\Shared\DemoInfo.cs" />
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaGUIDisplay.cs" />
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaManager.cs" />
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Components\AVProWindowsMediaMaterialApply.cs" />
@@ -52,6 +61,12 @@
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMedia.cs" />
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMediaFormatConverter.cs" />
      <Compile Include="Assets\AVProWindowsMedia\Scripts\Internal\AVProWindowsMediaPlugin.cs" />
+     <Compile Include="Assets\Demo\Scripts\HomingMissiles\HomingMissile.cs" />
+     <Compile Include="Assets\Demo\Scripts\HomingMissiles\MissileLauncher.cs" />
+     <Compile Include="Assets\Demo\Scripts\Movements\FollowMouse.cs" />
+     <Compile Include="Assets\Demo\Scripts\Movements\FreeMove.cs" />
+     <Compile Include="Assets\Demo\Scripts\Movements\RandomMove.cs" />
+     <Compile Include="Assets\Demo\Scripts\Others\LightAnim.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\Detonator.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\DetonatorBurstEmitter.cs" />
      <Compile Include="Assets\Detonator Explosion Framework\System\DetonatorCloudRing.cs" />
@@ -70,14 +85,17 @@
      <Compile Include="Assets\Scripts\Alutsista\BuildingManager.cs" />
      <Compile Include="Assets\Scripts\Alutsista\BuildingPlacement.cs" />
      <Compile Include="Assets\Scripts\Alutsista\PlaceableBuilding.cs" />
+     <Compile Include="Assets\Scripts\Alutsista\UnitProjectileExplosion.cs" />
      <Compile Include="Assets\Scripts\Const.cs" />
      <Compile Include="Assets\Scripts\FileBrowser\CariFile.cs" />
      <Compile Include="Assets\Scripts\FileBrowser\FileBrowser.cs" />
+     <Compile Include="Assets\Scripts\GUI\AVProOperationVideo.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraMovement.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraSangatta.cs" />
      <Compile Include="Assets\Scripts\GUI\CameraScriptKRIRanjau.cs" />
      <Compile Include="Assets\Scripts\GUI\ComboBox.cs" />
      <Compile Include="Assets\Scripts\GUI\CreditScreen.cs" />
+     <Compile Include="Assets\Scripts\GUI\CustomFileCopier.cs" />
      <Compile Include="Assets\Scripts\GUI\FlashIfSelected.cs" />
      <Compile Include="Assets\Scripts\GUI\FlashPoint.cs" />
      <Compile Include="Assets\Scripts\GUI\HUD.cs" />
@@ -99,8 +117,10 @@
      <Compile Include="Assets\Scripts\Navigasi\DragSelect.cs" />
      <Compile Include="Assets\Scripts\Navigasi\InfanteriUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\MoveSelectedUnitOnRightClick.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\NavalUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectLocationOnClicked.cs" />
      <Compile Include="Assets\Scripts\Navigasi\SelectPlayerUnitOnTrigger.cs" />
+     <Compile Include="Assets\Scripts\Navigasi\SubmarineUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\TankUnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\UnitMovement.cs" />
      <Compile Include="Assets\Scripts\Navigasi\boxMovement.cs" />
@@ -147,7 +167,6 @@
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\Trigger.cs" />
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\cameraBerbarisUnitUdara.cs" />
      <Compile Include="Assets\Scripts\Unit\PersiapanSiagaTempurUdara\komandanBarisUnitUdara.cs" />
-     <Compile Include="Assets\Scripts\Unit\PesawatLanding.cs" />
      <Compile Include="Assets\Scripts\Unit\RanjauHancur.cs" />
      <Compile Include="Assets\Scripts\Unit\SingleWayPoint.cs" />
      <Compile Include="Assets\Scripts\Unit\Tankmenembak.cs" />
@@ -160,6 +179,53 @@
      <Compile Include="Assets\Scripts\Unit\cameraToTarget.cs" />
      <Compile Include="Assets\Scripts\Unit\jetPatrol.cs" />
      <Compile Include="Assets\Scripts\Unit\modelMajuPesawat.cs" />
+     <Compile Include="Assets\TNet\Client\TNAutoCreate.cs" />
+     <Compile Include="Assets\TNet\Client\TNAutoJoin.cs" />
+     <Compile Include="Assets\TNet\Client\TNAutoJoinError.cs" />
+     <Compile Include="Assets\TNet\Client\TNAutoSync.cs" />
+     <Compile Include="Assets\TNet\Client\TNBehaviour.cs" />
+     <Compile Include="Assets\TNet\Client\TNGameClient.cs" />
+     <Compile Include="Assets\TNet\Client\TNLobbyClient.cs" />
+     <Compile Include="Assets\TNet\Client\TNManager.cs" />
+     <Compile Include="Assets\TNet\Client\TNObject.cs" />
+     <Compile Include="Assets\TNet\Client\TNRFC.cs" />
+     <Compile Include="Assets\TNet\Client\TNServerInstance.cs" />
+     <Compile Include="Assets\TNet\Client\TNSyncRigidbody.cs" />
+     <Compile Include="Assets\TNet\Client\TNTarget.cs" />
+     <Compile Include="Assets\TNet\Client\TNTcpLobbyClient.cs" />
+     <Compile Include="Assets\TNet\Client\TNUdpLobbyClient.cs" />
+     <Compile Include="Assets\TNet\Client\TNUnityTools.cs" />
+     <Compile Include="Assets\TNet\Common\TNBuffer.cs" />
+     <Compile Include="Assets\TNet\Common\TNDatagram.cs" />
+     <Compile Include="Assets\TNet\Common\TNList.cs" />
+     <Compile Include="Assets\TNet\Common\TNPacket.cs" />
+     <Compile Include="Assets\TNet\Common\TNPlayer.cs" />
+     <Compile Include="Assets\TNet\Common\TNServerList.cs" />
+     <Compile Include="Assets\TNet\Common\TNTcpProtocol.cs" />
+     <Compile Include="Assets\TNet\Common\TNTools.cs" />
+     <Compile Include="Assets\TNet\Common\TNUPnP.cs" />
+     <Compile Include="Assets\TNet\Common\TNUdpProtocol.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ColoredObject.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\DraggedObject.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ExampleChat.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ExampleCreate.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ExampleDestroy.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ExampleMenu.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\FillText.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\ImproveLatency.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\MoveSpinObject.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\SpringTransform.cs" />
+     <Compile Include="Assets\TNet\Examples\Scripts\TouchHandler.cs" />
+     <Compile Include="Assets\TNet\Server\TNChannel.cs" />
+     <Compile Include="Assets\TNet\Server\TNFileServer.cs" />
+     <Compile Include="Assets\TNet\Server\TNGameServer.cs" />
+     <Compile Include="Assets\TNet\Server\TNLobbyLink.cs" />
+     <Compile Include="Assets\TNet\Server\TNLobbyServer.cs" />
+     <Compile Include="Assets\TNet\Server\TNTcpLobbyLink.cs" />
+     <Compile Include="Assets\TNet\Server\TNTcpLobbyServer.cs" />
+     <Compile Include="Assets\TNet\Server\TNTcpPlayer.cs" />
+     <Compile Include="Assets\TNet\Server\TNUdpLobbyLink.cs" />
+     <Compile Include="Assets\TNet\Server\TNUdpLobbyServer.cs" />
      <Compile Include="Assets\TerrainToolkit\TerrainToolkit.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\AddSomeForce.cs" />
      <Compile Include="Assets\UnitySerializer\Scripts\AdditionalData.cs" />
@@ -190,7 +256,13 @@
      <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
      <Compile Include="Assets\iTween\Sample\RotateSample.cs" />
      <Compile Include="Assets\iTween\Sample\SampleInfo.cs" />
+     <Compile Include="Assets\iTweenEditor\Examples\StartAndStopTween.cs" />
+     <Compile Include="Assets\iTweenEditor\Helper Classes\EventParamMappings.cs" />
+     <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransform.cs" />
+     <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransformArray.cs" />
+     <Compile Include="Assets\iTweenEditor\iTweenEvent.cs" />
      <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_HDYC2RGBA.shader" />
+     <None Include="Assets\AVProWindowsMedia\Demos\MaterialMappingDemo\Projector Additive.shader" />
      <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_YUY22RGBA.shader" />
@@ -198,9 +270,14 @@
      <None Include="Assets\Detonator Explosion Framework\Resources\Detonator\Textures\HeatDistort.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-SimpleWater4.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\iTweenEditor\README.txt" />
+     <None Include="Assets\TNet\ReadMe - 1.8.2b.txt" />
      <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_NV12_709.shader" />
      <None Include="Assets\Plugins\whydoidoit.com\license.txt" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Sources\Shaders\FX-Water.shader" />
+     <None Include="Assets\Puffy_Smoke_Readme.txt" />
+     <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\DepthMask.shader" />
+     <None Include="Assets\Plugins\PuffySmoke\Shaders\FakedVolumetric.shader" />
      <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_RAW_BGRA2RGBA.shader" />
      <None Include="Assets\AVProWindowsMedia\Shaders\AVProWindowsMedia_YUV_UYVY2RGBA.shader" />
      <None Include="Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\WaterInclude.cginc" />

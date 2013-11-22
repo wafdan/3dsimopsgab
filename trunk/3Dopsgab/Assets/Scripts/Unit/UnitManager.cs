@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-[SerializeAll]
+//[SerializeAll]
+[DoNotSerialize]
 public class UnitManager : MonoBehaviour
 {
 
@@ -42,7 +43,7 @@ public class UnitManager : MonoBehaviour
     void Start()
     {
         //if (LevelSerializer.IsDeserializing) return;
-        LevelSerializer.AddPrefabPath("Prefabs/");
+        //LevelSerializer.AddPrefabPath("Prefabs/");
         GameObject ucon = (GameObject.Find("UnitContainer") as GameObject);
         if (ucon != null) uconTransform = ucon.transform;
         GameObject secondCameraObj = GameObject.Find("Secondary Camera");
@@ -66,6 +67,10 @@ public class UnitManager : MonoBehaviour
         //lineRenderer.SetWidth(0.2F, 0.2F);
         //lineRenderer.SetVertexCount(lengthOfLineRenderer);
         //testAddUnit();
+
+        scdCamTexture = Resources.Load("ScdCamTexture") as Texture;
+        MinimizeIcon = Resources.Load("GUI/minimize-2-512") as Texture;
+        MaximizeIcon = Resources.Load("GUI/maximize-2-512") as Texture;
     }
 
     public IEnumerator executeMovement()
@@ -119,73 +124,10 @@ public class UnitManager : MonoBehaviour
     void Update()
     {
         if (mouseOverGUI) return;
-        //mini view camera handle
-        secondCamera.enabled = (MenuUnit.showPlayMode || MenuUnit.testMovementMode);
-        if (secondCamera!=null && secondCamera.enabled)
-        {
-            Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
-            if (selectedUnitCenter != Vector3.zero)
-            {
-                Vector3 vcam = Quaternion.Euler(-30, 0, 0) * -Vector3.forward;
-                secondCamera.transform.position = selectedUnitCenter - vcam * 50;
-                //kalo ga ada mouse input, rotasi
-                secondCamera.transform.LookAt(selectedUnitCenter);
-                secondCamera.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 2);
-            }
-        }
-        //follow camera handle
+        handleSecondaryCamera();//mini view camera handle
+        handleFollowCamera();//follow camera handle
         if (Camera.main.enabled)
         {
-            //handle orbiting camera to selected units
-            if (Input.GetKeyUp(KeyCode.C))
-            {
-                if (!followCameraMode) //sedang mode biasa
-                {
-                    //simpan posisi dan rotasi teakhir kamera
-                    lastCamRot = Camera.main.transform.rotation;//Quaternion.Euler(Camera.main.transform.rotation.x, Camera.main.transform.rotation.y, Camera.main.transform.rotation.z);
-                    lastCamPos = Camera.main.transform.position;
-                }
-                else //sedang follow mode
-                {
-                    //kembalikan posisi dan rotasi teakhir kamera
-                    Camera.main.transform.rotation = lastCamRot;
-                    Camera.main.transform.position = lastCamPos;
-                    //lastSelectedUnits.Clear();
-                }
-                followCameraMode = !followCameraMode;
-            }
-
-            if (followCameraMode)
-            {
-                Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
-                if (selectedUnitCenter != Vector3.zero)
-                {
-
-                    //handle mouse movement
-                    xCam += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-                    yCam += Input.GetAxis("Mouse Y") * ySpeed * distance * 0.02f;
-
-                    yCam = ClampAngle(yCam, yMinLimit, yMaxLimit);
-                    Quaternion rot = Quaternion.Euler(-yCam, xCam, 0); // -yCam harus minus agar gerakan tidak invert
-                    distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
-
-                    RaycastHit hitCam;
-                    if (Physics.Linecast(selectedUnitCenter, Camera.main.transform.position, out hitCam))
-                    {
-                        distance -= hitCam.distance;
-                    }
-                    //Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-                    Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-                    Vector3 position = rot * negDistance + selectedUnitCenter;
-
-                    Camera.main.transform.rotation = rot;
-                    Camera.main.transform.position = position;
-
-                    //kalo ga ada mouse input, rotasi
-                    //Camera.main.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 10);
-                }
-            }
-            //end camera handle
 
             Ray ray;
             RaycastHit hit;
@@ -203,7 +145,7 @@ public class UnitManager : MonoBehaviour
                     }
                     /*
                     INI DICURIGAI SEBAGAI SEBAB BUG DIMANA SI UNIT NGOMBANG-AMBING GA JELAS
-					hit.transform.gameObject.SendMessage ("Clicked", hit.point, SendMessageOptions.DontRequireReceiver);
+                    hit.transform.gameObject.SendMessage ("Clicked", hit.point, SendMessageOptions.DontRequireReceiver);
                     */
                     if (hit.collider.gameObject.tag != UNIT_TAG) // cek apakah objek yg diselect adalah Unit, kalau tidak, deselect
                     {
@@ -379,6 +321,83 @@ public class UnitManager : MonoBehaviour
         }
     }
 
+    private void handleFollowCamera()
+    {
+        if (Camera.main.enabled)
+        {
+            //handle orbiting camera to selected units
+            if (Input.GetKeyUp(KeyCode.C))
+            {
+                if (!followCameraMode) //sedang mode biasa
+                {
+                    //simpan posisi dan rotasi teakhir kamera
+                    lastCamRot = Camera.main.transform.rotation;//Quaternion.Euler(Camera.main.transform.rotation.x, Camera.main.transform.rotation.y, Camera.main.transform.rotation.z);
+                    lastCamPos = Camera.main.transform.position;
+                    followCameraMode = true;
+                }
+                else //sedang follow mode
+                {
+                    //kembalikan posisi dan rotasi teakhir kamera
+                    Camera.main.transform.rotation = lastCamRot;
+                    Camera.main.transform.position = lastCamPos;
+                    //lastSelectedUnits.Clear();
+                    followCameraMode = false;
+                }
+                //followCameraMode = !followCameraMode;
+            }
+
+            if (followCameraMode)
+            {
+                Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
+                if (selectedUnitCenter != Vector3.zero)
+                {
+
+                    //handle mouse movement
+                    xCam += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
+                    yCam += Input.GetAxis("Mouse Y") * ySpeed * distance * 0.02f;
+
+                    yCam = ClampAngle(yCam, yMinLimit, yMaxLimit);
+                    Quaternion rot = Quaternion.Euler(-yCam, xCam, 0); // -yCam harus minus agar gerakan tidak invert
+                    distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
+
+                    RaycastHit hitCam;
+                    if (Physics.Linecast(selectedUnitCenter, Camera.main.transform.position, out hitCam))
+                    {
+                        distance -= hitCam.distance;
+                    }
+                    //Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+                    Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+                    Vector3 position = rot * negDistance + selectedUnitCenter;
+
+                    Camera.main.transform.rotation = rot;
+                    Camera.main.transform.position = position;
+
+                    //kalo ga ada mouse input, rotasi
+                    //Camera.main.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 10);
+                    if (selectedUnits.Count > 0) DeselectAllUnits();//selectedUnits.Clear(); //hapus biar ga glowing
+                }
+            }
+            //end camera handle
+        }
+    }
+
+    private void handleSecondaryCamera()
+    {
+        secondCamera.enabled = enabled;//(MenuUnit.showPlayMode || MenuUnit.testMovementMode) && !followCameraMode;
+        if (secondCamera != null && secondCamera.enabled)
+        {
+            Vector3 selectedUnitCenter = GetSelectedUnitCenterPos();
+            if (selectedUnitCenter != Vector3.zero)
+            {
+                Vector3 vcam = Quaternion.Euler(-30, 0, 0) * -Vector3.forward;
+                secondCamera.transform.position = selectedUnitCenter - vcam * 50;
+                //kalo ga ada mouse input, rotasi
+                secondCamera.transform.LookAt(selectedUnitCenter);
+                secondCamera.transform.RotateAround(selectedUnitCenter, Vector3.up, Time.deltaTime * 2);
+            }
+        }
+    }
+
     private Vector3 GetSelectedUnitCenterPos()
     {
         Vector3 centroid = Vector3.zero;
@@ -390,7 +409,6 @@ public class UnitManager : MonoBehaviour
             }
             centroid /= selectedUnits.Count;
             lastSelectedUnits = new List<GameObject>(selectedUnits); //masukkan ke cache
-            selectedUnits.Clear(); //hapus biar ga glowing
         }
         else
         {
@@ -453,9 +471,16 @@ public class UnitManager : MonoBehaviour
 
     public void SelectSingleUnit(GameObject unit)
     {
-        selectedUnits.Clear();
+        DeselectAllUnits();
         if (unit.tag == UNIT_TAG)
+        {
+            BasicUnitMovement bum = unit.GetComponent<BasicUnitMovement>();
+            if (bum != null)
+            {
+                bum.isSelected = true;
+            }
             selectedUnits.Add(unit);
+        }
         //Debug.Log(selectedUnits);
     }
 
@@ -463,12 +488,33 @@ public class UnitManager : MonoBehaviour
     {
         if (unit.tag == UNIT_TAG)
         {
+            BasicUnitMovement bum = unit.GetComponent<BasicUnitMovement>();
+            if (bum != null)
+            {
+                bum.isSelected = true;
+            }
             selectedUnits.Add(unit);
         }
     }
 
     public void DeselectAllUnits()
     {
+        GameObject ucon = GameObject.Find("UnitContainer");
+        if (ucon != null && ucon.transform.childCount > 0)
+        {
+            BasicUnitMovement[] bums = ucon.GetComponentsInChildren<BasicUnitMovement>();
+            for (int i = 0; i < bums.Length; i++)
+            {
+                bums[i].isSelected = false;
+                Debug.Log("bum!");
+            }
+        }
+        //for(int i=0;i<selectedUnits.Count;i++){
+        //    BasicUnitMovement bum = selectedUnits[i].GetComponent<BasicUnitMovement>();
+        //    if(bum!=null){
+        //        bum.isSelected = false;	
+        //    }
+        //}
         selectedUnits.Clear();
     }
 
@@ -508,15 +554,25 @@ public class UnitManager : MonoBehaviour
     // GUI operations
     void OnGUI()
     {
-        if (followCameraMode) return; // jika lagi mode kamera follow unit, GUI ga nampil dulu
+        if (followCameraMode && !AVProOperationVideo.isActiveMoviePlaying)
+        {
+            showMaxMinButton();
+            return; // jika lagi mode kamera follow unit, GUI ga nampil dulu
+        }
 
         if (menuVisible && Camera.main.enabled)
             showSelectedUnitMenu();
         else
             mouseOverGUI = false;
 
+        if ((MenuUnit.showPlayMode || MenuUnit.testMovementMode) && !AVProOperationVideo.isActiveMoviePlaying)
+        {
+            showSecondCameraScreen();
+        }
+
         if (HistoryManager.showHistory)
         {
+
             showHistoryGUI();
             showExistingUnitDetail();
         }
@@ -710,7 +766,7 @@ public class UnitManager : MonoBehaviour
     static float hisPosW = 250;
     static float hisPosH = 0;//hideHisList ? 25 : (Screen.height / 2 - 120);//250;
     static float hisPosX = Screen.width - hisPosW;
-    static float hisPosY = 0;
+    static float hisPosY = 180;
     static float hisItemH = 50;
     static float hisItemW = hisPosW;// *0.9f;
     private Vector2 scrollPosUnitDetail = Vector2.zero;
@@ -735,7 +791,72 @@ public class UnitManager : MonoBehaviour
     private float distanceMax = 250f;
     private Vector3 lastCentroid;
     private List<GameObject> lastSelectedUnits;
+    //second camera texture
+    private Texture scdCamTexture;
+    private Texture MinimizeIcon;
+    private Texture MaximizeIcon;
+    public static bool scdCamScrFullScreen = false;
+    float scdCamScrW = 250;
+    float scdCamScrH = 170;
+    float scdCamScrX = Screen.width - 250;
+    float scdCamScrY = 0;
 
+    void showSecondCameraScreen()
+    {
+        
+
+        //if (scdCamScrFullScreen)
+        //{
+        //    scdCamScrW = Screen.width;
+        //    scdCamScrH = Screen.height;
+        //    scdCamScrX = 0;
+        //    scdCamScrY = 0;
+        //}
+
+        Rect scdCamScrRect = new Rect(scdCamScrX, scdCamScrY, scdCamScrW, scdCamScrH);
+
+        GUILayout.BeginArea(scdCamScrRect, GUI.skin.box);
+        GUILayout.BeginVertical();
+        if (scdCamTexture != null)
+            GUILayout.Box(scdCamTexture);
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+        GUI.backgroundColor = Color.white;
+        if (GUI.Button(new Rect(scdCamScrRect.x + (scdCamScrRect.width - 32), scdCamScrRect.y, 32, 32), (scdCamScrFullScreen ? MinimizeIcon : MaximizeIcon)))
+        {
+            //scdCamScrFullScreen = !scdCamScrFullScreen;
+            followCameraMode = !followCameraMode;
+        }
+
+    }
+
+    public void showMaxMinButton()
+    {
+        //Rect scdCamScrRect = new Rect(scdCamScrX, scdCamScrY, scdCamScrW, scdCamScrH);
+
+        GUI.backgroundColor = Color.white;
+        //if (GUI.Button(new Rect(scdCamScrRect.x + (scdCamScrRect.width - 32), scdCamScrRect.y, 32, 32), (scdCamScrFullScreen ? MinimizeIcon : MaximizeIcon)))
+        if (GUI.Button(new Rect((Screen.width - 32), 0, 32, 32), (followCameraMode ? MinimizeIcon : MaximizeIcon)))
+        {
+            if (!followCameraMode) //sedang mode biasa
+            {
+                //simpan posisi dan rotasi teakhir kamera
+                lastCamRot = Camera.main.transform.rotation;//Quaternion.Euler(Camera.main.transform.rotation.x, Camera.main.transform.rotation.y, Camera.main.transform.rotation.z);
+                lastCamPos = Camera.main.transform.position;
+                followCameraMode = true;
+            }
+            else //sedang follow mode
+            {
+                //kembalikan posisi dan rotasi teakhir kamera
+                Camera.main.transform.rotation = lastCamRot;
+                Camera.main.transform.position = lastCamPos;
+                //lastSelectedUnits.Clear();
+                followCameraMode = false;
+            }
+            //followCameraMode = !followCameraMode;
+        }
+    }
 
     void showHistoryGUI()
     {

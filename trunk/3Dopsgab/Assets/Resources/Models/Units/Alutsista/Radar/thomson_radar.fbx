@@ -220,7 +220,7 @@ Objects:  {
 		Culling: "CullingOff"
 		TypeFlags: "Skeleton"
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::Thompson_Radar_Body", "Mesh" {
 		Version: 232
 		Properties60:  {
 			Property: "QuaternionInterpolate", "bool", "",0
@@ -3081,7 +3081,7 @@ Objects:  {
 			Matrix: 1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,-1.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 		PoseNode:  {
-			Node: "Model::Cube"
+			Node: "Model::Thompson_Radar_Body"
 			Matrix: 0.000000075497901,1.000000000000000,0.000000043711388,0.000000000000000,-1.000000000000000,0.000000075497901,0.000000000000004,0.000000000000000,0.000000000000000,-0.000000043711388,1.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,1.000000000000000
 		}
 		PoseNode:  {
@@ -3113,7 +3113,7 @@ Objects:  {
 Relations:  {
 	Model: "Model::radar_arm", "Limb" {
 	}
-	Model: "Model::Cube", "Mesh" {
+	Model: "Model::Thompson_Radar_Body", "Mesh" {
 	}
 	Model: "Model::base", "Limb" {
 	}
@@ -3149,10 +3149,10 @@ Relations:  {
 ;------------------------------------------------------------------
 
 Connections:  {
-	Connect: "OO", "Model::Cube", "Model::Scene"
+	Connect: "OO", "Model::Thompson_Radar_Body", "Model::Scene"
 	Connect: "OO", "Model::radar_arm", "Model::Scene"
-	Connect: "OO", "Material::thomson_mat", "Model::Cube"
-	Connect: "OO", "Deformer::Skin Cube", "Model::Cube"
+	Connect: "OO", "Material::thomson_mat", "Model::Thompson_Radar_Body"
+	Connect: "OO", "Deformer::Skin Cube", "Model::Thompson_Radar_Body"
 	Connect: "OO", "SubDeformer::Cluster Cube base", "Deformer::Skin Cube"
 	Connect: "OO", "SubDeformer::Cluster Cube main_radar", "Deformer::Skin Cube"
 	Connect: "OO", "Model::base", "SubDeformer::Cluster Cube base"
@@ -3164,9 +3164,9 @@ Connections:  {
 ;----------------------------------------------------
 
 Takes:  {
-	Current: "idle"
-	Take: "idle" {
-		FileName: "idle.tak"
+	Current: "radar_idle"
+	Take: "radar_idle" {
+		FileName: "radar_idle.tak"
 		LocalTime: 0,1924423250
 		ReferenceTime: 0,1924423250
 
